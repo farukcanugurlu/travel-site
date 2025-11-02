@@ -1,0 +1,429 @@
+Project Brief — LEXOR Travel (Web + Admin + Payments)
+
+0) Özet / Amaç
+LEXOR; turların listelendiği, filtrelenip satın alınabildiği, blog içerikleri olan ve sonradan yönetilebilir (admin panel) bir turizm websitesidir. Hedef kitle ağırlıkla yurtdışı müşteriler; zaman zaman yurtiçi müşteriler de olacaktır. Bu yüzden uluslararası + Türkiye içi ödeme aynı sitede desteklenecek. Başarılı ödemeden sonra Voucher PDF otomatik üretilip e-posta ile gönderilecek.
+
+Cloudflare üzerinden domain alındı; hosting/infra için öneriye açığız.
+
+Öncelik: Mevcut React/TypeScript Vite tabanlı frontend’i koruyabiliriz ya da SEO ve backend kolaylığı için Next.js + Node/Nest/Express yapısına taşıyabiliriz. Admin panel, ödeme ve kupon PDF gibi kritik akışlar sunucu tarafı gerektiriyor.
+
+1) Ana Özellikler ve Kabul Kriterleri
+1.1 Ödeme Entegrasyonu (International + TR Domestic)
+International: Stripe (kart, Apple/Google Pay).
+Türkiye içi: İyzico veya PayTR (kararı siz verin; PCI-DSS/3DS akışıyla).
+Sepet/checkout toplamı, paket + yolcu türü (adult/child/infant) adetlerine göre hesaplanır.
+Çoklu para birimi (min. USD/EUR/TRY). Fiyatlar TRY’de tutulup anlık kurla gösterilebilir veya sabit tablosu kullanılabilir; kararınızı verin, dokümante edin.
+Success/Fail webhooks: Ödeme başarılıysa Booking oluştur, Voucher PDF üret, e-posta gönder. Başarısızsa kullanıcıya hata göster, admin’e logla.
+Done: Test kartlarıyla end-to-end ödeme → booking oluştur → PDF maili → kullanıcı profilinde sipariş görünür.
+
+1.2 Voucher PDF (otomatik)
+Ödeme başarıyla tamamlandığında: PDF’de booking no, tur adı, seçilen paket, tarih, yolcu sayıları (adult/child/infant), toplam tutar ve QR Code (booking id linki) bulunur.
+PDF sunucuda üretilir (örn. PDFKit/Puppeteer). AWS S3/Cloudflare R2 benzeri objeye yüklenir; linki e-postaya eklenir.
+Kullanıcı panelinden indirilebilir.
+Done: Test rezervasyonunda PDF dosyası oluşur, e-posta ile gelir, link çalışır.
+
+1.3 Admin Panel
+Turlar (CRUD): ekle / düzenle / sil, yayında/değil toggle.
+Paketler: her tur için 1..N paket (örn. Standard, Premium, Private). Paket başına adult/child/infant fiyatı, dil seçenekleri, kontenjan (opsiyonel).
+Kategoriler & Destinasyonlar: (örn. City Tour, Hiking, Beach). Turlar kategori/destinasyona bağlanır.
+Blog (CRUD): kategori/tags alanlarıyla.
+İncelemeler: moderasyon (onayla/sil).
+Siparişler/Booking listesi: ödeme durumu, pdf linki, müşteri bilgileri.
+Rol bazlı erişim (Admin/Editor).
+Done: Admin’den yeni tur+paket eklenir; sitede görünür, filtrelenir, satın alınabilir.
+
+1.4 Tur Kartları ve Dinamik İnceleme Puanı
+Kartlarda rating ortalaması ve toplam review sayısı görünür.
+Yeni yorum geldiğinde (onaylıysa) ortalama ve adet anında güncellenir (realtime gerekmez; publish sonrası yeterli).
+Review alanları: {rating: 1..5, title, text, author, createdAt, approved}.
+Done: Admin’den review onaylandığında kartlarda rakamlar güncellenir.
+
+1.5 Arama & Filtreleme
+Filtreler: Destinasyon, Kategori, Dil, Paket tipi, Fiyat aralığı, Süre (gün), Puan, Şehir.
+Filtre URL’e yazılır (/tours?category=city&lang=en&min=...).
+Arama önerileri (min. 2 karakter) opsiyonel ama önerilir.
+Done: Filtre kombinasyonlarıyla doğru sonuç döner, URL paylaşılabilir.
+
+1.6 Popülerler
+Popüler Turlar: anasayfada 8 adet. Admin’de “featured” bayrağı.
+Popüler Destinasyonlar: 8 adet; her kartın altında “X tur” sayısı otomatik (DB count).
+Done: Yeni tur eklenince destinasyon sayısı otomatik artar.
+
+1.7 Blog
+Grid sayfasında kategori filtresi.
+Recent Posts her zaman en yeniye göre (timestamp).
+Blog detay URL’si slug ile.
+Admin’den kategori/tag eklenebilir.
+Done: Kategoriye tıklayınca doğru filtre, Recent Posts sıralı.
+
+1.8 Contact Form (EmailJS)
+Frontend’de EmailJS ile bağlanacak (account/keys biz vereceğiz).
+Form alanları: Name, Email, Subject (select: partnership, purchase, tour_info, booking_changes, technical, group, other), Message.
+Mesaj placeholder ve satır aralıkları düzgün; başarı/başarısız durumda toast.
+Done: Test gönderimi belirtilen e-posta adresine düşer.
+
+1.9 Üyelik (opsiyonel ama önerilir)
+E-posta/şifre ile kayıt & giriş. OAuth (Google/Apple) opsiyonel.
+Profil: bookings listesi (PDF indir), review yazma, favoriler.
+KVKK/GDPR checkbox’ları.
+Done: Yeni user kayıt → ödeme → profil sayfasında sipariş görünür.
+
+2) Teknik Tercihler / Mimari
+Frontend: React + TypeScript (mevcut). İsterseniz Next.js’e taşıyın (SEO/SSR). Tasarım mevcut class’lara uyumlu kalsın.
+Backend: Node.js (NestJS/Express) + PostgreSQL (Prisma).
+Auth: JWT/NextAuth (seçilen stack’e göre).
+Storage: S3 veya Cloudflare R2 (PDF & görseller).
+Mail: Transactional için Resend/SendGrid (EmailJS yalnızca contact için).
+Payments: Stripe + İyzico/PayTR (TR). Webhook endpoint’leri güvenli.
+
+3) UX Detayları
+Tur kartı: kapak görseli, başlık, şehir/ülke, süre (X Days), rating★ (N Reviews), Starts $price.
+Checkout: Yolcu sayıları (adult/child/infant), paket seçimi, dil seçimi, tarih. Fiyat dinamik hesaplanır = (A*priceAdult + C*priceChild + I*priceInfant) paket kuruna göre.
+Blog Grid: 2 sütun, sayfalama, kategori filtresi sağda.
+Contact/Blog Breadcrumb: link trail gizli (yalnızca başlık).
+
+4) Güvenlik & Uyumluluk
+Webhook’lar imza doğrulamalı.
+Ödeme sayfalarında 3DS desteği.
+Rate limiting (contact, review).
+Loglama/monitoring (Sentry/Datadog).
+GDPR/KVKK metinleri ve çerez banner’ı.
+
+5) Deploy / Hosting (öneri)
+Frontend: Vercel (Next) veya Cloudflare Pages (Vite).
+Backend: Render/Fly.io/Hetzner VM.
+DB: Managed Postgres (Railway/Supabase/Neon).
+DNS/CDN: Cloudflare (zaten domain bizde).
+Storage: Cloudflare R2 veya S3 compatible.
+
+6) Performans / SEO
+Resim optimizasyonu (next/image veya CDN).
+meta/OG tags; blog için structured data (Article).
+Lighthouse hedefi: 90+.
+
+7) Zamanlama / Milestones (öneri)
+Analiz & mimari netleştirme (1–2 gün)
+DB şeması + Admin temel CRUD (5–7 gün)
+Tours list + filtre + kartlar + popüler bloklar (5–7 gün)
+Checkout + ödemeler + webhook + booking + voucher PDF (7–10 gün)
+Blog modülü + kategori filtre + recent posts (3–4 gün)
+Reviews + ortalama puan akışı (2–3 gün)
+Contact (EmailJS) + sayfa cilaları (1–2 gün)
+Testler, SEO, güvenlik, dokümantasyon (3–5 gün)
+
+8) Teslimat / Definition of Done
+Kaynak kod (frontend + backend) + .env örnekleri.
+Admin giriş bilgileri.
+Ödeme test kartları ve test senaryoları dokümanı.
+Kurulum & deploy dokümantasyonu (README).
+En az 10 örnek tur, 2–3 paket, 3–4 blog içeriği seed scripti.
+
+9) Açık Konular / Sizin Öneriniz
+Çoklu para biriminde kur stratejisi (sabit tablo vs anlık).
+Üyelikte sosyal giriş (Google/Apple) gerekliliği.
+İade/iptal kuralları (policy alanları).
+Çok dillilik (site genel i18n ihtiyacı var mı, şu an yalnızca tour language yeterli mi?).
+
+Notlar
+Kod isimlendirmeleri İngilizce olsun; yalnızca yorum satırlarında Türkçe kullanılacak.
+Mevcut UI sınıflarını mümkün olduğunca bozmayın (tasarım tutarlılığı).
+Blog, tur ve booking alanları admin panelden yönetilebilir olmalı.
+
+
+
+=== BACKEND STACK KARARI ===
+✅ Backend: NestJS + PostgreSQL + Prisma
+✅ Auth: JWT + Passport
+✅ Storage: Cloudflare R2
+✅ Email: Resend
+✅ Deploy: Railway (backend + DB) + Cloudflare Pages (frontend)
+
+=== GELİŞTİRME SIRASI ===
+1. ✅ Backend kurulumu ve DB schema
+2. ✅ Auth modülü (JWT)
+3. ✅ Tours CRUD + Admin panel
+4. ✅ Blog CRUD modülü
+5. ✅ Review sistemi + rating hesaplama
+6. ✅ Booking sistemi (ödeme hariç)
+7. ✅ PDF generation + email
+8. ⏳ Ödeme entegrasyonu (en son)
+9. ⏳ Sosyal giriş (en son)
+
+=== BACKEND KURULUM TAMAMLANDI ===
+✅ NestJS + PostgreSQL + Prisma kurulumu
+✅ Database schema tasarımı
+✅ Auth modülü (JWT + Passport)
+✅ Tours CRUD API endpoints
+✅ Blog CRUD modülü
+✅ Reviews, Bookings, Admin modülleri (placeholder)
+✅ Seed scripti (örnek veriler)
+✅ Swagger API documentation
+✅ CORS konfigürasyonu
+
+=== SONRAKI ADIMLAR ===
+1. ✅ Database kurulumu (PostgreSQL)
+2. ✅ Migration çalıştırma
+3. ✅ Seed scripti çalıştırma
+4. ✅ Backend başlatma
+5. ✅ Frontend-backend entegrasyonu (API servisleri)
+6. ✅ Admin panel temel yapısı
+7. ✅ Review sistemi tamamlama
+8. ✅ Blog sistemi tamamlama
+9. ✅ Admin panel detayları (CRUD formları)
+10. ✅ Üyelik sistemi (Auth components)
+11. ✅ Bookings sistemi (Rezervasyon yönetimi)
+12. ✅ Favoriler sistemi (Tour favorileri)
+
+=== DATABASE KURULUM TAMAMLANDI ===
+✅ Docker PostgreSQL container başlatıldı
+✅ Migration'lar çalıştırıldı (tüm tablolar oluştu)
+✅ Seed scripti çalıştırıldı (örnek veriler yüklendi)
+✅ Backend server başlatıldı (http://localhost:3000)
+✅ Admin user: admin@lexortravel.com / admin123
+✅ API Documentation: http://localhost:3000/api/docs
+
+=== FRONTEND-BACKEND ENTEGRASYONU TAMAMLANDI ===
+✅ API servisleri oluşturuldu (api.ts, tours.ts, auth.ts, blog.ts)
+✅ ToursData.ts güncellendi (API + mock data fallback)
+✅ useTours hook'u oluşturuldu (API entegrasyonu)
+✅ Transform fonksiyonları (API → Frontend format)
+✅ Error handling ve fallback sistemi
+✅ TypeScript interfaces güncellendi
+
+=== ADMIN PANEL TAMAMLANDI ===
+✅ AdminLayout - Responsive sidebar navigation
+✅ AdminDashboard - Stats cards, quick actions, recent activity
+✅ ToursAdmin - Full CRUD table with filters and actions
+✅ Admin routes - Tüm admin sayfaları için route'lar
+✅ Responsive design - Mobile uyumlu
+✅ Professional UI - Modern admin panel tasarımı
+✅ Real-time updates - Toggle published/featured
+✅ Search & filters - Tours filtreleme sistemi
+✅ Error handling - API hatalarını yönetme
+
+=== REVIEW SİSTEMİ TAMAMLANDI ===
+✅ Backend API: Reviews Controller, Service, DTOs
+✅ Frontend API Service: reviews.ts
+✅ Review Components: ReviewForm, ReviewList, ReviewStats
+✅ Admin Reviews Management: ReviewsAdmin.tsx
+✅ Review Moderation: Approve/Reject/Delete
+✅ Rating System: 1-5 stars with statistics
+✅ User-friendly Review Form
+✅ Professional Review Display
+✅ Responsive Design
+✅ Error Handling
+
+=== BLOG SİSTEMİ TAMAMLANDI ===
+✅ Backend API: Blog Controller, Service, DTOs
+✅ Frontend API Service: blog.ts (güncellenmiş)
+✅ Admin Blog Management: BlogAdmin.tsx
+✅ Admin Categories Management: BlogCategoriesAdmin.tsx
+✅ Blog CRUD Operations: Create, Read, Update, Delete
+✅ Category Management: Full CRUD with slug generation
+✅ Published/Draft Toggle: Status management
+✅ Search & Filter: By status, content, category
+✅ Professional UI: Consistent admin theme
+✅ Responsive Design: Mobile uyumlu
+✅ Error Handling: API hatalarını yönetme
+
+=== ADMIN PANEL DETAYLARI TAMAMLANDI ===
+✅ Tour Form: Full CRUD form with packages management
+✅ Blog Form: Complete blog post creation/editing
+✅ Professional Forms: Rich form interfaces
+✅ Package Management: Dynamic package creation
+✅ Slug Generation: Auto-generate from titles
+✅ Validation: Form validation and error handling
+✅ Responsive Design: Mobile-friendly forms
+✅ Professional UI: Consistent admin theme
+✅ Real-time Updates: Instant form submissions
+✅ Error Handling: Comprehensive error management
+
+=== ÜYELİK SİSTEMİ TAMAMLANDI ===
+✅ Login Form: Professional login interface
+✅ Register Form: Complete registration with validation
+✅ User Profile: Profile management with tabs
+✅ Auth Routes: /login, /register, /profile
+✅ Header Integration: Auth links in main header
+✅ Template Integration: No template breaking
+✅ Professional UI: Modern auth design
+✅ Responsive Design: Mobile-friendly forms
+✅ Form Validation: Client-side validation
+✅ Error Handling: User-friendly error messages
+✅ KVKK/GDPR: Terms and privacy checkboxes
+
+=== BOOKINGS VE FAVORİLER SİSTEMİ TAMAMLANDI ===
+✅ Bookings Backend API: Complete CRUD operations
+✅ Bookings Frontend API: Full integration
+✅ Booking Form: Professional reservation form
+✅ Admin Bookings: Complete management system
+✅ User Bookings: Profile integration
+✅ Favorites API: Add/remove favorites
+✅ Favorite Button: Reusable component
+✅ User Favorites: Profile integration
+✅ Routes Integration: All booking routes
+✅ Professional UI: Modern booking interface
+✅ Responsive Design: Mobile-friendly forms
+✅ Error Handling: Comprehensive error management
+✅ Template Safe: No existing template breaking
+
+=== BOOKINGS SİSTEMİ ÖZELLİKLERİ ===
+✅ Booking Form: Complete reservation form with packages
+✅ Package Selection: Dynamic package selection
+✅ Participants Count: Adult/Child/Infant selection
+✅ Tour Date: Date picker for tour dates
+✅ Contact Info: Phone and email fields
+✅ Special Requests: Additional information field
+✅ Total Calculation: Real-time price calculation
+✅ Admin Management: Complete booking management
+✅ Status Updates: Pending/Confirmed/Cancelled
+✅ User Bookings: Personal booking history
+✅ Professional UI: Modern booking interface
+✅ Responsive Design: Works on all devices
+
+=== FAVORİLER SİSTEMİ ÖZELLİKLERİ ===
+✅ Favorite Button: Reusable heart button component
+✅ Add/Remove: Toggle favorite status
+✅ User Favorites: Profile favorites tab
+✅ Tour Integration: Seamless tour integration
+✅ Professional UI: Modern favorite interface
+✅ Responsive Design: Mobile-friendly
+✅ Error Handling: Comprehensive error management
+✅ Template Safe: No existing template breaking
+
+=== EKSİK SİSTEMLER TAMAMLANDI ===
+✅ Favorites Backend API: Complete CRUD operations
+✅ Tour Details Page: Professional tour detail page
+✅ Search & Filter: Advanced search and filtering
+✅ Image Upload System: Complete upload functionality
+
+=== FAVORİLER BACKEND API ===
+✅ Favorites Service: Complete CRUD operations
+✅ Favorites Controller: REST API endpoints
+✅ Favorites Module: NestJS module
+✅ Database Schema: Favorites table
+✅ User Relations: User-Favorite relationships
+✅ Tour Relations: Tour-Favorite relationships
+✅ Unique Constraints: Prevent duplicate favorites
+✅ Admin Integration: App module integration
+
+=== TOUR DETAILS PAGE ===
+✅ Professional Design: Modern tour detail page
+✅ Hero Section: Attractive tour header
+✅ Tab Navigation: Overview/Packages/Reviews
+✅ Package Selection: Dynamic package display
+✅ Review Integration: Review system integration
+✅ Booking Integration: Booking form integration
+✅ Favorite Button: Add to favorites
+✅ Responsive Design: Mobile-friendly
+✅ SEO Optimized: Proper meta tags
+
+=== SEARCH & FILTER SYSTEM ===
+✅ Advanced Search: Text-based search
+✅ Category Filter: Filter by tour categories
+✅ Destination Filter: Filter by destinations
+✅ Price Range: Min/Max price filtering
+✅ Duration Filter: Filter by tour duration
+✅ Difficulty Filter: Filter by difficulty level
+✅ Real-time Results: Instant search results
+✅ Clear Filters: Reset all filters
+✅ Professional UI: Modern search interface
+✅ Responsive Design: Mobile-friendly
+
+=== DATABASE MIGRATION VE SEED TAMAMLANDI ===
+✅ Favorites Table: Migration başarıyla oluşturuldu
+✅ Database Schema: Favorites tablosu eklendi
+✅ User Relations: User-Favorite ilişkileri kuruldu
+✅ Tour Relations: Tour-Favorite ilişkileri kuruldu
+✅ Unique Constraints: Duplicate favorites önlendi
+✅ Seed Data: Tüm sample data başarıyla oluşturuldu
+✅ Blog Posts: Duplicate slug hatası düzeltildi
+✅ Database Ready: Tüm sistemler çalışır durumda
+
+=== EKSİK KALAN SİSTEMLER ===
+⚠️ PDF İndirme Sistemi - Rezervasyon PDF'leri (Kısmen tamamlandı)
+❌ Ödeme Sistemi - Stripe/İyzico entegrasyonu
+❌ Email Sistemi - Rezervasyon email'leri
+✅ Image Upload Backend - Resim yükleme API
+✅ Tour Details Integration - Frontend entegrasyonu
+✅ Search Integration - Frontend entegrasyonu
+✅ Admin Image Management - Resim yönetimi
+❌ Production Deployment - Canlı ortam kurulumu
+
+=== PDF İNDİRME SİSTEMİ (KISMEN TAMAMLANDI) ===
+✅ PDF Generator: PDFKit entegrasyonu tamamlandı
+✅ PDF Template: Profesyonel PDF tasarımı (booking no, tur adı, paket, tarih, yolcu sayıları, toplam tutar, QR Code)
+✅ PDF Storage: uploads/bookings klasöründe saklanıyor (local + production için hazır)
+✅ PDF Download: Kullanıcı panelinden PDF indirme eklendi
+✅ QR Code: Booking ID QR kodları PDF'e eklendi
+✅ Booking Oluşturma: Otomatik PDF oluşturma (booking oluşturulduğunda)
+✅ Checkout Sistemi: Place your order butonu aktif, booking oluşturma entegrasyonu
+✅ Checkout Form: Otomatik kullanıcı bilgisi doldurma
+❌ PDF Email: Otomatik PDF gönderimi (gelecekte eklenecek)
+❌ Admin PDF Management: PDF yönetimi (gelecekte eklenecek)
+
+=== ÖDEME SİSTEMİ (EKSİK) ===
+❌ Stripe Integration: Uluslararası ödemeler
+❌ İyzico/PayTR Integration: Türkiye ödemeleri
+❌ Payment Gateway: Ödeme işlemleri
+❌ Webhook Handling: Ödeme webhook'ları
+❌ Payment Status: Ödeme durumu takibi
+❌ Multi-Currency: Çoklu para birimi
+❌ 3DS Support: Güvenli ödeme
+❌ Payment Logging: Ödeme logları
+
+=== EMAİL SİSTEMİ (EKSİK) ===
+❌ Email Service: Resend/SendGrid entegrasyonu
+❌ Booking Emails: Rezervasyon email'leri
+❌ Confirmation Emails: Onay email'leri
+❌ Reminder Emails: Hatırlatma email'leri
+❌ Email Templates: Profesyonel email tasarımları
+❌ Email Queue: Email kuyruğu sistemi
+❌ Email Logging: Email logları
+
+=== IMAGE UPLOAD BACKEND (TAMAMLANDI) ===
+✅ Upload Service: Resim yükleme servisi
+✅ File Validation: Dosya doğrulama
+✅ Image Processing: Resim işleme
+✅ Storage Integration: Cloudflare R2 entegrasyonu
+✅ Admin Image Management: Resim yönetimi
+✅ Image Optimization: Resim optimizasyonu
+
+=== FRONTEND ENTEGRASYONU (TAMAMLANDI) ===
+✅ Tour Details Integration: TourDetailsMain entegrasyonu
+✅ Search Integration: SearchFilter entegrasyonu
+✅ Image Upload Integration: ImageUpload entegrasyonu
+✅ Navigation Updates: Route güncellemeleri
+✅ Component Testing: Component testleri
+✅ Error Handling: Frontend hata yönetimi
+
+=== IMAGE UPLOAD BACKEND TAMAMLANDI ===
+✅ R2 Service: Cloudflare R2 entegrasyonu
+✅ Upload Service: Resim yükleme servisi
+✅ Upload Controller: REST API endpoints
+✅ File Validation: Dosya doğrulama
+✅ Image Processing: Sharp ile resim işleme
+✅ Multiple Upload: Çoklu resim yükleme
+✅ Frontend API: Upload API servisi
+✅ ImageUpload Component: Güncellenmiş component
+✅ Admin Image Management: Resim yönetimi
+✅ Navigation Integration: Route entegrasyonu
+✅ Dependencies: Gerekli paketler eklendi
+✅ Environment Variables: R2 konfigürasyonu
+
+=== CHECKOUT VE PDF SİSTEMİ TAMAMLANDI ===
+✅ Checkout Form: Form state yönetimi ve otomatik kullanıcı bilgisi doldurma
+✅ Place Your Order: Aktif buton, booking oluşturma entegrasyonu
+✅ Booking Oluşturma: Sepetteki her item için booking oluşturuluyor
+✅ PDF Generator: PDFKit ile otomatik PDF oluşturma (booking no, tur adı, paket, tarih, yolcu sayıları, toplam tutar, QR Code)
+✅ PDF Storage: uploads/bookings klasöründe PDF dosyaları saklanıyor
+✅ PDF Download: Kullanıcı panelinden PDF indirme butonu ve API entegrasyonu
+✅ QR Code: Booking ID içeren QR kod PDF'e eklendi
+✅ Otomatik PDF: Booking oluşturulduğunda otomatik PDF oluşturma
+✅ User Profile Route: /user-profile route'u eklendi, ?tab=bookings query parameter desteği
+✅ Cart Navigation: Go To Shop butonu /tours sayfasına yönlendiriyor
+✅ Route Sıralaması: PDF endpoint route sıralaması düzeltildi
+✅ Hata Yönetimi: Detaylı hata mesajları ve validation iyileştirmeleri
+✅ Token Yönetimi: 401 hatası için otomatik logout ve redirect
+✅ UUID Validator: CUID formatı için validator düzeltmesi
+✅ Database Migration: tourDate ve diğer booking alanları eklendi
+✅ PDFKit Import: CommonJS require ile import düzeltmesi

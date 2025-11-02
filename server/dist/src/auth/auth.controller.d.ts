@@ -1,0 +1,29 @@
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+export declare class AuthController {
+    private authService;
+    constructor(authService: AuthService);
+    login(loginDto: LoginDto): Promise<{
+        access_token: string;
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
+            role: import(".prisma/client").$Enums.UserRole;
+        };
+    }>;
+    register(registerDto: RegisterDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        firstName: string | null;
+        lastName: string | null;
+        role: import(".prisma/client").$Enums.UserRole;
+        isActive: boolean;
+        lastLoginAt: Date | null;
+    }>;
+    getProfile(req: any): any;
+}

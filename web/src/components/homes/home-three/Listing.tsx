@@ -1,0 +1,406 @@
+// src/components/homes/home-three/Listing.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useMemo, useState } from "react";
+import Isotope from "isotope-layout";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { type Tour } from "../../../api/tours";
+import toursApiService from "../../../api/tours";
+import favoritesApiService from "../../../api/favorites";
+import authApiService from "../../../api/auth";
+
+const Listing = () => {
+  const iso = useRef<Isotope | null>(null);
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [favoriteTours, setFavoriteTours] = useState<Set<string>>(new Set());
+
+  // Fetch tours from API
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await toursApiService.getTours(); // Get all tours
+        setTours(data);
+      } catch (err) {
+        setError('Failed to load tours');
+        console.error('Error fetching tours:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTours();
+  }, []);
+
+  // Check favorite status for current user
+  useEffect(() => {
+    const checkFavorites = async () => {
+      const currentUser = authApiService.getCurrentUser();
+      if (!currentUser || !currentUser.id) {
+        console.log('No authenticated user found, skipping favorites check');
+        return;
+      }
+
+      try {
+        const favoriteIds = new Set<string>();
+        for (const tour of tours) {
+          const isFavorite = await favoritesApiService.isFavorite(currentUser.id, tour.id);
+          if (isFavorite) {
+            favoriteIds.add(tour.id);
+          }
+        }
+        setFavoriteTours(favoriteIds);
+      } catch (error) {
+        console.error('Error checking favorites:', error);
+        // Don't show error to user for favorites check
+      }
+    };
+
+    if (tours.length > 0) {
+      checkFavorites();
+    }
+  }, [tours]);
+
+  // Ensure Isotope recalculates layout after data/favorite toggles or hard reloads
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => iso.current?.layout?.());
+    const timeout = setTimeout(() => iso.current?.layout?.(), 300);
+    const onLoad = () => iso.current?.layout?.();
+    window.addEventListener('load', onLoad, { once: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+      window.removeEventListener('load', onLoad);
+    };
+  }, [tours.length, favoriteTours.size]);
+
+  // Handle favorite toggle
+  const handleFavoriteToggle = async (tour: Tour) => {
+    const currentUser = authApiService.getCurrentUser();
+    if (!currentUser) {
+      toast.error('Please log in to add to favorites', {
+        position: "top-center",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      const isFavorite = favoriteTours.has(tour.id);
+      if (isFavorite) {
+        await favoritesApiService.removeFromFavorites(currentUser.id, tour.id);
+        setFavoriteTours(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(tour.id);
+          return newSet;
+        });
+        toast.success('Removed from favorites');
+      } else {
+        await favoritesApiService.addToFavorites(currentUser.id, tour.id);
+        setFavoriteTours(prev => new Set(prev).add(tour.id));
+        toast.success('Added to favorites');
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Failed to update favorites');
+    }
+  };
+
+  // Isotope init/destroy – sadece layout için
+  useEffect(() => {
+    const grid = document.querySelector(
+      ".isotope-wrapper"
+    ) as HTMLElement | null;
+    if (!grid) return;
+
+    let isoInstance: Isotope | null = null;
+    let mounted = true;
+
+    const waitForImages = (root: Element) =>
+      new Promise<void>((resolve) => {
+        const imgs = Array.from(root.querySelectorAll("img"));
+        if (!imgs.length) return resolve();
+        let loaded = 0;
+        const done = () => {
+          loaded += 1;
+          if (loaded >= imgs.length) resolve();
+        };
+        imgs.forEach((img) => {
+          const el = img as HTMLImageElement;
+          if (el.complete) return done();
+          el.addEventListener("load", done, { once: true });
+          el.addEventListener("error", done, { once: true });
+        });
+      });
+
+    const init = async () => {
+      try {
+        await waitForImages(grid);
+        const Iso: any = (Isotope as any)?.default ?? Isotope;
+        if (!mounted || !Iso) return;
+        isoInstance = new Iso(grid, {
+          itemSelector: ".isotope-filter-item",
+          layoutMode: "fitRows",
+        });
+        iso.current = isoInstance;
+      } catch (err) {
+        // init sırasında oluşan hataları bilerek yok sayıyoruz
+        void err;
+      }
+    };
+
+    init();
+    return () => {
+      mounted = false;
+      try {
+        isoInstance?.destroy();
+      } catch (err) {
+        // destroy hatalarını da sessizce yut
+        void err;
+      }
+      iso.current = null;
+    };
+  }, []);
+
+
+  // Sadece home_3 grid verisi
+  const gridItems = useMemo(
+    () => tours,
+    [tours]
+  );
+
+  return (
+    <div className="tg-listing-area tg-grey-bg pt-140 pb-110 p-relative z-index-9">
+      <style>{`
+        .project-active-two { row-gap: 24px; }
+        .isotope-wrapper { transition: height .2s ease; }
+        .isotope-filter-item { will-change: transform; }
+        /* Prevent overlap on hard refresh by falling back to normal flow */
+        .isotope-wrapper { position: static !important; height: auto !important; }
+        .isotope-filter-item { position: static !important; transform: none !important; }
+        .tg-listing-card-price { display:flex !important; }
+        .lexor-starts-pill{
+          background: var(--tg-theme-1, #ffffff);
+          color:#7f0af5;
+          padding:4px 8px;
+          border-radius:10px;
+          font-weight:700;
+          line-height:1;
+          font-size:12px;
+          display:inline-flex;
+          align-items:center;
+        }
+        .lexor-price-pill{
+          background: var(--tg-theme-1, #ff4d30);
+          color:#fff;
+          padding:6px 12px;
+          border-radius:10px;
+          font-weight:800;
+          line-height:1;
+          font-size:14px;
+          display:inline-flex;
+          align-items:baseline;
+        }
+      `}</style>
+
+      <img
+        className="tg-listing-shape d-none d-lg-block"
+        src="/assets/img/listing/about-shape.png"
+        alt=""
+      />
+      <img
+        className="tg-listing-shape-2 d-none d-xl-block"
+        src="/assets/img/listing/about-shape-2.png"
+        alt=""
+      />
+      <img
+        className="tg-listing-shape-3 d-none d-lg-block"
+        src="/assets/img/listing/about-shape-3.png"
+        alt=""
+      />
+
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+            <div className="tg-listing-section-title text-center mb-35">
+              <h5
+                className="tg-section-subtitle wow fadeInUp"
+                data-wow-delay=".3s"
+                data-wow-duration=".5s"
+              >
+                Our Most Popular Tours
+              </h5>
+              <h2
+                className="mb-15 wow fadeInUp"
+                data-wow-delay=".4s"
+                data-wow-duration=".6s"
+              >
+                Something Amazing Waiting For you
+              </h2>
+            </div>
+          </div>
+          {/* Başlık altındaki küçük ikon & “Tours” butonu kaldırıldı */}
+        </div>
+
+        {/* GRID */}
+        <div className="row isotope-wrapper project-active-two">
+          {loading ? (
+            <div className="col-12 text-center py-5">
+              <div className="loading-spinner">Loading tours...</div>
+            </div>
+          ) : error ? (
+            <div className="col-12 text-center py-5">
+              <div className="error-message text-danger">{error}</div>
+            </div>
+          ) : gridItems.length === 0 ? (
+            <div className="col-12 text-center py-5">
+              <div className="no-tours-message">No tours available</div>
+            </div>
+          ) : (
+            gridItems.map((item: Tour) => {
+            const price = item.packages?.[0]?.adultPrice || 0;
+            const priceText = price ? price.toLocaleString() : "—";
+            const reviews = item.reviews?.length || 0;
+            const isFavorite = favoriteTours.has(item.id);
+
+            return (
+              <div
+                key={item.id}
+                className="col-xxl-3 col-xl-4 col-lg-4 col-md-6 grid-item grid-sizer isotope-filter-item"
+              >
+                <div className="tg-listing-card-item mb-30">
+                  <div className="tg-listing-card-thumb fix mb-15 p-relative">
+                    <Link to={`/tour/${item.slug}`}>
+                      <img
+                        className="tg-card-border w-100"
+                        src={(() => {
+                          const imgUrl = item.images?.[0] || item.thumbnail || '/assets/img/listing/default-tour.jpg';
+                          // If it's already a full URL, return as is
+                          if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) {
+                            return imgUrl;
+                          }
+                          // If it starts with /uploads/, prepend backend URL
+                          if (imgUrl.startsWith('/uploads/')) {
+                            return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
+                          }
+                          return imgUrl;
+                        })()}
+                        alt={item.title}
+                      />
+                      {item.featured && (
+                        <span className="tg-listing-item-price-discount shape-3">
+                          <svg
+                            width="12"
+                            height="14"
+                            viewBox="0 0 12 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.60156 1L0.601562 8.2H6.00156L5.40156 13L11.4016 5.8H6.00156L6.60156 1Z"
+                              stroke="white"
+                              strokeWidth="0.857143"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          Featured
+                        </span>
+                      )}
+                    </Link>
+                    {/* Wishlist heart removed on home cards per template */}
+                  </div>
+
+                  <div className="tg-listing-card-content">
+                    <h4 className="tg-listing-card-title">
+                      <Link to={`/tour/${item.slug}`}>{item.title}</Link>
+                    </h4>
+
+                    <div className="tg-listing-card-duration-tour">
+                      <span className="tg-listing-card-duration-map mb-5">
+                        <svg
+                          width="13"
+                          height="16"
+                          viewBox="0 0 13 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M12.3329 6.7071C12.3329 11.2324 6.55512 15.1111 6.55512 15.1111C6.55512 15.1111 0.777344 11.2324 0.777344 6.7071C0.777344 5.16402 1.38607 3.68414 2.46962 2.59302C3.55316 1.5019 5.02276 0.888916 6.55512 0.888916C8.08748 0.888916 9.55708 1.5019 10.6406 2.59302C11.7242 3.68414 12.3329 5.16402 12.3329 6.7071Z"
+                            stroke="currentColor"
+                            strokeWidth="1.15556"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M6.55512 8.64649C7.61878 8.64649 8.48105 7.7782 8.48105 6.7071C8.48105 5.636 7.61878 4.7677 6.55512 4.7677C5.49146 4.7677 4.6292 5.636 4.6292 6.7071C4.6292 7.7782 5.49146 8.64649 6.55512 8.64649Z"
+                            stroke="currentColor"
+                            strokeWidth="1.15556"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        {typeof item.destination === 'string' ? item.destination : item.destination?.name || 'Location not specified'}
+                      </span>
+                      <span className="tg-listing-card-duration-time">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M8.00175 3.73329V7.99996L10.8462 9.42218M15.1128 8.00003C15.1128 11.9274 11.9291 15.1111 8.00174 15.1111C4.07438 15.1111 0.890625 11.9274 0.890625 8.00003C0.890625 4.07267 4.07438 0.888916 8.00174 0.888916C11.9291 0.888916 15.1128 4.07267 15.1128 8.00003Z"
+                            stroke="currentColor"
+                            strokeWidth="1.06667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        {item.duration || 'Duration not specified'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* PRICE */}
+                  <div
+                    className="tg-listing-card-price d-flex align-items-center"
+                    style={{ marginTop: 10 }}
+                  >
+                    <div
+                      className="d-flex align-items-center"
+                      style={{ gap: 4, marginLeft: 16, marginRight: 18 }}
+                    >
+                      <span className="lexor-starts-pill">Starts</span>
+                      <span className="lexor-price-pill">
+                        <span className="currency-symbol">$</span>
+                        {priceText}
+                      </span>
+                    </div>
+
+                    <div className="tg-listing-card-review space">
+                      <span className="tg-listing-rating-icon">
+                        <i className="fa-sharp fa-solid fa-star"></i>
+                      </span>
+                      <span className="tg-listing-rating-percent">
+                        ({(reviews as number) ?? 0} Reviews)
+                      </span>
+                    </div>
+                  </div>
+                  {/* /PRICE */}
+                </div>
+              </div>
+            );
+          })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Listing;

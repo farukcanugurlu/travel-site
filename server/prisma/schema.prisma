@@ -1,0 +1,269 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  password    String
+  firstName   String?
+  lastName    String?
+  role        UserRole  @default(USER)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  bookings Booking[]
+  reviews  Review[]
+  favorites Favorite[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  USER
+}
+
+// Destinations (Antalya, Fethiye, Bodrum, etc.)
+model Destination {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  country   String
+  latitude  Float?
+  longitude Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tours Tour[]
+
+  @@map("destinations")
+}
+
+// Main tours table
+model Tour {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  description  String?
+  excerpt      String?
+  featured     Boolean  @default(false)
+  published    Boolean  @default(false)
+  duration     String?  // "1 Day", "4 Hours", etc.
+  thumbnail    String?
+  images       String[] // Array of image URLs
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // New dynamic fields
+  included       Json?  // Array of strings: ["Pick and Drop Service", "1 Meal Per Day"]
+  excluded       Json?  // Array of strings: ["Gratuities", "Tickets"]
+  highlights     Json?  // Array of strings: ["Tour with licensed guide", "Explore history"]
+  itinerary      Json?  // Array of objects: [{"day": "Day-01", "title": "...", "description": "..."}]
+  locationLatitude   Float?
+  locationLongitude  Float?
+  locationDescription String?
+  type          String?  // "Adventure", "Cultural", "Beach", etc.
+  category      String?
+  groupSize     String?  // "50 People", "Small Group", etc.
+  languages     Json?  // Array of strings: ["English", "Turkish"]
+
+  // Foreign keys
+  destinationId String
+
+  // Relations
+  destination  Destination   @relation(fields: [destinationId], references: [id])
+  packages     TourPackage[]
+  bookings     Booking[]
+  reviews      Review[]
+  favorites    Favorite[]
+
+  @@map("tours")
+}
+
+// Tour packages (Standard, Premium, Private)
+model TourPackage {
+  id          String   @id @default(cuid())
+  name        String   // "Standard", "Premium", "Private"
+  description String?
+  adultPrice  Decimal  @db.Decimal(10, 2)
+  childPrice  Decimal  @db.Decimal(10, 2)
+  infantPrice Decimal  @db.Decimal(10, 2)
+  language    String   // "English", "Russian", etc.
+  capacity    Int?     // Optional capacity limit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign key
+  tourId String
+
+  // Relations
+  tour     Tour      @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@map("tour_packages")
+}
+
+// Bookings table
+model Booking {
+  id           String        @id @default(cuid())
+  bookingNo    String        @unique
+  status       BookingStatus @default(PENDING)
+  adultCount   Int           @default(0)
+  childCount   Int           @default(0)
+  infantCount  Int           @default(0)
+  totalAmount  Decimal       @db.Decimal(10, 2)
+  paymentStatus PaymentStatus @default(PENDING)
+  pdfUrl       String?
+  notes        String?
+  tourDate     DateTime
+  specialRequests String?
+  contactPhone String?
+  contactEmail String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Foreign keys
+  userId    String
+  tourId    String
+  packageId String
+
+  // Relations
+  user    User        @relation(fields: [userId], references: [id])
+  tour    Tour        @relation(fields: [tourId], references: [id])
+  package TourPackage @relation(fields: [packageId], references: [id])
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// Reviews table
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  title     String?
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  userId String
+  tourId String
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  tour Tour @relation(fields: [tourId], references: [id])
+
+  @@map("reviews")
+}
+
+// Blog categories
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts BlogPost[]
+
+  @@map("blog_categories")
+}
+
+// Blog posts
+model BlogPost {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String
+  excerpt       String?
+  featuredImage String?
+  author        String?  @default("Admin")
+  tags          String[] @default([])
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Foreign key
+  categoryId String
+
+  // Relations
+  category BlogCategory @relation(fields: [categoryId], references: [id])
+  comments BlogComment[]
+
+  @@map("blog_posts")
+}
+
+// Blog comments
+model BlogComment {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  website   String?
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign key
+  postId String
+
+  // Relations
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("blog_comments")
+}
+
+// Favorites table
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Foreign keys
+  userId String
+  tourId String
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  tour Tour @relation(fields: [tourId], references: [id])
+
+  @@unique([userId, tourId])
+  @@map("favorites")
+}
+
+model Setting {
+  id        String   @id @default("singleton")
+  data      Json
+  updatedAt DateTime @updatedAt
+  @@map("settings")
+}

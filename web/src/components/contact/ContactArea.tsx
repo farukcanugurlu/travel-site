@@ -1,0 +1,84 @@
+import { Link } from "react-router-dom";
+import ContactForm from "../forms/ContactForm";
+import React, { useEffect, useState } from 'react';
+import settingsApi, { type SiteSettingsData } from '../../api/settings';
+
+const ContactArea = () => {
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+  useEffect(() => { settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); }, []);
+  const phone = settings?.phone || settings?.phone1 || '+123 9998 000';
+  const email = settings?.email || settings?.email1 || 'info@lexor.com';
+  const address = settings?.officeAddress || 'Antalya';
+  const map = settings?.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31078.361591144112!2d-74.0256365664179!3d40.705584751235754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1724572184688!5m2!1sen!2sbd';
+
+  return (
+    <div className="tg-contact-area pt-130 p-relative z-index-1 pb-100">
+      <img
+        className="tg-team-shape-2 d-none d-md-block"
+        src="/assets/img/banner/banner-2/shape.png"
+        alt=""
+      />
+      <div className="container">
+        {/* stretch both columns to equal height */}
+        <div className="row align-items-stretch">
+          {/* LEFT: Information */}
+          <div className="col-lg-5 d-flex">
+            <div
+              className="tg-team-details-contant tg-contact-info-wrap mb-30 w-100"
+              style={{ height: "100%" }}
+            >
+              <h6 className="mb-15">Information:</h6>
+              <p className="mb-25">
+                For any questions regarding tours, bookings or partnerships,
+                feel free to reach us.
+              </p>
+              <div className="tg-team-details-contact-info mb-35">
+                <div className="tg-team-details-contact">
+                  <div className="item">
+                    <span>Phone :</span>
+                    <Link to={`tel:${phone}`}> {phone}</Link>
+                  </div>
+                  <div className="item">
+                    <span>E-mail :</span>
+                    <Link to={`mailto:${email}`}> {email}</Link>
+                  </div>
+                  <div className="item">
+                    <span>Address :</span>
+                    <Link to="#"> {address}</Link>
+                  </div>
+                </div>
+              </div>
+
+              <div className="tg-contact-map h-100">
+                <iframe
+                  title="map"
+                  src={map}
+                  width="600"
+                  height="450"
+                  style={{ border: "0" }}
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Form */}
+          <div className="col-lg-7 d-flex">
+            <div className="tg-contact-content-wrap ml-40 mb-30 w-100">
+              <h3 className="tg-contact-title mb-15">Let&apos;s Connect</h3>
+              <p className="mb-30">
+                Tell us more about your request. We usually respond within 24
+                hours.
+              </p>
+              <div className="tg-contact-form tg-tour-about-review-form">
+                <ContactForm />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ContactArea;

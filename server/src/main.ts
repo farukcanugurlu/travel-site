@@ -1,0 +1,95 @@
+import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Serve static files from uploads directory
+  const uploadsPath = join(process.cwd(), 'uploads');
+  
+  console.log('📁 Static files directory:', uploadsPath);
+  console.log('📂 Process CWD:', process.cwd());
+  console.log('📂 __dirname:', __dirname);
+  
+  // Check if directory exists
+  const fs = require('fs');
+  if (fs.existsSync(uploadsPath)) {
+    console.log('✅ Uploads directory exists');
+  } else {
+    console.log('❌ Uploads directory NOT found');
+  }
+  
+  app.useStaticAssets(uploadsPath, {
+    prefix: '/uploads/',
+    // Serve files with these extensions
+    dotfiles: 'ignore',
+    etag: true,
+    extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'],
+    fallthrough: true,
+    index: false,
+    lastModified: true,
+    maxAge: 0,
+    redirect: false,
+    setHeaders: (res, path) => {
+      res.set('x-timestamp', Date.now().toString());
+      // Set proper content type for PDFs
+      if (path.endsWith('.pdf')) {
+        res.set('Content-Type', 'application/pdf');
+      }
+    }
+  });
+
+  // Enable CORS for frontend
+  app.enableCors({
+    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true,
+    exposedHeaders: ['Content-Length', 'Content-Type'],
+  });
+
+  // Global validation pipe
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: false, // Allow extra properties like 'packages'
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+    exceptionFactory: (errors) => {
+      const messages = errors.map(error => {
+        const constraints = error.constraints;
+        if (constraints) {
+          return Object.values(constraints).join(', ');
+        }
+        return `${error.property} has invalid value`;
+      });
+      return new BadRequestException({
+        message: messages,
+        error: 'Validation failed',
+        statusCode: 400,
+      });
+    },
+  }));
+
+  // Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('LEXOR Travel API')
+    .setDescription('API for LEXOR Travel booking system')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  
+  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+}
+
+bootstrap();
