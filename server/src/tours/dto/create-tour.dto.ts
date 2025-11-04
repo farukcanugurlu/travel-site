@@ -27,6 +27,11 @@ export class CreateTourDto {
   @IsBoolean()
   featured?: boolean;
 
+  @ApiProperty({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  popular?: boolean;
+
   @ApiProperty({ example: true })
   @IsOptional()
   @IsBoolean()

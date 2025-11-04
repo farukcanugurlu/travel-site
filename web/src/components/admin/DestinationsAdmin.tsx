@@ -89,32 +89,35 @@ const DestinationsAdmin: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="loading-spinner">Loading destinations...</div>;
-  }
-
-  if (error) {
-    return <div className="error-message text-danger">{error}</div>;
+    return (
+      <div className="admin-loading">
+        <div className="loading-spinner">Loading destinations...</div>
+      </div>
+    );
   }
 
   return (
     <div className="destinations-admin">
       <div className="admin-header">
         <div className="header-content">
-          <div className="header-title">
-            <h1>📍 Destinations Management</h1>
-            <p>Manage your travel destinations and locations</p>
-          </div>
+          <h1>📍 Destinations Management</h1>
+          <p>Manage your travel destinations and locations</p>
+        </div>
+        <div className="header-actions">
           <button 
-            className="btn btn-primary btn-add"
+            className="btn-primary"
             onClick={() => setShowCreateModal(true)}
           >
-            <span className="btn-icon">+</span>
-            Add New Destination
+            ➕ Add New Destination
           </button>
         </div>
       </div>
 
-      <div className="admin-container">
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="stats-section">
@@ -250,66 +253,76 @@ const DestinationsAdmin: React.FC = () => {
           onClose={() => setEditingDestination(null)}
         />
       )}
-      </div>
 
       <style>{`
         .destinations-admin {
-          padding: 0;
+          max-width: 1400px;
+          margin: 0 auto;
         }
 
-        .admin-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 30px;
+        .error-message {
+          background: #f8d7da;
+          color: #721c24;
+          padding: 16px;
+          border-left: 4px solid #dc3545;
+          margin-bottom: 24px;
+          border-radius: 4px;
+        }
+
+        .admin-loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 400px;
+        }
+
+        .loading-spinner {
+          font-size: 18px;
+          color: #666;
         }
 
         .admin-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 40px 30px;
-          margin: -30px -30px 30px -30px;
-        }
-
-        .header-content {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          max-width: 1200px;
-          margin: 0 auto;
+          margin-bottom: 30px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #e0e0e0;
         }
 
-        .header-title h1 {
+        .header-content h1 {
+          font-size: 28px;
+          font-weight: 600;
+          color: #2c3e50;
           margin: 0 0 8px 0;
-          font-size: 32px;
-          font-weight: 700;
         }
 
-        .header-title p {
-          margin: 0;
-          opacity: 0.9;
+        .header-content p {
+          color: #666;
           font-size: 16px;
+          margin: 0;
         }
 
-        .btn-add {
-          background: rgba(255, 255, 255, 0.2);
-          border: 2px solid rgba(255, 255, 255, 0.3);
+        .header-actions {
+          display: flex;
+          gap: 12px;
+        }
+
+        .btn-primary {
+          background: #3498db;
           color: white;
           padding: 12px 24px;
-          border-radius: 8px;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 500;
+          transition: background 0.2s ease;
+          border: none;
+          cursor: pointer;
+          font-size: 14px;
         }
 
-        .btn-add:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
-        }
-
-        .btn-icon {
-          font-size: 18px;
+        .btn-primary:hover {
+          background: #2980b9;
         }
 
         .stats-section {
@@ -360,10 +373,10 @@ const DestinationsAdmin: React.FC = () => {
 
         .filters-section {
           background: white;
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 24px;
-          margin-bottom: 30px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin-bottom: 24px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .filters-header h3 {
@@ -374,7 +387,7 @@ const DestinationsAdmin: React.FC = () => {
 
         .filter-group {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 20px;
         }
 
@@ -387,23 +400,23 @@ const DestinationsAdmin: React.FC = () => {
 
         .filter-input {
           width: 100%;
-          padding: 12px 16px;
-          border: 2px solid #e0e0e0;
-          border-radius: 8px;
+          padding: 10px 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
           font-size: 14px;
           transition: border-color 0.3s ease;
         }
 
         .filter-input:focus {
           outline: none;
-          border-color: #667eea;
+          border-color: #3498db;
         }
 
         .content-section {
           background: white;
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 24px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .empty-state {

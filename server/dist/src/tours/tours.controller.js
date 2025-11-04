@@ -34,6 +34,9 @@ let ToursController = class ToursController {
     getFeatured(limit) {
         return this.toursService.getFeaturedTours(limit ? parseInt(limit) : 8);
     }
+    getPopular(limit) {
+        return this.toursService.getPopularTours(limit ? parseInt(limit) : 8);
+    }
     getDestinations(limit) {
         return this.toursService.getPopularDestinations(limit ? parseInt(limit) : 8);
     }
@@ -92,6 +95,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ToursController.prototype, "getFeatured", null);
+__decorate([
+    (0, common_1.Get)('popular'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get popular tours' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Popular tours retrieved successfully' }),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ToursController.prototype, "getPopular", null);
 __decorate([
     (0, common_1.Get)('destinations'),
     (0, swagger_1.ApiOperation)({ summary: 'Get popular destinations' }),

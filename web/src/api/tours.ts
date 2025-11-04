@@ -8,6 +8,7 @@ export interface Tour {
   description?: string;
   excerpt?: string;
   featured: boolean;
+  popular: boolean;
   published: boolean;
   duration?: string;
   thumbnail?: string;
@@ -101,8 +102,32 @@ export interface Destination {
 
 // Transform backend response to frontend format
 const transformTour = (tour: any): Tour => {
+  // Calculate average rating from reviews if available
+  let rating = tour.rating;
+  if (tour.reviews && Array.isArray(tour.reviews) && tour.reviews.length > 0) {
+    const approvedReviews = tour.reviews.filter((r: any) => r.approved !== false);
+    if (approvedReviews.length > 0) {
+      const averageRating = approvedReviews.reduce((sum: number, review: any) => sum + (review.rating || 0), 0) / approvedReviews.length;
+      rating = {
+        average: Math.round(averageRating * 10) / 10,
+        total: approvedReviews.length,
+      };
+    } else {
+      rating = {
+        average: 0,
+        total: 0,
+      };
+    }
+  } else if (!rating) {
+    rating = {
+      average: 0,
+      total: 0,
+    };
+  }
+
   return {
     ...tour,
+    rating,
     location: tour.locationLatitude || tour.locationLongitude || tour.locationDescription
       ? {
           latitude: tour.locationLatitude,
@@ -152,6 +177,12 @@ class ToursApiService {
   // Get featured tours
   async getFeaturedTours(limit: number = 8): Promise<Tour[]> {
     const tours = await apiService.get<any[]>(`/tours/featured?limit=${limit}`);
+    return transformTours(tours);
+  }
+
+  // Get popular tours
+  async getPopularTours(limit: number = 8): Promise<Tour[]> {
+    const tours = await apiService.get<any[]>(`/tours/popular?limit=${limit}`);
     return transformTours(tours);
   }
 

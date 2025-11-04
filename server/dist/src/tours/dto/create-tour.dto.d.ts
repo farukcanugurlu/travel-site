@@ -4,6 +4,7 @@ export declare class CreateTourDto {
     description?: string;
     excerpt?: string;
     featured?: boolean;
+    popular?: boolean;
     published?: boolean;
     duration?: string;
     thumbnail?: string;

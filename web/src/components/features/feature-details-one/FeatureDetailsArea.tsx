@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { type Tour } from "../../../api/tours";
@@ -14,6 +14,87 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
 
    const [isInWishlist, setIsInWishlist] = useState(false);
    const [isLoading, setIsLoading] = useState(false);
+   const [showShareMenu, setShowShareMenu] = useState(false);
+   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+   // Check wishlist status when component mounts or tour changes
+   useEffect(() => {
+     const checkWishlistStatus = async () => {
+       if (!authApiService.isAuthenticated()) {
+         setIsInWishlist(false);
+         return;
+       }
+
+       const currentUser = authApiService.getCurrentUser();
+       if (!currentUser || !tour?.id) {
+         setIsInWishlist(false);
+         return;
+       }
+
+       try {
+         const favorite = await favoritesApiService.isFavorite(currentUser.id, tour.id);
+         setIsInWishlist(favorite);
+       } catch (error) {
+         console.error('Error checking wishlist status:', error);
+         setIsInWishlist(false);
+       }
+     };
+
+     checkWishlistStatus();
+   }, [tour?.id]);
+
+   // Close share menu when clicking outside
+   useEffect(() => {
+     const handleClickOutside = (event: MouseEvent) => {
+       const target = event.target as HTMLElement;
+       if (!target.closest('.tg-tour-details-video-share')) {
+         setShowShareMenu(false);
+       }
+     };
+
+     if (showShareMenu) {
+       document.addEventListener('mousedown', handleClickOutside);
+     }
+
+     return () => {
+       document.removeEventListener('mousedown', handleClickOutside);
+     };
+   }, [showShareMenu]);
+
+   // Handle keyboard navigation for lightbox
+   useEffect(() => {
+     const handleKeyDown = (event: KeyboardEvent) => {
+       if (selectedImageIndex === null) return;
+       
+       const allImages = tour.images && tour.images.length > 0 
+         ? tour.images 
+         : (tour.thumbnail ? [tour.thumbnail] : []);
+       
+       if (event.key === 'Escape') {
+         setSelectedImageIndex(null);
+       } else if (event.key === 'ArrowLeft') {
+         setSelectedImageIndex((prev) => {
+           if (prev === null) return null;
+           return prev > 0 ? prev - 1 : allImages.length - 1;
+         });
+       } else if (event.key === 'ArrowRight') {
+         setSelectedImageIndex((prev) => {
+           if (prev === null) return null;
+           return prev < allImages.length - 1 ? prev + 1 : 0;
+         });
+       }
+     };
+
+     if (selectedImageIndex !== null) {
+       document.addEventListener('keydown', handleKeyDown);
+       document.body.style.overflow = 'hidden'; // Prevent body scroll
+     }
+
+     return () => {
+       document.removeEventListener('keydown', handleKeyDown);
+       document.body.style.overflow = '';
+     };
+   }, [selectedImageIndex, tour.images, tour.thumbnail]);
 
    const handleWishlistToggle = async () => {
      if (isLoading) return;
@@ -49,6 +130,71 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
        toast.error('Failed to update wishlist');
      } finally {
        setIsLoading(false);
+     }
+   };
+
+   const handleShare = async (platform?: string) => {
+     const tourUrl = `${window.location.origin}/tour/${tour.slug || tour.id}`;
+     const tourTitle = tour.title;
+     const tourDescription = tour.description?.substring(0, 200) || '';
+     const shareText = `${tourTitle} - ${tourDescription}`;
+
+     // Check if Web Share API is available (mobile devices)
+     if (navigator.share && !platform) {
+       try {
+         await navigator.share({
+           title: tourTitle,
+           text: tourDescription,
+           url: tourUrl,
+         });
+         setShowShareMenu(false);
+         return;
+       } catch (error) {
+         // User cancelled or error occurred
+         if ((error as Error).name !== 'AbortError') {
+           console.error('Error sharing:', error);
+         }
+       }
+     }
+
+     // Platform-specific sharing
+     let shareUrl = '';
+    
+     switch (platform) {
+       case 'facebook':
+         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(tourUrl)}`;
+         break;
+       case 'twitter':
+         shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(tourUrl)}&text=${encodeURIComponent(tourTitle)}`;
+         break;
+       case 'linkedin':
+         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(tourUrl)}`;
+         break;
+       case 'whatsapp':
+         shareUrl = `https://wa.me/?text=${encodeURIComponent(`${tourTitle} ${tourUrl}`)}`;
+         break;
+       case 'telegram':
+         shareUrl = `https://t.me/share/url?url=${encodeURIComponent(tourUrl)}&text=${encodeURIComponent(tourTitle)}`;
+         break;
+       case 'copy':
+         try {
+           await navigator.clipboard.writeText(tourUrl);
+           toast.success('Link copied to clipboard!');
+           setShowShareMenu(false);
+           return;
+         } catch (error) {
+           console.error('Failed to copy:', error);
+           toast.error('Failed to copy link');
+           return;
+         }
+       default:
+         setShowShareMenu(!showShareMenu);
+         return;
+     }
+
+     if (shareUrl) {
+       window.open(shareUrl, '_blank', 'width=600,height=400');
+       setShowShareMenu(false);
      }
    };
 
@@ -92,13 +238,184 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                      </div>
                   </div>
                   <div className="col-xl-3 col-lg-4">
-                     <div className="tg-tour-details-video-share text-end">
-                        <Link to="#">
+                     <div className="tg-tour-details-video-share text-end" style={{ position: 'relative' }}>
+                        <button
+                          onClick={() => handleShare()}
+                          className="btn-link"
+                          style={{ 
+                            background: 'none', 
+                            border: 'none', 
+                            color: 'inherit',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M5.87746 9.03227L10.7343 11.8625M10.7272 4.05449L5.87746 6.88471M14.7023 2.98071C14.7023 4.15892 13.7472 5.11405 12.569 5.11405C11.3908 5.11405 10.4357 4.15892 10.4357 2.98071C10.4357 1.80251 11.3908 0.847382 12.569 0.847382C13.7472 0.847382 14.7023 1.80251 14.7023 2.98071ZM6.16901 7.95849C6.16901 9.1367 5.21388 10.0918 4.03568 10.0918C2.85747 10.0918 1.90234 9.1367 1.90234 7.95849C1.90234 6.78029 2.85747 5.82516 4.03568 5.82516C5.21388 5.82516 6.16901 6.78029 6.16901 7.95849ZM14.7023 12.9363C14.7023 14.1145 13.7472 15.0696 12.569 15.0696C11.3908 15.0696 10.4357 14.1145 10.4357 12.9363C10.4357 11.7581 11.3908 10.8029 12.569 10.8029C13.7472 10.8029 14.7023 11.7581 14.7023 12.9363Z" stroke="currentColor" strokeWidth="0.977778" strokeLinecap="round" strokeLinejoin="round" />
                            </svg>
                            Share
-                        </Link>
+                        </button>
+                        
+                        {/* Share Menu Dropdown */}
+                        {showShareMenu && (
+                          <div 
+                            className="share-dropdown"
+                            style={{
+                              position: 'absolute',
+                              top: '100%',
+                              right: 0,
+                              marginTop: '10px',
+                              background: '#fff',
+                              borderRadius: '8px',
+                              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                              padding: '12px',
+                              minWidth: '200px',
+                              zIndex: 1000,
+                              border: '1px solid #e0e0e0'
+                            }}
+                          >
+                            <div style={{ fontWeight: 500, marginBottom: '8px', fontSize: '14px', color: '#333' }}>
+                              Share via:
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <button
+                                onClick={() => handleShare('facebook')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <i className="fa-brands fa-facebook-f" style={{ color: '#1877F2', width: '16px' }}></i>
+                                Facebook
+                              </button>
+                              <button
+                                onClick={() => handleShare('twitter')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M9.33161 6.77486L15.1688 0H13.7856L8.71722 5.8826L4.66907 0H0L6.12155 8.89546L0 16H1.38336L6.73581 9.78785L11.0109 16H15.68L9.33148 6.77486H9.33187H9.33161ZM7.43696 8.97374L6.81669 8.088L1.88171 1.03969H4.00634L7.98902 6.72789L8.60929 7.61362L13.7863 15.0074H11.6616L7.43709 8.974V8.97361L7.43696 8.97374Z" fill="#1DA1F2" />
+                                </svg>
+                                Twitter
+                              </button>
+                              <button
+                                onClick={() => handleShare('linkedin')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <i className="fa-brands fa-linkedin-in" style={{ color: '#0A66C2', width: '16px' }}></i>
+                                LinkedIn
+                              </button>
+                              <button
+                                onClick={() => handleShare('whatsapp')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', width: '16px' }}></i>
+                                WhatsApp
+                              </button>
+                              <button
+                                onClick={() => handleShare('telegram')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <i className="fa-brands fa-telegram" style={{ color: '#0088cc', width: '16px' }}></i>
+                                Telegram
+                              </button>
+                              <div style={{ borderTop: '1px solid #e0e0e0', margin: '8px 0' }}></div>
+                              <button
+                                onClick={() => handleShare('copy')}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  padding: '8px 12px',
+                                  border: 'none',
+                                  background: 'none',
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  transition: 'background 0.2s',
+                                  fontSize: '14px',
+                                  color: '#333'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.6667 2H5.33333C4.59695 2 4 2.59695 4 3.33333V10.6667C4 11.403 4.59695 12 5.33333 12H10.6667C11.403 12 12 11.403 12 10.6667V3.33333C12 2.59695 11.403 2 10.6667 2Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M8 12V14.6667C8 15.403 7.40305 16 6.66667 16H2C1.26362 16 0.666667 15.403 0.666667 14.6667V7.33333C0.666667 6.59695 1.26362 6 2 6H4.66667" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Copy Link
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        
                         <button 
                           onClick={handleWishlistToggle}
                           disabled={isLoading}
@@ -108,7 +425,10 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                             border: 'none', 
                             color: 'inherit',
                             cursor: isLoading ? 'not-allowed' : 'pointer',
-                            opacity: isLoading ? 0.6 : 1
+                            opacity: isLoading ? 0.6 : 1,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px'
                           }}
                         >
                            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -121,26 +441,232 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                </div>
                <div className="row gx-15 mb-25">
                   <div className="col-lg-7">
-                     <div className="tg-tour-details-video-thumb mb-15">
+                     <div 
+                        className="tg-tour-details-video-thumb mb-15"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          const allImages = tour.images && tour.images.length > 0 
+                            ? tour.images 
+                            : (tour.thumbnail ? [tour.thumbnail] : []);
+                          if (allImages.length > 0) {
+                            setSelectedImageIndex(0);
+                          }
+                        }}
+                     >
                         <img
                           className="w-100"
                           src={(tour.images && tour.images[0]) || tour.thumbnail || "/assets/img/listing/listing-1.jpg"}
                           alt={tour.title}
+                          style={{ transition: 'transform 0.3s ease' }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         />
                      </div>
                   </div>
                   <div className="col-lg-5">
                     <div className="row gx-15">
-                      {(tour.images || []).slice(1, 5).map((img, idx) => (
-                        <div key={idx} className="col-lg-6 col-md-6">
-                          <div className="tg-tour-details-video-thumb mb-15">
-                            <img className="w-100" src={img} alt={`${tour.title} ${idx + 2}`} />
+                      {(tour.images || []).slice(1, 5).map((img, idx) => {
+                        const imageIndex = idx + 1; // +1 because first image is in the main column
+                        return (
+                          <div key={idx} className="col-lg-6 col-md-6">
+                            <div 
+                              className="tg-tour-details-video-thumb mb-15"
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => {
+                                const allImages = tour.images && tour.images.length > 0 
+                                  ? tour.images 
+                                  : (tour.thumbnail ? [tour.thumbnail] : []);
+                                if (allImages.length > imageIndex) {
+                                  setSelectedImageIndex(imageIndex);
+                                }
+                              }}
+                            >
+                              <img 
+                                className="w-100" 
+                                src={img} 
+                                alt={`${tour.title} ${idx + 2}`}
+                                style={{ transition: 'transform 0.3s ease' }}
+                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                </div>
+               
+               {/* Lightbox Modal */}
+               {selectedImageIndex !== null && (
+                 <div
+                   style={{
+                     position: 'fixed',
+                     top: 0,
+                     left: 0,
+                     right: 0,
+                     bottom: 0,
+                     backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                     zIndex: 9999,
+                     display: 'flex',
+                     alignItems: 'center',
+                     justifyContent: 'center',
+                     padding: '20px'
+                   }}
+                   onClick={() => setSelectedImageIndex(null)}
+                 >
+                   <button
+                     onClick={() => setSelectedImageIndex(null)}
+                     style={{
+                       position: 'absolute',
+                       top: '20px',
+                       right: '20px',
+                       background: 'rgba(255, 255, 255, 0.2)',
+                       border: 'none',
+                       color: 'white',
+                       fontSize: '32px',
+                       width: '50px',
+                       height: '50px',
+                       borderRadius: '50%',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'background 0.3s ease',
+                       zIndex: 10000
+                     }}
+                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
+                     onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                   >
+                     ×
+                   </button>
+                   
+                   <button
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       const allImages = tour.images && tour.images.length > 0 
+                         ? tour.images 
+                         : (tour.thumbnail ? [tour.thumbnail] : []);
+                       if (allImages.length > 0) {
+                         setSelectedImageIndex(
+                           selectedImageIndex > 0 ? selectedImageIndex - 1 : allImages.length - 1
+                         );
+                       }
+                     }}
+                     style={{
+                       position: 'absolute',
+                       left: '20px',
+                       background: 'rgba(255, 255, 255, 0.2)',
+                       border: 'none',
+                       color: 'white',
+                       fontSize: '24px',
+                       width: '50px',
+                       height: '50px',
+                       borderRadius: '50%',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'background 0.3s ease',
+                       zIndex: 10000
+                     }}
+                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
+                     onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                   >
+                     ‹
+                   </button>
+                   
+                   <button
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       const allImages = tour.images && tour.images.length > 0 
+                         ? tour.images 
+                         : (tour.thumbnail ? [tour.thumbnail] : []);
+                       if (allImages.length > 0) {
+                         setSelectedImageIndex(
+                           selectedImageIndex < allImages.length - 1 ? selectedImageIndex + 1 : 0
+                         );
+                       }
+                     }}
+                     style={{
+                       position: 'absolute',
+                       right: '20px',
+                       background: 'rgba(255, 255, 255, 0.2)',
+                       border: 'none',
+                       color: 'white',
+                       fontSize: '24px',
+                       width: '50px',
+                       height: '50px',
+                       borderRadius: '50%',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'background 0.3s ease',
+                       zIndex: 10000
+                     }}
+                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)'}
+                     onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)'}
+                   >
+                     ›
+                   </button>
+                   
+                   <div
+                     onClick={(e) => e.stopPropagation()}
+                     style={{
+                       maxWidth: '90vw',
+                       maxHeight: '90vh',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center'
+                     }}
+                   >
+                     {(() => {
+                       const allImages = tour.images && tour.images.length > 0 
+                         ? tour.images 
+                         : (tour.thumbnail ? [tour.thumbnail] : []);
+                       const currentImage = allImages[selectedImageIndex] || tour.thumbnail || "/assets/img/listing/listing-1.jpg";
+                       
+                       return (
+                         <img
+                           src={currentImage}
+                           alt={`${tour.title} - Image ${selectedImageIndex! + 1}`}
+                           style={{
+                             maxWidth: '100%',
+                             maxHeight: '90vh',
+                             objectFit: 'contain',
+                             borderRadius: '8px'
+                           }}
+                         />
+                       );
+                     })()}
+                   </div>
+                   
+                   {/* Image counter */}
+                   {(() => {
+                     const allImages = tour.images && tour.images.length > 0 
+                       ? tour.images 
+                       : (tour.thumbnail ? [tour.thumbnail] : []);
+                     return (
+                       <div
+                         style={{
+                           position: 'absolute',
+                           bottom: '20px',
+                           left: '50%',
+                           transform: 'translateX(-50%)',
+                           color: 'white',
+                           background: 'rgba(0, 0, 0, 0.5)',
+                           padding: '8px 16px',
+                           borderRadius: '20px',
+                           fontSize: '14px'
+                         }}
+                       >
+                         {selectedImageIndex! + 1} / {allImages.length}
+                       </div>
+                     );
+                   })()}
+                 </div>
+               )}
                <div className="tg-tour-details-feature-list-wrap">
                   <div className="row align-items-center">
                      <div className="col-lg-8">

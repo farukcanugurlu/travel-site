@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Link } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import FeatureTop from "./FeatureTop";
 import FeatureSidebar from "./FeatureSidebar";
 import ReactPaginate from "react-paginate";
@@ -13,6 +13,7 @@ const FeatureArea = () => {
   const [isListView, setIsListView] = useState(false);
   const [itemOffset, setItemOffset] = useState(0);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const isInitialMount = useRef(true);
 
   // Debug: API'den gelen verileri konsola yazdır
   useEffect(() => {
@@ -27,12 +28,15 @@ const FeatureArea = () => {
     [tours]
   );
 
-  // Filtered products'i başlangıçta tüm turlar olarak ayarla
+  // Filtered products'i sadece ilk yüklemede tüm turlar olarak ayarla
+  // Filtreleme sonucu boş liste geldiğinde override etme
   useEffect(() => {
-    if (shopItems.length > 0 && filteredProducts.length === 0) {
+    // Sadece ilk yüklemede ve loading bittiğinde set et
+    if (isInitialMount.current && shopItems.length > 0 && !loading) {
       setFilteredProducts(shopItems);
+      isInitialMount.current = false;
     }
-  }, [shopItems, filteredProducts.length]);
+  }, [shopItems, loading]);
 
   const totalItems = filteredProducts.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
@@ -281,16 +285,52 @@ const FeatureArea = () => {
                                 }}
                               >
                                 <span className="currency-symbol">$</span>
-                                {item.price}
+                                {(() => {
+                                  // Packages'dan en düşük fiyatı al
+                                  if (item.packages && Array.isArray(item.packages) && item.packages.length > 0) {
+                                    const prices = item.packages
+                                      .map((pkg: any) => Number(pkg?.adultPrice || 0))
+                                      .filter((p: number) => p > 0);
+                                    if (prices.length > 0) {
+                                      return Math.min(...prices).toLocaleString();
+                                    }
+                                  }
+                                  // Fallback
+                                  return item.price || "0";
+                                })()}
                               </span>
                             </div>
 
                             <div className="tg-listing-card-review space">
                               <span className="tg-listing-rating-icon">
-                                <i className="fa-sharp fa-solid fa-star"></i>
+                                {(() => {
+                                  const avgRating = item.rating?.average || 0;
+                                  const totalReviews = item.rating?.total || item.total_review || 0;
+                                  const fullStars = Math.floor(avgRating);
+                                  const hasHalfStar = avgRating % 1 >= 0.5;
+                                  
+                                  return (
+                                    <>
+                                      {[...Array(5)].map((_, i) => {
+                                        if (i < fullStars) {
+                                          return <i key={i} className="fa-sharp fa-solid fa-star"></i>;
+                                        } else if (i === fullStars && hasHalfStar) {
+                                          return <i key={i} className="fa-sharp fa-solid fa-star-half-stroke"></i>;
+                                        } else {
+                                          return <i key={i} className="fa-sharp fa-regular fa-star"></i>;
+                                        }
+                                      })}
+                                      {avgRating > 0 && (
+                                        <span style={{ marginLeft: '4px', fontWeight: 600 }}>
+                                          {avgRating.toFixed(1)}
+                                        </span>
+                                      )}
+                                    </>
+                                  );
+                                })()}
                               </span>
                               <span className="tg-listing-rating-percent">
-                                ({item.total_review ?? 0} Reviews)
+                                ({item.rating?.total || item.total_review || 0} {item.rating?.total === 1 || item.total_review === 1 ? 'Review' : 'Reviews'})
                               </span>
                             </div>
                           </div>

@@ -36,6 +36,13 @@ export class ToursController {
     return this.toursService.getFeaturedTours(limit ? parseInt(limit) : 8);
   }
 
+  @Get('popular')
+  @ApiOperation({ summary: 'Get popular tours' })
+  @ApiResponse({ status: 200, description: 'Popular tours retrieved successfully' })
+  getPopular(@Query('limit') limit?: string) {
+    return this.toursService.getPopularTours(limit ? parseInt(limit) : 8);
+  }
+
   @Get('destinations')
   @ApiOperation({ summary: 'Get popular destinations' })
   @ApiResponse({ status: 200, description: 'Destinations retrieved successfully' })

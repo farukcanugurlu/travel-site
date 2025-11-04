@@ -8,24 +8,24 @@ export declare class BlogService {
     createPost(createBlogPostDto: CreateBlogPostDto): Promise<{
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     }>;
     findAllPosts(filters?: {
@@ -34,181 +34,181 @@ export declare class BlogService {
     }): Promise<({
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     })[]>;
     findPostById(id: string): Promise<{
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     }>;
     findPostBySlug(slug: string): Promise<{
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
         comments: {
             id: string;
-            content: string;
+            email: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            email: string;
-            website: string | null;
+            content: string;
             approved: boolean;
+            website: string | null;
             postId: string;
         }[];
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     }>;
     updatePost(id: string, updateBlogPostDto: UpdateBlogPostDto): Promise<{
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     }>;
     removePost(id: string): Promise<{
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     }>;
     getRecentPosts(limit?: number): Promise<({
         category: {
             id: string;
-            slug: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            slug: string;
             description: string | null;
         };
     } & {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        excerpt: string | null;
-        featuredImage: string | null;
-        author: string | null;
         tags: string[];
-        published: boolean;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        slug: string;
+        title: string;
+        excerpt: string | null;
+        published: boolean;
+        content: string;
+        featuredImage: string | null;
+        author: string | null;
         categoryId: string;
     })[]>;
     createCategory(createBlogCategoryDto: CreateBlogCategoryDto): Promise<{
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         description: string | null;
     }>;
     findAllCategories(): Promise<{
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         description: string | null;
     }[]>;
     findCategoryById(id: string): Promise<{
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         description: string | null;
     }>;
     updateCategory(id: string, updateData: Partial<CreateBlogCategoryDto>): Promise<{
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         description: string | null;
     }>;
     removeCategory(id: string): Promise<{
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         description: string | null;
     }>;
     createComment(createCommentDto: {
@@ -224,24 +224,24 @@ export declare class BlogService {
         };
     } & {
         id: string;
-        content: string;
+        email: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        email: string;
-        website: string | null;
+        content: string;
         approved: boolean;
+        website: string | null;
         postId: string;
     }>;
     getCommentsByPostId(postId: string): Promise<{
         id: string;
-        content: string;
+        email: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
-        email: string;
-        website: string | null;
+        content: string;
         approved: boolean;
+        website: string | null;
         postId: string;
     }[]>;
     getAllTags(): Promise<string[]>;

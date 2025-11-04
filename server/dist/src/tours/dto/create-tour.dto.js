@@ -46,6 +46,12 @@ __decorate([
     __metadata("design:type", Boolean)
 ], CreateTourDto.prototype, "featured", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], CreateTourDto.prototype, "popular", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),

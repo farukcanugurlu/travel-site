@@ -208,6 +208,24 @@ export class ToursService {
     });
   }
 
+  async getPopularTours(limit: number = 8) {
+    return this.prisma.tour.findMany({
+      where: {
+        popular: true,
+        published: true,
+      },
+      include: {
+        destination: true,
+        packages: true,
+        reviews: {
+          where: { approved: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+  }
+
   async getPopularDestinations(limit: number = 8) {
     return this.prisma.destination.findMany({
       include: {

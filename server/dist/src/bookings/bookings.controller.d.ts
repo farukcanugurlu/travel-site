@@ -14,8 +14,8 @@ export declare class BookingsController {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {
@@ -56,8 +56,8 @@ export declare class BookingsController {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {
@@ -92,8 +92,8 @@ export declare class BookingsController {
     findByUser(userId: string): Promise<({
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {
@@ -141,8 +141,8 @@ export declare class BookingsController {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {
@@ -183,8 +183,8 @@ export declare class BookingsController {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {
@@ -225,8 +225,8 @@ export declare class BookingsController {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
             thumbnail: string;
         };
         package: {

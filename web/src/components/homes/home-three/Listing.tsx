@@ -16,13 +16,13 @@ const Listing = () => {
   const [error, setError] = useState<string | null>(null);
   const [favoriteTours, setFavoriteTours] = useState<Set<string>>(new Set());
 
-  // Fetch tours from API
+  // Fetch popular tours from API
   useEffect(() => {
     const fetchTours = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await toursApiService.getTours(); // Get all tours
+        const data = await toursApiService.getPopularTours(20); // Get popular tours (limit 20 for grid)
         setTours(data);
       } catch (err) {
         setError('Failed to load tours');

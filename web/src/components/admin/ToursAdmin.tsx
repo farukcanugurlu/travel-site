@@ -241,9 +241,6 @@ const ToursAdmin: React.FC = () => {
                     <Link to={`/admin/tours/${tour.id}`} className="btn-edit">
                       Edit
                     </Link>
-                    <Link to={`/admin/tours/${tour.id}/packages`} className="btn-packages">
-                      Packages
-                    </Link>
                     <button
                       className="btn-delete"
                       onClick={() => handleDelete(tour.id)}
@@ -507,8 +504,7 @@ const ToursAdmin: React.FC = () => {
           gap: 8px;
         }
 
-        .btn-edit,
-        .btn-packages {
+        .btn-edit {
           padding: 6px 12px;
           background: #3498db;
           color: white;
@@ -519,8 +515,7 @@ const ToursAdmin: React.FC = () => {
           transition: background 0.2s ease;
         }
 
-        .btn-edit:hover,
-        .btn-packages:hover {
+        .btn-edit:hover {
           background: #2980b9;
         }
 

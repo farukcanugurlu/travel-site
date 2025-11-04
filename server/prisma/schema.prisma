@@ -62,6 +62,7 @@ model Tour {
   description  String?
   excerpt      String?
   featured     Boolean  @default(false)
+  popular      Boolean  @default(false)
   published    Boolean  @default(false)
   duration     String?  // "1 Day", "4 Hours", etc.
   thumbnail    String?

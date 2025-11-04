@@ -10,10 +10,10 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -30,10 +30,10 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -44,10 +44,10 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -58,10 +58,10 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        slug: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
+        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;

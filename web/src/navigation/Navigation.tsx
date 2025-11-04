@@ -38,6 +38,7 @@ import BlogForm from "../components/admin/BlogForm";
 import BookingsAdmin from "../components/admin/BookingsAdmin";
 import UsersAdmin from "../components/admin/UsersAdmin";
 import DestinationsAdmin from "../components/admin/DestinationsAdmin";
+import PopularToursAdmin from "../components/admin/PopularToursAdmin";
 import AdminRoute from "../components/admin/AdminRoute";
 import SiteSettings from "../components/admin/SiteSettings";
 
@@ -81,6 +82,7 @@ const AppNavigation = () => {
         <Route path="/admin/tours/new" element={<AdminRoute><AdminLayout><TourForm /></AdminLayout></AdminRoute>} />
         <Route path="/admin/tours/:id" element={<AdminRoute><AdminLayout><TourForm /></AdminLayout></AdminRoute>} />
         <Route path="/admin/destinations" element={<AdminRoute><AdminLayout><DestinationsAdmin /></AdminLayout></AdminRoute>} />
+        <Route path="/admin/popular-tours" element={<AdminRoute><AdminLayout><PopularToursAdmin /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog" element={<AdminRoute><AdminLayout><BlogAdmin /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog/new" element={<AdminRoute><AdminLayout><BlogForm /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog/:id" element={<AdminRoute><AdminLayout><BlogForm /></AdminLayout></AdminRoute>} />

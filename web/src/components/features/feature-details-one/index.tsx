@@ -6,7 +6,7 @@ import Breadcrumb from "./Breadcrumb"
 import FeatureDetailsArea from "./FeatureDetailsArea"
 import FeatureAboutArea from "./FeatureAboutArea"
 import HeaderThree from "../../../layouts/headers/HeaderThree"
-import FooterSix from "../../../layouts/footers/FooterSix"
+import FooterThree from "../../../layouts/footers/FooterThree"
 
 interface FeatureDetailsOneProps {
   slug?: string;
@@ -82,7 +82,7 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
             <div className="loading-spinner">Loading tour details...</div>
           </div>
         </main>
-        <FooterSix />
+        <FooterThree />
       </>
     );
   }
@@ -99,7 +99,7 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
             {error && <p style={{ color: 'red' }}>Error: {error}</p>}
           </div>
         </main>
-        <FooterSix />
+        <FooterThree />
       </>
     );
   }
@@ -112,7 +112,7 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
         <FeatureDetailsArea tour={tour} />
         <FeatureAboutArea tour={tour} reviews={reviews} onReviewSubmitted={handleReviewSubmitted} />
       </main>
-      <FooterSix />
+      <FooterThree />
     </>
   );
 };

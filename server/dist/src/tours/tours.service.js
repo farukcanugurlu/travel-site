@@ -178,6 +178,23 @@ let ToursService = class ToursService {
             take: limit,
         });
     }
+    async getPopularTours(limit = 8) {
+        return this.prisma.tour.findMany({
+            where: {
+                popular: true,
+                published: true,
+            },
+            include: {
+                destination: true,
+                packages: true,
+                reviews: {
+                    where: { approved: true },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+        });
+    }
     async getPopularDestinations(limit = 8) {
         return this.prisma.destination.findMany({
             include: {

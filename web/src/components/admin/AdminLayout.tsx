@@ -15,6 +15,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const menuItems = [
     { path: '/admin', label: 'Dashboard', icon: '📊' },
     { path: '/admin/tours', label: 'Tours', icon: '🗺️' },
+    { path: '/admin/popular-tours', label: 'Popular Tours', icon: '⭐' },
     { path: '/admin/destinations', label: 'Destinations', icon: '📍' },
     { path: '/admin/blog', label: 'Blog Posts', icon: '📝' },
     { path: '/admin/blog-categories', label: 'Blog Categories', icon: '📂' },

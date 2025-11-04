@@ -13,18 +13,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     }>;
     findAll(filters?: {
@@ -40,18 +40,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     })[]>;
     findByTour(tourId: string): Promise<({
@@ -62,13 +62,13 @@ export declare class ReviewsService {
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     })[]>;
     findPending(): Promise<({
@@ -80,18 +80,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     })[]>;
     findOne(id: string): Promise<{
@@ -103,18 +103,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     }>;
     update(id: string, updateReviewDto: UpdateReviewDto): Promise<{
@@ -126,18 +126,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     }>;
     approve(id: string): Promise<{
@@ -149,18 +149,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     }>;
     reject(id: string): Promise<{
@@ -172,18 +172,18 @@ export declare class ReviewsService {
         };
         tour: {
             id: string;
-            title: string;
             slug: string;
+            title: string;
         };
     } & {
         id: string;
-        title: string | null;
-        content: string;
         createdAt: Date;
         updatedAt: Date;
-        approved: boolean;
+        title: string | null;
         tourId: string;
         rating: number;
+        content: string;
+        approved: boolean;
         userId: string;
     }>;
     remove(id: string): Promise<void>;
