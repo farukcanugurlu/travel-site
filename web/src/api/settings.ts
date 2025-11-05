@@ -49,6 +49,15 @@ export interface SiteSettingsData {
   chooseButtonText?: string;
   chooseImage1?: string;
   chooseImage2?: string;
+
+  // SEO Settings
+  siteTitle?: string;
+  siteDescription?: string;
+  siteKeywords?: string;
+  siteUrl?: string;
+  ogImage?: string;
+  twitterHandle?: string;
+  defaultMetaDescription?: string;
 }
 
 class SettingsApiService {

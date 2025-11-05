@@ -1,0 +1,30 @@
+# Robots.txt for Lexor Holiday
+# https://www.lexorholiday.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /api/
+
+# Disallow private/user pages
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /user-profile
+Disallow: /cart
+Disallow: /checkout
+
+# Allow important pages
+Allow: /
+Allow: /tours
+Allow: /tour/*
+Allow: /blog
+Allow: /blog-details/*
+Allow: /about
+Allow: /contact
+
+# Sitemap
+Sitemap: https://www.lexorholiday.com/sitemap.xml
+

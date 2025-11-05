@@ -127,6 +127,64 @@ const SiteSettings: React.FC = () => {
             </small>
           </div>
 
+          {/* SEO Settings */}
+          <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>SEO Settings</h3>
+          </div>
+          
+          <div className="form-group">
+            <label>Site Title</label>
+            <input 
+              value={form.siteTitle || ''} 
+              onChange={e => set('siteTitle', e.target.value)} 
+              placeholder="Lexor Holiday - Travel Agency"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Site Description (Meta Description)</label>
+            <textarea 
+              value={form.siteDescription || ''} 
+              onChange={e => set('siteDescription', e.target.value)}
+              rows={3}
+              placeholder="Premium travel agency offering curated tours and unforgettable experiences..."
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Site Keywords</label>
+            <input 
+              value={form.siteKeywords || ''} 
+              onChange={e => set('siteKeywords', e.target.value)} 
+              placeholder="lexor holiday, travel agency, turkey tours, antalya tours"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Site URL</label>
+            <input 
+              value={form.siteUrl || ''} 
+              onChange={e => set('siteUrl', e.target.value)} 
+              placeholder="https://www.lexorholiday.com"
+            />
+          </div>
+          
+          <ImageUpload
+            label="Open Graph Image (Default for social media sharing)"
+            folder="site"
+            currentImage={form.ogImage || ''}
+            onImageUploaded={(url) => set('ogImage', url)}
+          />
+          
+          <div className="form-group">
+            <label>Twitter Handle</label>
+            <input 
+              value={form.twitterHandle || ''} 
+              onChange={e => set('twitterHandle', e.target.value)} 
+              placeholder="@lexorholiday"
+            />
+          </div>
+
           {error && <div className="error">{error}</div>}
           {success && <div className="success">Saved</div>}
           <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Saving...' : 'Save Settings'}</button>
