@@ -31,12 +31,12 @@ export declare class ToursController {
         }[];
         reviews: {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         }[];
@@ -60,6 +60,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -93,12 +95,12 @@ export declare class ToursController {
         }[];
         reviews: {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         }[];
@@ -122,6 +124,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -155,12 +159,12 @@ export declare class ToursController {
         }[];
         reviews: {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         }[];
@@ -184,6 +188,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -217,12 +223,12 @@ export declare class ToursController {
         }[];
         reviews: {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         }[];
@@ -246,6 +252,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -274,6 +282,8 @@ export declare class ToursController {
             locationLatitude: number | null;
             locationLongitude: number | null;
             locationDescription: string | null;
+            meetingPointAddress: string | null;
+            meetingPointMapUrl: string | null;
             category: string | null;
             groupSize: string | null;
             languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -340,12 +350,12 @@ export declare class ToursController {
             };
         } & {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         })[];
@@ -369,6 +379,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -415,12 +427,12 @@ export declare class ToursController {
             };
         } & {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         })[];
@@ -444,6 +456,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -477,12 +491,12 @@ export declare class ToursController {
         }[];
         reviews: {
             title: string | null;
+            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             tourId: string;
             rating: number;
-            content: string;
             approved: boolean;
             userId: string;
         }[];
@@ -506,6 +520,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
@@ -533,6 +549,8 @@ export declare class ToursController {
         locationLatitude: number | null;
         locationLongitude: number | null;
         locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
         category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;

@@ -25,17 +25,19 @@ export declare class AuthService {
     }>;
     register(email: string, password: string, firstName?: string, lastName?: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         firstName: string | null;
         lastName: string | null;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     validateJwtPayload(payload: JwtPayload): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string;
         password: string;
         firstName: string | null;
@@ -43,7 +45,5 @@ export declare class AuthService {
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

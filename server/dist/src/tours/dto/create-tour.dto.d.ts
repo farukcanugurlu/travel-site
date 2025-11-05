@@ -17,6 +17,8 @@ export declare class CreateTourDto {
     locationLatitude?: number;
     locationLongitude?: number;
     locationDescription?: string;
+    meetingPointAddress?: string;
+    meetingPointMapUrl?: string;
     type?: string;
     category?: string;
     groupSize?: string;

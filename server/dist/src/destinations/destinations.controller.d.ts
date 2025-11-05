@@ -9,11 +9,11 @@ export declare class DestinationsController {
             tours: number;
         };
     } & {
+        name: string;
+        slug: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -29,11 +29,11 @@ export declare class DestinationsController {
             tours: number;
         };
     } & {
+        name: string;
+        slug: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -43,11 +43,11 @@ export declare class DestinationsController {
             tours: number;
         };
     } & {
+        name: string;
+        slug: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
@@ -57,11 +57,11 @@ export declare class DestinationsController {
             tours: number;
         };
     } & {
+        name: string;
+        slug: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        slug: string;
         country: string;
         latitude: number | null;
         longitude: number | null;

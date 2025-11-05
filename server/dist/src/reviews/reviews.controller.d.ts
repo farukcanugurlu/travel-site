@@ -5,48 +5,48 @@ export declare class ReviewsController {
     private readonly reviewsService;
     constructor(reviewsService: ReviewsService);
     create(createReviewDto: CreateReviewDto): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     }>;
     findAll(filters: any): Promise<({
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     })[]>;
@@ -57,128 +57,128 @@ export declare class ReviewsController {
             lastName: string;
         };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     })[]>;
     getPending(): Promise<({
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     })[]>;
     findOne(id: string): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     }>;
     update(id: string, updateReviewDto: UpdateReviewDto): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     }>;
     approve(id: string): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     }>;
     reject(id: string): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
+        title: string | null;
+        content: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
         tourId: string;
         rating: number;
-        content: string;
         approved: boolean;
         userId: string;
     }>;

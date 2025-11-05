@@ -125,6 +125,18 @@ __decorate([
     __metadata("design:type", String)
 ], CreateTourDto.prototype, "locationDescription", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Hotel Pickup or Main Square' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTourDto.prototype, "meetingPointAddress", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'https://www.google.com/maps/embed?pb=...' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTourDto.prototype, "meetingPointMapUrl", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Adventure' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),

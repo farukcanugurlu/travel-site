@@ -4,21 +4,21 @@ export declare class BookingsService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createBookingDto: CreateBookingDto): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            thumbnail: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-            thumbnail: string;
-        };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -50,21 +50,21 @@ export declare class BookingsService {
         tourId?: string;
         status?: string;
     }): Promise<({
+        tour: {
+            title: string;
+            slug: string;
+            thumbnail: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-            thumbnail: string;
-        };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -93,14 +93,14 @@ export declare class BookingsService {
     })[]>;
     findByUser(userId: string): Promise<({
         tour: {
-            id: string;
-            slug: string;
             title: string;
+            slug: string;
             thumbnail: string;
+            id: string;
         };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -128,21 +128,21 @@ export declare class BookingsService {
         packageId: string;
     })[]>;
     findOne(id: string): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            thumbnail: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-            thumbnail: string;
-        };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -170,21 +170,21 @@ export declare class BookingsService {
         packageId: string;
     }>;
     update(id: string, updateData: any): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            thumbnail: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-            thumbnail: string;
-        };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -233,21 +233,21 @@ export declare class BookingsService {
         packageId: string;
     }>;
     updateStatus(id: string, status: string): Promise<{
+        tour: {
+            title: string;
+            slug: string;
+            thumbnail: string;
+            id: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-            thumbnail: string;
-        };
         package: {
-            id: string;
             name: string;
+            id: string;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;

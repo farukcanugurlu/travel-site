@@ -37,6 +37,13 @@ export interface SiteSettingsData {
     chooseButtonText?: string;
     chooseImage1?: string;
     chooseImage2?: string;
+    siteTitle?: string;
+    siteDescription?: string;
+    siteKeywords?: string;
+    siteUrl?: string;
+    ogImage?: string;
+    twitterHandle?: string;
+    defaultMetaDescription?: string;
 }
 export declare class SettingsService {
     private prisma;
