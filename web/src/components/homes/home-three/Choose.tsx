@@ -2,8 +2,27 @@ import { Link } from "react-router-dom";
 import Choose4 from "../../../svg/home-one/Choose4";
 import Choose5 from "../../../svg/home-one/Choose5";
 import Button from "../../common/Button";
+import { useEffect, useState } from "react";
+import settingsApi, { type SiteSettingsData } from "../../../api/settings";
 
 const Choose = () => {
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+
+  useEffect(() => {
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null));
+  }, []);
+
+  const chooseSubtitle = settings?.chooseSubtitle || "Choose Your Dream Tour With Us";
+  const chooseTitle = settings?.chooseTitle || "discover when even<br /> you want to go";
+  const chooseDescription = settings?.chooseDescription || "Are you tired of the typical tourist destinations and looking to step out of your comfort zone? Adventure travel may be the perfect solution for you! Here are four.";
+  const chooseFeature1Title = settings?.chooseFeature1Title || "Best Travel Agency";
+  const chooseFeature1Description = settings?.chooseFeature1Description || "Are you tired of the typical tourist destinatio and looking step out of your comfort.";
+  const chooseFeature2Title = settings?.chooseFeature2Title || "Secure Journey With Us";
+  const chooseFeature2Description = settings?.chooseFeature2Description || "Are you tired of the typical tourist destinatio and looking step out of your comfort.";
+  const chooseButtonText = settings?.chooseButtonText || "Book Your Trip";
+  const chooseImage1 = settings?.chooseImage1 || "/assets/img/chose/chose.png";
+  const chooseImage2 = settings?.chooseImage2 || "/assets/img/chose/chose-2.jpg";
+
   return (
     <div className="tg-chose-area p-relative pt-160 pb-100">
       <img
@@ -21,24 +40,20 @@ const Choose = () => {
                   data-wow-delay=".3s"
                   data-wow-duration=".1s"
                 >
-                  Choose Your Dream Tour With Us
+                  {chooseSubtitle}
                 </h5>
                 <h2
                   className="mb-15 text-capitalize wow fadeInUp"
                   data-wow-delay=".4s"
                   data-wow-duration=".9s"
-                >
-                  discover when even
-                  <br /> you want to go
-                </h2>
+                  dangerouslySetInnerHTML={{ __html: chooseTitle }}
+                />
                 <p
                   className="text-capitalize wow fadeInUp"
                   data-wow-delay=".5s"
                   data-wow-duration=".9s"
                 >
-                  Are you tired of the typical tourist destinations and looking
-                  to step out of your comfort zone? Adventure travel may be the
-                  perfect solution for you! Here are four.
+                  {chooseDescription}
                 </p>
               </div>
               <div className="tg-chose-list-wrap">
@@ -52,11 +67,10 @@ const Choose = () => {
                   </span>
                   <div className="tg-chose-list-content">
                     <h4 className="tg-chose-list-title mb-5">
-                      Best Travel Agency
+                      {chooseFeature1Title}
                     </h4>
                     <p>
-                      Are you tired of the typical tourist destinatio and
-                      looking step out of your comfort.
+                      {chooseFeature1Description}
                     </p>
                   </div>
                 </div>
@@ -70,11 +84,10 @@ const Choose = () => {
                   </span>
                   <div className="tg-chose-list-content">
                     <h4 className="tg-chose-list-title mb-5">
-                      Secure Journey With Us
+                      {chooseFeature2Title}
                     </h4>
                     <p>
-                      Are you tired of the typical tourist destinatio and
-                      looking step out of your comfort.
+                      {chooseFeature2Description}
                     </p>
                   </div>
                 </div>
@@ -84,7 +97,7 @@ const Choose = () => {
                   data-wow-duration=".9s"
                 >
                   <Link to="/tours" className="tg-btn tg-btn-switch-animation">
-                    <Button text="Book Your Trip" />
+                    <Button text={chooseButtonText} />
                   </Link>
                 </div>
               </div>
@@ -105,7 +118,7 @@ const Choose = () => {
                       className="w-100 wow fadeInRight"
                       data-wow-delay=".4s"
                       data-wow-duration=".9s"
-                      src="/assets/img/chose/chose.png"
+                      src={chooseImage1}
                       alt="chose"
                     />
                   </div>
@@ -119,7 +132,7 @@ const Choose = () => {
                     >
                       <img
                         className="w-100 tg-round-15"
-                        src="/assets/img/chose/chose-2.jpg"
+                        src={chooseImage2}
                         alt="chose"
                       />
                     </div>

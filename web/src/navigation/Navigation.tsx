@@ -41,6 +41,7 @@ import DestinationsAdmin from "../components/admin/DestinationsAdmin";
 import PopularToursAdmin from "../components/admin/PopularToursAdmin";
 import AdminRoute from "../components/admin/AdminRoute";
 import SiteSettings from "../components/admin/SiteSettings";
+import HomepageSettings from "../components/admin/HomepageSettings";
 
 const AppNavigation = () => {
   return (
@@ -83,6 +84,7 @@ const AppNavigation = () => {
         <Route path="/admin/tours/:id" element={<AdminRoute><AdminLayout><TourForm /></AdminLayout></AdminRoute>} />
         <Route path="/admin/destinations" element={<AdminRoute><AdminLayout><DestinationsAdmin /></AdminLayout></AdminRoute>} />
         <Route path="/admin/popular-tours" element={<AdminRoute><AdminLayout><PopularToursAdmin /></AdminLayout></AdminRoute>} />
+        <Route path="/admin/homepage" element={<AdminRoute><AdminLayout><HomepageSettings /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog" element={<AdminRoute><AdminLayout><BlogAdmin /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog/new" element={<AdminRoute><AdminLayout><BlogForm /></AdminLayout></AdminRoute>} />
         <Route path="/admin/blog/:id" element={<AdminRoute><AdminLayout><BlogForm /></AdminLayout></AdminRoute>} />

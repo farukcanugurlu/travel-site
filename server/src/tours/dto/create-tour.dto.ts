@@ -94,6 +94,16 @@ export class CreateTourDto {
   @IsString()
   locationDescription?: string;
 
+  @ApiProperty({ example: 'Hotel Pickup or Main Square' })
+  @IsOptional()
+  @IsString()
+  meetingPointAddress?: string;
+
+  @ApiProperty({ example: 'https://www.google.com/maps/embed?pb=...' })
+  @IsOptional()
+  @IsString()
+  meetingPointMapUrl?: string;
+
   @ApiProperty({ example: 'Adventure' })
   @IsOptional()
   @IsString()

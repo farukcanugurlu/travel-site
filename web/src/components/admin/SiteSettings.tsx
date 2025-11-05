@@ -75,6 +75,15 @@ const SiteSettings: React.FC = () => {
             currentImage={form.favicon || ''}
             onImageUploaded={(url) => set('favicon', url)}
           />
+          <div className="form-group">
+            <label>Company Description</label>
+            <textarea 
+              value={form.companyDescription || ''} 
+              onChange={e => set('companyDescription', e.target.value)}
+              rows={4}
+              placeholder="Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world."
+            />
+          </div>
           <div className="form-group"><label>Office Address</label><input value={form.officeAddress || ''} onChange={e => set('officeAddress', e.target.value)} /></div>
           {/* City/Country removed; officeAddress is sufficient */}
           <div className="form-row">
@@ -91,7 +100,32 @@ const SiteSettings: React.FC = () => {
             <div className="form-group"><label>Twitter</label><input value={form.twitter || ''} onChange={e => set('twitter', e.target.value)} /></div>
             <div className="form-group"><label>Youtube</label><input value={form.youtube || ''} onChange={e => set('youtube', e.target.value)} /></div>
           </div>
-          <div className="form-group"><label>Map Embed URL</label><input value={form.mapEmbedUrl || ''} onChange={e => set('mapEmbedUrl', e.target.value)} placeholder="https://www.google.com/maps/embed?..." /></div>
+          <div className="form-group">
+            <label>Map Embed URL</label>
+            <input 
+              value={form.mapEmbedUrl || ''} 
+              onChange={e => {
+                let value = e.target.value;
+                // If user pastes full iframe code, extract the src URL
+                const iframeMatch = value.match(/src=["']([^"']+)["']/);
+                if (iframeMatch) {
+                  value = iframeMatch[1];
+                } else {
+                  // Extract URL if it's wrapped in quotes or other characters
+                  const urlMatch = value.match(/https?:\/\/[^\s"'<>]+/);
+                  if (urlMatch) {
+                    value = urlMatch[0];
+                  }
+                }
+                set('mapEmbedUrl', value);
+              }} 
+              placeholder="https://www.google.com/maps/embed?pb=..."
+            />
+            <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+              Google Maps'te konumunuzu açın → "Paylaş" → "Haritayı yerleştir" → Embed URL'sini kopyalayın<br/>
+              <strong>İpucu:</strong> Iframe kodunu yapıştırırsanız, URL otomatik olarak çıkarılacaktır.
+            </small>
+          </div>
 
           {error && <div className="error">{error}</div>}
           {success && <div className="success">Saved</div>}
@@ -105,6 +139,7 @@ const SiteSettings: React.FC = () => {
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
         .form-group{display:flex;flex-direction:column;gap:6px}
         .form-group input{border:1px solid #e0e0e0;border-radius:8px;padding:10px}
+        .form-group textarea{border:1px solid #e0e0e0;border-radius:8px;padding:10px;font-family:inherit;resize:vertical;min-height:100px}
         .btn-primary{background:#3498db;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer}
         .error{color:#e74c3c}
         .success{color:#2ecc71}

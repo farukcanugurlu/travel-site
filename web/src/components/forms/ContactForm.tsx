@@ -30,7 +30,7 @@ const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "themedox";
 const TEMPLATE_ID =
   import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_vvhaqp9";
 const PUBLIC_KEY =
-  import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "QOBCxT0bzNKEs-CwW";
+  import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "8J7ZO8OH7mUoEA9WX";
 const TO_EMAIL = import.meta.env.VITE_CONTACT_TO_EMAIL || "support@lexor.com";
 
 /* Doğrulama şeması */

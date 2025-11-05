@@ -33,6 +33,9 @@ const TourForm: React.FC = () => {
     locationLatitude: '',
     locationLongitude: '',
     locationDescription: '',
+    // Meeting point (başlangıç buluşma noktası)
+    meetingPointAddress: '',
+    meetingPointMapUrl: '',
     languages: [] as string[],
   });
 
@@ -87,6 +90,9 @@ const TourForm: React.FC = () => {
         locationLatitude: tour.location?.latitude?.toString() || tour.destination?.latitude?.toString() || '',
         locationLongitude: tour.location?.longitude?.toString() || tour.destination?.longitude?.toString() || '',
         locationDescription: tour.location?.description || '',
+        // Meeting point fields
+        meetingPointAddress: (tour as any).meetingPointAddress || '',
+        meetingPointMapUrl: (tour as any).meetingPointMapUrl || '',
         languages: Array.isArray(tour.languages) ? tour.languages : (tour.packages && tour.packages.length > 0 ? [...new Set(tour.packages.map(p => p.language))] : []),
       });
 
@@ -629,6 +635,69 @@ const TourForm: React.FC = () => {
           </div>
         </div>
 
+        {/* Meeting Point - Başlangıç Buluşma Noktası */}
+        <div className="form-section">
+          <h2>Meeting Point (Başlangıç Buluşma Noktası)</h2>
+          
+          <div className="form-group">
+            <label htmlFor="meetingPointAddress">Meeting Point Address</label>
+            <input
+              type="text"
+              id="meetingPointAddress"
+              value={formData.meetingPointAddress}
+              onChange={(e) => handleInputChange('meetingPointAddress', e.target.value)}
+              placeholder="Örn: Hotel Lobby, Main Square, etc."
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="meetingPointMapUrl">Meeting Point Map Embed URL</label>
+            <input
+              type="text"
+              id="meetingPointMapUrl"
+              value={formData.meetingPointMapUrl}
+              onChange={(e) => {
+                let value = e.target.value;
+                // Extract URL from iframe code if user pasted full iframe HTML
+                const iframeMatch = value.match(/src=["']([^"']+)["']/);
+                if (iframeMatch) {
+                  value = iframeMatch[1];
+                } else {
+                  // Extract URL if it's wrapped in quotes or other characters
+                  const urlMatch = value.match(/https?:\/\/[^\s"'<>]+/);
+                  if (urlMatch) {
+                    value = urlMatch[0];
+                  }
+                }
+                handleInputChange('meetingPointMapUrl', value);
+              }}
+              placeholder="https://www.google.com/maps/embed?pb=..."
+              className="form-input"
+            />
+            <small style={{ color: '#666', display: 'block', marginTop: '8px' }}>
+              Google Maps'te buluşma noktasını açın → "Paylaş" → "Haritayı yerleştir" → Embed URL'sini kopyalayın
+            </small>
+          </div>
+
+          {formData.meetingPointMapUrl && (
+            <div className="form-group">
+              <label>Map Preview</label>
+              <div className="map-preview">
+                <iframe
+                  src={formData.meetingPointMapUrl}
+                  width="100%"
+                  height="300"
+                  style={{ border: "0", borderRadius: "8px" }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Languages */}
         <div className="form-section">
           <h2>Languages</h2>
@@ -974,6 +1043,11 @@ const TourForm: React.FC = () => {
 
         .btn-cancel:hover {
           background: #5a6268;
+        }
+
+        /* Map Preview Styles */
+        .map-preview {
+          margin-top: 12px;
         }
 
         @media (max-width: 768px) {

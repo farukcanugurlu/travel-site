@@ -88,27 +88,66 @@ const FeatureArea = () => {
 
   return (
     <div className="tg-listing-grid-area mb-85">
-      {/* Görsel, hover ve kart küçük düzeltmeleri */}
-      <style>{`
-        .tg-listing-card-thumb{
-          position:relative;
-          overflow:hidden;
-          border-radius:16px 16px 0 0;
-        }
-        .tg-listing-card-thumb img{
-          display:block;
-          width:100%;
-          height:auto;
-          border-radius:inherit;
-          transition:transform .35s ease;
-          object-fit:cover;
-        }
-        .tg-listing-card-item:hover .tg-listing-card-thumb img{
-          transform:scale(1.04);
-        }
-        .tg-thumb-link{ display:block; position:relative; z-index:1; }
-        /* wishlist tamamen kaldırıldı */
-      `}</style>
+          {/* Görsel, hover ve kart küçük düzeltmeleri */}
+          <style>{`
+            .tg-listing-card-thumb{
+              position:relative;
+              overflow:hidden;
+              border-radius:16px 16px 0 0;
+              aspect-ratio: 16 / 9;
+              height: auto;
+            }
+            .tg-listing-card-thumb img{
+              display:block;
+              width:100%;
+              height:100%;
+              object-fit:cover;
+              border-radius:inherit;
+              transition:transform .35s ease;
+            }
+            .tg-listing-card-item:hover .tg-listing-card-thumb img{
+              transform:scale(1.04);
+            }
+            .tg-thumb-link{ display:block; position:relative; z-index:1; height:100%; }
+            /* wishlist tamamen kaldırıldı */
+            
+            /* Rating yıldızları için sarı renk */
+            .tg-listing-rating-icon .fa-sharp.fa-solid.fa-star,
+            .tg-listing-rating-icon .fa-sharp.fa-solid.fa-star-half-stroke {
+              color: #FFA500 !important;
+              -webkit-text-fill-color: #FFA500 !important;
+              fill: #FFA500 !important;
+            }
+            .tg-listing-rating-icon .fa-sharp.fa-regular.fa-star {
+              color: #E0E0E0 !important;
+              -webkit-text-fill-color: #E0E0E0 !important;
+              fill: #E0E0E0 !important;
+            }
+            
+            /* Rating yıldızları için sarı renk - genel selector */
+            .tg-listing-card-review .fa-sharp.fa-solid.fa-star,
+            .tg-listing-card-review .fa-sharp.fa-solid.fa-star-half-stroke {
+              color: #FFA500 !important;
+              -webkit-text-fill-color: #FFA500 !important;
+            }
+            .tg-listing-card-review .fa-sharp.fa-regular.fa-star {
+              color: #E0E0E0 !important;
+              -webkit-text-fill-color: #E0E0E0 !important;
+            }
+            
+            /* Kart overflow düzeltmesi */
+            .tg-listing-card-item {
+              overflow: hidden;
+            }
+            .tg-listing-card-price {
+              overflow: hidden;
+              max-width: 100%;
+            }
+            .tg-listing-card-review {
+              overflow: visible;
+              max-width: 100%;
+            }
+          `}</style>
 
       <div className="container">
         <div className="row">
@@ -245,35 +284,19 @@ const FeatureArea = () => {
 
                           {/* PRICE + REVIEWS */}
                           <div
-                            className="tg-listing-card-price d-flex align-items-center"
-                            style={{ marginTop: 10 }}
+                            className="tg-listing-card-price d-flex align-items-center justify-content-between"
+                            style={{ marginTop: 10, flexWrap: 'nowrap', gap: '12px', maxWidth: '100%', paddingLeft: '25px', paddingRight: '18px' }}
                           >
                             <div
                               className="d-flex align-items-center"
                               style={{
                                 gap: 4,
-                                marginLeft: 16,
-                                marginRight: 18,
+                                flexShrink: 0
                               }}
                             >
                               <span
                                 style={{
-                                  background: "var(--tg-theme-1, #ffffff)",
-                                  color: "#7f0af5",
-                                  padding: "4px 8px",
-                                  borderRadius: 10,
-                                  fontWeight: 700,
-                                  lineHeight: 1,
-                                  fontSize: 12,
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                Starts
-                              </span>
-                              <span
-                                style={{
-                                  background: "var(--tg-theme-1, #ff4d30)",
+                                  background: "#7f0af5",
                                   color: "#fff",
                                   padding: "6px 12px",
                                   borderRadius: 10,
@@ -301,38 +324,115 @@ const FeatureArea = () => {
                               </span>
                             </div>
 
-                            <div className="tg-listing-card-review space">
-                              <span className="tg-listing-rating-icon">
-                                {(() => {
-                                  const avgRating = item.rating?.average || 0;
-                                  const totalReviews = item.rating?.total || item.total_review || 0;
-                                  const fullStars = Math.floor(avgRating);
-                                  const hasHalfStar = avgRating % 1 >= 0.5;
-                                  
-                                  return (
-                                    <>
-                                      {[...Array(5)].map((_, i) => {
-                                        if (i < fullStars) {
-                                          return <i key={i} className="fa-sharp fa-solid fa-star"></i>;
-                                        } else if (i === fullStars && hasHalfStar) {
-                                          return <i key={i} className="fa-sharp fa-solid fa-star-half-stroke"></i>;
-                                        } else {
-                                          return <i key={i} className="fa-sharp fa-regular fa-star"></i>;
+                            {/* Rating - Hemen sağında */}
+                            {(() => {
+                              // Tour detay sayfasındaki gibi hesapla
+                              const totalReviews = item.rating?.total || item.reviews?.length || 0;
+                              const averageRating = item.rating?.average || 
+                                (item.reviews && Array.isArray(item.reviews) && item.reviews.length > 0
+                                  ? (() => {
+                                      // Sadece approved review'ları al
+                                      const approvedReviews = item.reviews.filter((r: any) => r.approved !== false);
+                                      if (approvedReviews.length === 0) return 0;
+                                      
+                                      return approvedReviews.reduce((sum: number, review: any) => {
+                                        // review.rating bir obje olabilir (location, price, amenities, rooms, services)
+                                        // Eğer obje ise ortalamasını al, değilse direkt sayıyı kullan
+                                        let ratingValue = 0;
+                                        if (typeof review.rating === 'number') {
+                                          ratingValue = review.rating;
+                                        } else if (typeof review.rating === 'object' && review.rating !== null) {
+                                          const ratings = Object.values(review.rating).filter((v: any) => typeof v === 'number' && v > 0) as number[];
+                                          if (ratings.length > 0) {
+                                            ratingValue = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+                                          }
                                         }
-                                      })}
-                                      {avgRating > 0 && (
-                                        <span style={{ marginLeft: '4px', fontWeight: 600 }}>
-                                          {avgRating.toFixed(1)}
-                                        </span>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </span>
-                              <span className="tg-listing-rating-percent">
-                                ({item.rating?.total || item.total_review || 0} {item.rating?.total === 1 || item.total_review === 1 ? 'Review' : 'Reviews'})
-                              </span>
-                            </div>
+                                        return sum + ratingValue;
+                                      }, 0) / approvedReviews.length;
+                                    })()
+                                  : 0);
+                              
+                              // Her zaman göster (review yoksa da 0.0 göster)
+                              const displayRating = averageRating > 0 ? averageRating : 0;
+                              
+                              return (
+                                <div 
+                                  className="tg-listing-card-review space" 
+                                  style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '4px',
+                                    flexShrink: 0
+                                  }}
+                                >
+                                  {/* Ortalama Puan */}
+                                  <span style={{ 
+                                    fontWeight: 700, 
+                                    fontSize: '14px', 
+                                    color: '#2c3e50',
+                                    lineHeight: 1,
+                                    flexShrink: 0
+                                  }}>
+                                    {displayRating.toFixed(1)}
+                                  </span>
+                                  
+                                  {/* Yıldızlar */}
+                                  <span 
+                                    className="tg-listing-rating-icon" 
+                                    style={{ 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      gap: '1px',
+                                      fontSize: '12px',
+                                      flexShrink: 0,
+                                      lineHeight: 1
+                                    }}
+                                  >
+                                    {[...Array(5)].map((_, i) => {
+                                      const fullStars = Math.floor(displayRating);
+                                      const hasHalfStar = displayRating % 1 >= 0.5;
+                                      if (i < fullStars) {
+                                        return (
+                                          <i 
+                                            key={i} 
+                                            className="fa-sharp fa-solid fa-star"
+                                          ></i>
+                                        );
+                                      } else if (i === fullStars && hasHalfStar) {
+                                        return (
+                                          <i 
+                                            key={i} 
+                                            className="fa-sharp fa-solid fa-star-half-stroke"
+                                          ></i>
+                                        );
+                                      } else {
+                                        return (
+                                          <i 
+                                            key={i} 
+                                            className="fa-sharp fa-regular fa-star"
+                                          ></i>
+                                        );
+                                      }
+                                    })}
+                                  </span>
+                                  
+                                  {/* Review Sayısı */}
+                                  <span 
+                                    className="tg-listing-rating-percent" 
+                                    style={{ 
+                                      color: '#757575', 
+                                      fontSize: '12px',
+                                      fontWeight: 400,
+                                      flexShrink: 0,
+                                      lineHeight: 1,
+                                      whiteSpace: 'nowrap'
+                                    }}
+                                  >
+                                    ({totalReviews})
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </div>
                           {/* /PRICE */}
                         </div>

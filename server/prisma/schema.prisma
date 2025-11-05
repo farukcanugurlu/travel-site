@@ -78,6 +78,9 @@ model Tour {
   locationLatitude   Float?
   locationLongitude  Float?
   locationDescription String?
+  // Meeting point (başlangıç buluşma noktası)
+  meetingPointAddress    String?
+  meetingPointMapUrl     String?
   type          String?  // "Adventure", "Cultural", "Beach", etc.
   category      String?
   groupSize     String?  // "50 People", "Small Group", etc.

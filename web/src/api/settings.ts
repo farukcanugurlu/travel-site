@@ -23,6 +23,32 @@ export interface SiteSettingsData {
   twitter?: string;
   youtube?: string;
   mapEmbedUrl?: string;
+
+  // Homepage settings
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroButtonText?: string;
+  heroSliderImages?: string[];
+  popularTourSubtitle?: string;
+  popularTourTitle?: string;
+  popularTourDescription?: string;
+  aboutLogo?: string;
+  aboutLeftImage1?: string;
+  aboutLeftImage2?: string;
+  aboutRightImage1?: string;
+  aboutRightImage2?: string;
+
+  // Choose section settings
+  chooseSubtitle?: string;
+  chooseTitle?: string;
+  chooseDescription?: string;
+  chooseFeature1Title?: string;
+  chooseFeature1Description?: string;
+  chooseFeature2Title?: string;
+  chooseFeature2Description?: string;
+  chooseButtonText?: string;
+  chooseImage1?: string;
+  chooseImage2?: string;
 }
 
 class SettingsApiService {

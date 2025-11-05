@@ -15,6 +15,28 @@ export interface SiteSettingsData {
     twitter?: string;
     youtube?: string;
     mapEmbedUrl?: string;
+    heroTitle?: string;
+    heroSubtitle?: string;
+    heroButtonText?: string;
+    heroSliderImages?: string[];
+    popularTourSubtitle?: string;
+    popularTourTitle?: string;
+    popularTourDescription?: string;
+    aboutLogo?: string;
+    aboutLeftImage1?: string;
+    aboutLeftImage2?: string;
+    aboutRightImage1?: string;
+    aboutRightImage2?: string;
+    chooseSubtitle?: string;
+    chooseTitle?: string;
+    chooseDescription?: string;
+    chooseFeature1Title?: string;
+    chooseFeature1Description?: string;
+    chooseFeature2Title?: string;
+    chooseFeature2Description?: string;
+    chooseButtonText?: string;
+    chooseImage1?: string;
+    chooseImage2?: string;
 }
 export declare class SettingsService {
     private prisma;

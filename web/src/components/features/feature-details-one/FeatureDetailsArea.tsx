@@ -468,7 +468,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                       {(tour.images || []).slice(1, 5).map((img, idx) => {
                         const imageIndex = idx + 1; // +1 because first image is in the main column
                         return (
-                          <div key={idx} className="col-lg-6 col-md-6">
+                        <div key={idx} className="col-lg-6 col-md-6">
                             <div 
                               className="tg-tour-details-video-thumb mb-15"
                               style={{ cursor: 'pointer' }}

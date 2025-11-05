@@ -2,6 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade, Autoplay } from "swiper/modules";
 import { Link } from "react-router-dom";
 import Button from "../../common/Button";
+import { useEffect, useState } from "react";
+import settingsApi, { type SiteSettingsData } from "../../../api/settings";
 
 const banner_thumb: string[] = [
   "/assets/img/hero/hero-1.webp",
@@ -26,6 +28,19 @@ const setting = {
 };
 
 const Banner = () => {
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+
+  useEffect(() => {
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null));
+  }, []);
+
+  const heroTitle = settings?.heroTitle || "Lexor Holiday";
+  const heroSubtitle = settings?.heroSubtitle || "From the first click to the final memory: <br /> Lexor Holiday is with you.";
+  const heroButtonText = settings?.heroButtonText || "Take a Tour";
+  const heroSliderImages = settings?.heroSliderImages && settings.heroSliderImages.length > 0 
+    ? settings.heroSliderImages 
+    : banner_thumb;
+
   return (
     <div className="tg-hero-area fix p-relative">
       <div className="tg-hero-top-shadow"></div>
@@ -35,7 +50,7 @@ const Banner = () => {
           modules={[Navigation, EffectFade, Autoplay]}
           className="swiper-container tg-hero-slider-active"
         >
-          {banner_thumb.map((thumb, i) => (
+          {heroSliderImages.map((thumb, i) => (
             <SwiperSlide key={i} className="swiper-slide">
               <div className="tg-hero-bg">
                 <div
@@ -65,16 +80,14 @@ const Banner = () => {
                       data-wow-delay=".4s"
                       data-wow-duration=".9s"
                     >
-                      Lexor Holiday
+                      {heroTitle}
                     </h2>
                     <p
                       className="tg-hero-para mb-0  wow fadeInUp"
                       data-wow-delay=".6s"
                       data-wow-duration="1.1s"
-                    >
-                      From the first click to the final memory: <br /> Lexor
-                      Holiday is with you.
-                    </p>
+                      dangerouslySetInnerHTML={{ __html: heroSubtitle }}
+                    />
                   </div>
                   <div
                     className="tg-hero-price-wrap mb-35 d-flex align-items-center justify-content-center  wow fadeInUp"
@@ -97,7 +110,7 @@ const Banner = () => {
                       to="/tours"
                       className="tg-btn tg-btn-switch-animation"
                     >
-                      <Button text="Take a Tour" />
+                      <Button text={heroButtonText} />
                     </Link>
                   </div>
                 </div>

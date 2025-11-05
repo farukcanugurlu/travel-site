@@ -107,7 +107,20 @@ const transformTour = (tour: any): Tour => {
   if (tour.reviews && Array.isArray(tour.reviews) && tour.reviews.length > 0) {
     const approvedReviews = tour.reviews.filter((r: any) => r.approved !== false);
     if (approvedReviews.length > 0) {
-      const averageRating = approvedReviews.reduce((sum: number, review: any) => sum + (review.rating || 0), 0) / approvedReviews.length;
+      const averageRating = approvedReviews.reduce((sum: number, review: any) => {
+        // review.rating bir obje olabilir (location, price, amenities, rooms, services)
+        // Eğer obje ise ortalamasını al, değilse direkt sayıyı kullan
+        let ratingValue = 0;
+        if (typeof review.rating === 'number') {
+          ratingValue = review.rating;
+        } else if (typeof review.rating === 'object' && review.rating !== null) {
+          const ratings = Object.values(review.rating).filter((v: any) => typeof v === 'number' && v > 0) as number[];
+          if (ratings.length > 0) {
+            ratingValue = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+          }
+        }
+        return sum + ratingValue;
+      }, 0) / approvedReviews.length;
       rating = {
         average: Math.round(averageRating * 10) / 10,
         total: approvedReviews.length,
@@ -128,6 +141,7 @@ const transformTour = (tour: any): Tour => {
   return {
     ...tour,
     rating,
+    reviews: tour.reviews || [], // Reviews'ı da ekle
     location: tour.locationLatitude || tour.locationLongitude || tour.locationDescription
       ? {
           latitude: tour.locationLatitude,

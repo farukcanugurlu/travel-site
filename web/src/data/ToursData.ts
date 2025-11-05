@@ -8,7 +8,7 @@ export interface TourProduct {
   thumb: string;
   title: string;
   location: string; // "Kaş, Antalya" gibi
-  destination: string; // Filtre için: "Antalya", "Fethiye" vb.
+  destination: string | { id: string; name: string; slug: string; country: string }; // Filtre için: "Antalya", "Fethiye" vb.
   language: "English" | "Russian";
   duration: string; // "1 Hour", "2 Days" vb.
   price: number; // NUMARA (slider için şart)
@@ -17,36 +17,76 @@ export interface TourProduct {
   tag?: string;
   featured?: string;
   offer?: string;
+  // Rating ve reviews alanlarını ekle
+  rating?: {
+    average: number;
+    total: number;
+  };
+  reviews?: any[];
+  // API Tour'un diğer alanlarını da ekle
+  packages?: any[];
+  images?: string[];
+  thumbnail?: string;
 }
 
 // API Tour'u TourProduct'a dönüştürme fonksiyonu
 export const transformTourToProduct = (tour: Tour): TourProduct => {
   // En düşük fiyatlı paketi al
-  const minPricePackage = tour.packages.reduce((min, pkg) => 
-    pkg.adultPrice < min.adultPrice ? pkg : min
-  );
+  const minPricePackage = tour.packages && tour.packages.length > 0
+    ? tour.packages.reduce((min, pkg) => 
+        pkg.adultPrice < min.adultPrice ? pkg : min
+      )
+    : null;
 
-  // Review ortalaması hesapla
-  const approvedReviews = tour.reviews.filter(r => r.approved);
-  const averageRating = approvedReviews.length > 0 
-    ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length 
-    : 0;
+  // Review ortalaması hesapla - rating obje olabilir
+  const approvedReviews = tour.reviews ? tour.reviews.filter((r: any) => r.approved !== false) : [];
+  let averageRating = 0;
+  
+  if (approvedReviews.length > 0) {
+    averageRating = approvedReviews.reduce((sum: number, r: any) => {
+      let ratingValue = 0;
+      if (typeof r.rating === 'number') {
+        ratingValue = r.rating;
+      } else if (typeof r.rating === 'object' && r.rating !== null) {
+        // Obje ise (location, price, amenities, rooms, services) ortalamasını al
+        const ratings = Object.values(r.rating).filter((v: any) => typeof v === 'number' && v > 0) as number[];
+        if (ratings.length > 0) {
+          ratingValue = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+        }
+      }
+      return sum + ratingValue;
+    }, 0) / approvedReviews.length;
+  }
 
   return {
     id: tour.id,
-    slug: tour.slug, // Add slug from API
+    slug: tour.slug,
     page: "home_3",
-    thumb: tour.thumbnail || "/assets/img/listing/listing-1.jpg",
+    thumb: tour.thumbnail || tour.images?.[0] || "/assets/img/listing/listing-1.jpg",
     title: tour.title,
-    location: `${tour.destination.name}, ${tour.destination.country}`,
-    destination: tour.destination.name,
-    language: minPricePackage.language as "English" | "Russian",
+    location: typeof tour.destination === 'string' 
+      ? tour.destination 
+      : `${tour.destination?.name || ''}, ${tour.destination?.country || ''}`,
+    destination: typeof tour.destination === 'string' 
+      ? tour.destination 
+      : tour.destination || '',
+    language: (minPricePackage?.language || "English") as "English" | "Russian",
     duration: tour.duration || "1 Day",
-    price: Number(minPricePackage.adultPrice),
-    review: Math.round(averageRating * 10) / 10, // 1 decimal place
+    price: minPricePackage ? Number(minPricePackage.adultPrice) : 0,
+    review: Math.round(averageRating * 10) / 10,
     total_review: approvedReviews.length,
     tag: tour.featured ? "Featured" : undefined,
     featured: tour.featured ? "Featured" : undefined,
+    // Rating ve reviews'ı ekle
+    rating: tour.rating || {
+      average: averageRating,
+      total: approvedReviews.length,
+    },
+    reviews: tour.reviews || [],
+    // Diğer alanları da ekle
+    packages: tour.packages,
+    images: tour.images,
+    thumbnail: tour.thumbnail,
   };
 };
 
