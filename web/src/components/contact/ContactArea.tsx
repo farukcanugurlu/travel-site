@@ -5,7 +5,12 @@ import settingsApi, { type SiteSettingsData } from '../../api/settings';
 
 const ContactArea = () => {
   const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  useEffect(() => { settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); }, []);
+  
+  useEffect(() => { 
+    settingsApi.getSettings()
+      .then(setSettings)
+      .catch(() => setSettings(null)); 
+  }, []);
   
   // Dynamic data from settings (consistent with footer/sidebar)
   const phone = settings?.phone || '+123 9998 000';
