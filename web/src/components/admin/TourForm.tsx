@@ -18,7 +18,6 @@ const TourForm: React.FC = () => {
     excerpt: '',
     duration: '',
     type: '',
-    category: '',
     groupSize: '',
     published: false,
     featured: false,
@@ -37,6 +36,7 @@ const TourForm: React.FC = () => {
     meetingPointAddress: '',
     meetingPointMapUrl: '',
     languages: [] as string[],
+    availableTimes: [] as string[],
   });
 
   const [packages, setPackages] = useState<TourPackage[]>([]);
@@ -75,7 +75,6 @@ const TourForm: React.FC = () => {
         excerpt: tour.excerpt || '',
         duration: tour.duration || '',
         type: tour.type || '',
-        category: tour.category || '',
         groupSize: tour.groupSize || '',
         published: tour.published,
         featured: tour.featured,
@@ -94,6 +93,7 @@ const TourForm: React.FC = () => {
         meetingPointAddress: (tour as any).meetingPointAddress || '',
         meetingPointMapUrl: (tour as any).meetingPointMapUrl || '',
         languages: Array.isArray(tour.languages) ? tour.languages : (tour.packages && tour.packages.length > 0 ? [...new Set(tour.packages.map(p => p.language))] : []),
+        availableTimes: Array.isArray((tour as any).availableTimes) ? (tour as any).availableTimes : [],
       });
 
       setPackages(tour.packages || []);
@@ -187,7 +187,6 @@ const TourForm: React.FC = () => {
         featured: formData.featured,
         published: formData.published,
         type: formData.type || null,
-        category: formData.category || null,
         groupSize: formData.groupSize || null,
         included: formData.included.length > 0 ? formData.included : null,
         excluded: formData.excluded.length > 0 ? formData.excluded : null,
@@ -197,6 +196,7 @@ const TourForm: React.FC = () => {
         locationLongitude: formData.locationLongitude ? parseFloat(formData.locationLongitude) : null,
         locationDescription: formData.locationDescription || null,
         languages: formData.languages.length > 0 ? formData.languages : null,
+        availableTimes: formData.availableTimes.length > 0 ? formData.availableTimes : null,
       };
       
       // For update, send packages separately
@@ -376,18 +376,6 @@ const TourForm: React.FC = () => {
           </div>
 
           <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="category">Category</label>
-              <input
-                type="text"
-                id="category"
-                value={formData.category}
-                onChange={(e) => handleInputChange('category', e.target.value)}
-                placeholder="e.g., Cultural, Sightseeing, Adventure"
-                className="form-input"
-              />
-            </div>
-
             <div className="form-group">
               <label htmlFor="groupSize">Group Size</label>
               <input
@@ -715,6 +703,99 @@ const TourForm: React.FC = () => {
               className="form-textarea"
             />
           </div>
+        </div>
+
+        {/* Available Times */}
+        <div className="form-section">
+          <h2>Available Times</h2>
+          <p className="form-hint" style={{ fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+            Add available time slots for this tour. Customers will be able to select from these times when booking.
+          </p>
+          
+          <div className="form-group">
+            <label>Available Times</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {formData.availableTimes.map((time, index) => (
+                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => {
+                      const newTimes = [...formData.availableTimes];
+                      newTimes[index] = e.target.value;
+                      handleInputChange('availableTimes', newTimes);
+                    }}
+                    className="form-input"
+                    style={{ flex: 1, maxWidth: '200px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newTimes = formData.availableTimes.filter((_, i) => i !== index);
+                      handleInputChange('availableTimes', newTimes);
+                    }}
+                    style={{
+                      background: '#f44336',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      transition: 'background 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#d32f2f';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#f44336';
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              
+              <button
+                type="button"
+                onClick={() => {
+                  handleInputChange('availableTimes', [...formData.availableTimes, '09:00']);
+                }}
+                style={{
+                  background: '#4caf50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '10px 20px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  alignSelf: 'flex-start',
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#45a049';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#4caf50';
+                }}
+              >
+                + Add Time Slot
+              </button>
+            </div>
+            <p className="form-hint" style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
+              Format: HH:MM (24-hour format). Click "Add Time Slot" to add more times.
+            </p>
+          </div>
+          
+          {formData.availableTimes.length === 0 && (
+            <div className="form-group">
+              <p style={{ fontSize: '14px', color: '#999', fontStyle: 'italic' }}>
+                No time slots added yet. Click "Add Time Slot" to add your first time.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Images */}

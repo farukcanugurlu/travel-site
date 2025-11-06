@@ -1,7 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import blogApiService, { type BlogCategory, type BlogPost } from '../../../api/blog';
 
-const Category: React.FC = () => {
+interface CategoryProps {
+  onCategoryFilter?: (categoryId: string | null) => void;
+  selectedCategoryId?: string | null;
+}
+
+const Category: React.FC<CategoryProps> = ({ onCategoryFilter, selectedCategoryId }) => {
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,8 +53,51 @@ const Category: React.FC = () => {
           <div style={{ padding: '8px 0', color: '#e74c3c' }}>{error}</div>
         ) : (
           <ul>
+            <li 
+              onClick={() => onCategoryFilter?.(null)}
+              style={{
+                cursor: 'pointer',
+                padding: '8px 0',
+                color: selectedCategoryId === null ? '#560CE3' : 'inherit',
+                fontWeight: selectedCategoryId === null ? 600 : 400,
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                if (selectedCategoryId !== null) {
+                  e.currentTarget.style.color = '#560CE3';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedCategoryId !== null) {
+                  e.currentTarget.style.color = 'inherit';
+                }
+              }}
+            >
+              <span>All</span>
+              <span>({posts.length})</span>
+            </li>
             {categories.map((cat) => (
-              <li key={cat.id}>
+              <li 
+                key={cat.id}
+                onClick={() => onCategoryFilter?.(cat.id)}
+                style={{
+                  cursor: 'pointer',
+                  padding: '8px 0',
+                  color: selectedCategoryId === cat.id ? '#560CE3' : 'inherit',
+                  fontWeight: selectedCategoryId === cat.id ? 600 : 400,
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedCategoryId !== cat.id) {
+                    e.currentTarget.style.color = '#560CE3';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedCategoryId !== cat.id) {
+                    e.currentTarget.style.color = 'inherit';
+                  }
+                }}
+              >
                 <span>{cat.name}</span>
                 <span>({countsByCategory.get(cat.id) || 0})</span>
               </li>

@@ -15,56 +15,68 @@ export declare class DestinationsService {
             tours: number;
         };
     } & {
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         _count: {
             tours: number;
         };
     } & {
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     create(createDestinationDto: CreateDestinationDto): Promise<{
         _count: {
             tours: number;
         };
     } & {
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, updateDestinationDto: UpdateDestinationDto): Promise<{
         _count: {
             tours: number;
         };
     } & {
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         message: string;
@@ -75,4 +87,21 @@ export declare class DestinationsService {
         destinationsWithTours: number;
         destinationsWithoutTours: number;
     }>;
+    getFeaturedDestinations(limit?: number): Promise<({
+        _count: {
+            tours: number;
+        };
+    } & {
+        id: string;
+        name: string;
+        slug: string;
+        country: string;
+        latitude: number | null;
+        longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
 }

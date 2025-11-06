@@ -20,7 +20,7 @@ export declare class CreateTourDto {
     meetingPointAddress?: string;
     meetingPointMapUrl?: string;
     type?: string;
-    category?: string;
     groupSize?: string;
     languages?: any;
+    availableTimes?: any;
 }

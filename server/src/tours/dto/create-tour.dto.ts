@@ -109,11 +109,6 @@ export class CreateTourDto {
   @IsString()
   type?: string;
 
-  @ApiProperty({ example: 'Cultural' })
-  @IsOptional()
-  @IsString()
-  category?: string;
-
   @ApiProperty({ example: 'Small Group (Max 12 People)' })
   @IsOptional()
   @IsString()
@@ -123,4 +118,9 @@ export class CreateTourDto {
   @IsOptional()
   @IsArray()
   languages?: any;
+
+  @ApiProperty({ example: ['09:00', '14:00', '18:00'] })
+  @IsOptional()
+  @IsArray()
+  availableTimes?: any;
 }

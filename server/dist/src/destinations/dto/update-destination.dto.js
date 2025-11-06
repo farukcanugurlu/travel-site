@@ -38,4 +38,22 @@ __decorate([
     (0, class_validator_1.MinLength)(2),
     __metadata("design:type", String)
 ], UpdateDestinationDto.prototype, "country", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Featured image URL', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateDestinationDto.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Show on homepage', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UpdateDestinationDto.prototype, "featured", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Display order on homepage', required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], UpdateDestinationDto.prototype, "displayOrder", void 0);
 //# sourceMappingURL=update-destination.dto.js.map

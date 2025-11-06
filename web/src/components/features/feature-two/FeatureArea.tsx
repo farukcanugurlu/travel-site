@@ -230,12 +230,12 @@ const FeatureArea = () => {
 
                         {/* CONTENT */}
                         <div className="tg-listing-main-content">
-                          <div className="tg-listing-card-content">
+                          <div className="tg-listing-card-content" style={{ marginBottom: 0 }}>
                             <h4 className="tg-listing-card-title">
                               <Link to={`/tour/${item.slug || item.id}`}>{item.title}</Link>
                             </h4>
 
-                            <div className="tg-listing-card-duration-tour">
+                            <div className="tg-listing-card-duration-tour" style={{ marginBottom: 0 }}>
                               <span className="tg-listing-card-duration-map mb-5">
                                 <svg
                                   width="13"
@@ -285,7 +285,7 @@ const FeatureArea = () => {
                           {/* PRICE + REVIEWS */}
                           <div
                             className="tg-listing-card-price d-flex align-items-center justify-content-between"
-                            style={{ marginTop: 10, flexWrap: 'nowrap', gap: '12px', maxWidth: '100%', paddingLeft: '25px', paddingRight: '18px' }}
+                            style={{ marginTop: -5, flexWrap: 'nowrap', gap: '12px', maxWidth: '100%', paddingLeft: '25px', paddingRight: '18px' }}
                           >
                             <div
                               className="d-flex align-items-center"

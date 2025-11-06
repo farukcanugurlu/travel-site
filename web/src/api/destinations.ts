@@ -6,6 +6,9 @@ export interface Destination {
   name: string;
   slug: string;
   country: string;
+  image?: string;
+  featured?: boolean;
+  displayOrder?: number;
   createdAt: string;
   updatedAt: string;
   _count?: {
@@ -24,12 +27,18 @@ export interface CreateDestinationPayload {
   name: string;
   slug: string;
   country: string;
+  image?: string;
+  featured?: boolean;
+  displayOrder?: number;
 }
 
 export interface UpdateDestinationPayload {
   name?: string;
   slug?: string;
   country?: string;
+  image?: string;
+  featured?: boolean;
+  displayOrder?: number;
 }
 
 class DestinationsApiService {
@@ -65,6 +74,16 @@ class DestinationsApiService {
 
   async getDestinationStats(): Promise<any> {
     return apiService.get<any>('/destinations/stats');
+  }
+
+  async getFeaturedDestinations(limit: number = 8): Promise<Destination[]> {
+    try {
+      const result = await apiService.get<Destination[]>(`/destinations/featured?limit=${limit}`);
+      return result || [];
+    } catch (error) {
+      console.error('Error fetching featured destinations:', error);
+      return [];
+    }
   }
 }
 

@@ -45,6 +45,9 @@ model Destination {
   country   String
   latitude  Float?
   longitude Float?
+  image     String?  // Featured image for homepage display
+  featured  Boolean  @default(false) // Show on homepage
+  displayOrder Int?  @default(0) // Order for homepage display
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -82,9 +85,9 @@ model Tour {
   meetingPointAddress    String?
   meetingPointMapUrl     String?
   type          String?  // "Adventure", "Cultural", "Beach", etc.
-  category      String?
   groupSize     String?  // "50 People", "Small Group", etc.
   languages     Json?  // Array of strings: ["English", "Turkish"]
+  availableTimes Json?  // Array of strings: ["09:00", "14:00", "18:00"]
 
   // Foreign keys
   destinationId String

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Comment from "./Comment";
 import BlogSidebar from "../blog-sidebar";
 import { Link } from "react-router-dom";
-import BlogForm from "../../forms/BlogForm";
 import blogApiService, { type BlogPost } from "../../../api/blog";
+import settingsApi, { type SiteSettingsData } from "../../../api/settings";
 
 interface BlogDetailsAreaProps {
   slug?: string;
@@ -17,11 +16,14 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
 
   useEffect(() => {
     if (slug) {
       fetchBlogData();
     }
+    // Fetch settings for social media links
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null));
   }, [slug]);
 
   const fetchBlogData = async () => {
@@ -112,6 +114,20 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
 
   const readingTime = calculateReadingTime(blog.content || '');
   const blogDate = formatDate(blog.createdAt);
+
+  // Social media share handlers
+  const handleFacebookShare = () => {
+    const blogUrl = `${window.location.origin}/blog-details/${blog.slug}`;
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(blogUrl)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  };
+
+  const handleInstagramClick = () => {
+    const instagramUrl = settings?.instagram || '#';
+    if (instagramUrl && instagramUrl !== '#') {
+      window.open(instagramUrl, '_blank');
+    }
+  };
    return (
       <div className="tg-blog-grid-area pt-130 pb-80">
          <div className="container">
@@ -184,20 +200,40 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
                               </div>
                            )}
                         </div>
-                        <div className="tg-blog-details-social mb-10">
-                           <span>Share:</span>
-                           <Link to="#"><i className="fa-brands fa-facebook-f"></i></Link>
-                           <Link to="#"><i className="fa-brands fa-twitter"></i></Link>
-                           <Link to="#"><i className="fa-brands fa-instagram"></i></Link>
-                           <Link to="#"><i className="fa-brands fa-pinterest-p"></i></Link>
-                           <Link to="#"><i className="fa-brands fa-youtube"></i></Link>
+                        <div className="tg-blog-details-social mb-10" style={{ marginLeft: '-5px' }}>
+                           <span style={{ marginRight: '12px' }}>Share:</span>
+                           <button
+                              type="button"
+                              onClick={handleFacebookShare}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: '5px 8px',
+                                cursor: 'pointer',
+                                color: 'inherit',
+                                fontSize: 'inherit',
+                                marginRight: '8px'
+                              }}
+                              aria-label="Share on Facebook"
+                           >
+                              <i className="fa-brands fa-facebook-f"></i>
+                           </button>
+                           <button
+                              type="button"
+                              onClick={handleInstagramClick}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: '5px 8px',
+                                cursor: 'pointer',
+                                color: 'inherit',
+                                fontSize: 'inherit'
+                              }}
+                              aria-label="Visit Instagram"
+                           >
+                              <i className="fa-brands fa-instagram"></i>
+                           </button>
                         </div>
-                     </div>
-                     <Comment postId={blog.id} />
-                     <div className="tg-tour-about-review-form tg-blog-details-review-form">
-                        <h4 className="tg-tour-about-title mb-10">Post a comment</h4>
-                        <p>Your email address will not be published. Required fields are marked *</p>
-                        <BlogForm postId={blog.id} onCommentSubmitted={() => window.location.reload()} />
                      </div>
                   </div>
                </div>

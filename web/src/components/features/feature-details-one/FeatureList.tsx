@@ -29,6 +29,10 @@ const FeatureList = ({ tour }: FeatureListProps) => {
     <path d="M11.5 6.52684L4.5 2.64944M1.21001 4.70401L8.00001 8.47683L14.79 4.70401M8 16V8.46931M15 11.4578V5.48102C14.9997 5.21899 14.9277 4.96165 14.7912 4.7348C14.6547 4.50794 14.4585 4.31956 14.2222 4.18855L8.77778 1.20018C8.5413 1.06904 8.27306 1 8 1C7.72694 1 7.4587 1.06904 7.22222 1.20018L1.77778 4.18855C1.54154 4.31956 1.34532 4.50794 1.2088 4.7348C1.07229 4.96165 1.00028 5.21899 1 5.48102V11.4578C1.00028 11.7198 1.07229 11.9771 1.2088 12.204C1.34532 12.4308 1.54154 12.6192 1.77778 12.7502L7.22222 15.7386C7.4587 15.8697 7.72694 15.9388 8 15.9388C8.27306 15.9388 8.5413 15.8697 8.77778 15.7386L14.2222 12.7502C14.4585 12.6192 14.6547 12.4308 14.7912 12.204C14.9277 11.9771 14.9997 11.7198 15 11.4578Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
   </svg></>);
 
+  const timeIcon = (<><svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.00001 4.19992V8.99992L12.2 10.5999M17 9C17 13.4183 13.4183 17 9 17C4.58172 17 1 13.4183 1 9C1 4.58172 4.58172 1 9 1C13.4183 1 17 4.58172 17 9Z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg></>);
+
   // Build list data dynamically from tour
   const list_data: DataType[] = [
     {
@@ -60,6 +64,16 @@ const FeatureList = ({ tour }: FeatureListProps) => {
         : "English",
     },
   ];
+
+  // Add available times if they exist
+  if (tour.availableTimes && Array.isArray(tour.availableTimes) && tour.availableTimes.length > 0) {
+    list_data.push({
+      id: 5,
+      icon: timeIcon,
+      sub_title: "Available Times",
+      title: tour.availableTimes.join(", "),
+    });
+  }
 
    return (
       <ul>

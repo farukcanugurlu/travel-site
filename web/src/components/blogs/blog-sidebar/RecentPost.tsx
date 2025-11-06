@@ -48,16 +48,33 @@ const RecentPost = () => {
           <span>No recent posts found</span>
         </div>
       ) : (
-        recentPosts.map((item) => (
+        recentPosts.map((item, index) => (
           <div
             key={item.id}
             className="tg-blog-post-item d-flex align-items-center"
+            style={{ 
+              marginBottom: index < recentPosts.length - 1 ? '20px' : '0',
+              paddingBottom: index < recentPosts.length - 1 ? '20px' : '0',
+              borderBottom: index < recentPosts.length - 1 ? '1px solid #e0e0e0' : 'none'
+            }}
           >
-            <div className="tg-blog-post-thumb mr-15">
+            <div className="tg-blog-post-thumb mr-15" style={{
+              width: '80px',
+              height: '80px',
+              minWidth: '80px',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              flexShrink: 0
+            }}>
               <img 
                 src={item.featuredImage || '/assets/img/blog/sidebar/post.jpg'} 
                 alt={item.title}
-                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                style={{ 
+                  objectFit: 'cover', 
+                  width: '100%', 
+                  height: '100%',
+                  display: 'block'
+                }}
               />
             </div>
             <div className="tg-blog-post-content w-100">

@@ -32,7 +32,16 @@ const HomepageSettings: React.FC = () => {
     try {
       setSaving(true);
       setError(null);
-      await settingsApi.updateSettings(form);
+      
+      // Clean heroSliderImages: remove empty strings and invalid values
+      const cleanedForm = {
+        ...form,
+        heroSliderImages: form.heroSliderImages 
+          ? form.heroSliderImages.filter(img => img && img.trim() !== '' && img !== 'undefined' && img !== 'null')
+          : []
+      };
+      
+      await settingsApi.updateSettings(cleanedForm);
       setSuccess(true);
       toast.success('Homepage settings saved successfully!');
       setTimeout(() => setSuccess(false), 2000);
@@ -117,6 +126,9 @@ const HomepageSettings: React.FC = () => {
             </div>
             <div className="form-group">
               <label>Hero Slider Images</label>
+              <p className="form-hint" style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+                Add at least one image for the slider to work. Empty image slots will be automatically removed when saving.
+              </p>
               <div className="image-list">
                 {(form.heroSliderImages || []).map((img, index) => (
                   <div key={index} className="image-item">
@@ -229,6 +241,38 @@ const HomepageSettings: React.FC = () => {
                   onImageUploaded={(url) => set('aboutRightImage2', url)}
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Blog Section */}
+          <div className="settings-section">
+            <h2 className="section-title">Blog Section</h2>
+            <div className="form-group">
+              <label>Subtitle</label>
+              <input 
+                type="text"
+                value={form.blogSubtitle || ''} 
+                onChange={e => set('blogSubtitle', e.target.value)}
+                placeholder="Blog And Article"
+              />
+            </div>
+            <div className="form-group">
+              <label>Title</label>
+              <input 
+                type="text"
+                value={form.blogTitle || ''} 
+                onChange={e => set('blogTitle', e.target.value)}
+                placeholder="Latest News & Articles"
+              />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea 
+                value={form.blogDescription || ''} 
+                onChange={e => set('blogDescription', e.target.value)}
+                rows={3}
+                placeholder="Are you tired of the typical tourist destinations and looking to step out of your comfort zonetravel"
+              />
             </div>
           </div>
 

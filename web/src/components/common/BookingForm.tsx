@@ -44,6 +44,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
     childCount: 0,
     infantCount: 0,
     tourDate: '',
+    tourTime: '',
     specialRequests: '',
     contactPhone: '',
     contactEmail: '',
@@ -67,6 +68,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
       // Set default package if available
       if (tourData.packages && tourData.packages.length > 0) {
         setFormData(prev => ({ ...prev, packageId: tourData.packages[0].id }));
+      }
+      
+      // Set default time if available times exist
+      const availableTimes = Array.isArray(tourData.availableTimes) && tourData.availableTimes.length > 0 
+        ? tourData.availableTimes 
+        : [];
+      if (availableTimes.length > 0) {
+        setFormData(prev => ({ ...prev, tourTime: availableTimes[0] }));
       }
     } catch (err) {
       setError('Failed to load tour data');
@@ -126,8 +135,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
 
       // Build cart item compatible with template cart
       const cartItem = {
-        id: `${tourId}-${formData.packageId}-${formData.tourDate}-${formData.adultCount}-${formData.childCount}-${formData.infantCount}`,
-        title: `${tour?.title || 'Tour'} - ${selectedPackage.name} (${formData.tourDate})`,
+        id: `${tourId}-${formData.packageId}-${formData.tourDate}-${formData.tourTime || ''}-${formData.adultCount}-${formData.childCount}-${formData.infantCount}`,
+        title: `${tour?.title || 'Tour'} - ${selectedPackage.name} (${formData.tourDate}${formData.tourTime ? ` ${formData.tourTime}` : ''})`,
         price: totalAmount,
         thumb: (() => {
           const imgUrl = tour?.images?.[0] || tour?.thumbnail || '/assets/img/listing/listing-1.jpg';
@@ -142,6 +151,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
         tourId: tourId!,
         packageId: formData.packageId,
         tourDate: formData.tourDate,
+        tourTime: formData.tourTime || undefined,
         participants: {
           adults: formData.adultCount,
           children: formData.childCount,
@@ -284,7 +294,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
 
         {/* Tour Date */}
         <div className="form-section">
-          <h3>Tour Date</h3>
+          <h3>Tour Date & Time</h3>
           <div className="form-group">
             <label htmlFor="tourDate">Select Date *</label>
             <input
@@ -296,6 +306,26 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
               required
             />
           </div>
+          
+          {tour && Array.isArray(tour.availableTimes) && tour.availableTimes.length > 0 && (
+            <div className="form-group">
+              <label htmlFor="tourTime">Select Time *</label>
+              <select
+                id="tourTime"
+                value={formData.tourTime}
+                onChange={(e) => handleInputChange('tourTime', e.target.value)}
+                className="form-input"
+                required
+              >
+                <option value="">Select a time</option>
+                {tour.availableTimes.map((time) => (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Contact Information */}

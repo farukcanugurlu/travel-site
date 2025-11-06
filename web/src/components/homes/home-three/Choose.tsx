@@ -19,7 +19,7 @@ const Choose = () => {
   const chooseFeature1Description = settings?.chooseFeature1Description || "Are you tired of the typical tourist destinatio and looking step out of your comfort.";
   const chooseFeature2Title = settings?.chooseFeature2Title || "Secure Journey With Us";
   const chooseFeature2Description = settings?.chooseFeature2Description || "Are you tired of the typical tourist destinatio and looking step out of your comfort.";
-  const chooseButtonText = settings?.chooseButtonText || "Book Your Trip";
+  const chooseButtonText = settings?.chooseButtonText || "BOOK YOUR TRIP";
   const chooseImage1 = settings?.chooseImage1 || "/assets/img/chose/chose.png";
   const chooseImage2 = settings?.chooseImage2 || "/assets/img/chose/chose-2.jpg";
 

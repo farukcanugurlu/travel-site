@@ -24,6 +24,14 @@ let DestinationsController = class DestinationsController {
     constructor(destinationsService) {
         this.destinationsService = destinationsService;
     }
+    getFeatured(limit) {
+        const limitNum = limit ? parseInt(limit) : 8;
+        console.log('Featured destinations endpoint called with limit:', limitNum);
+        return this.destinationsService.getFeaturedDestinations(limitNum);
+    }
+    getStats() {
+        return this.destinationsService.getStats();
+    }
     findAll(search, country, page, limit) {
         const filters = {
             search,
@@ -32,9 +40,6 @@ let DestinationsController = class DestinationsController {
             limit: limit ? parseInt(limit) : undefined,
         };
         return this.destinationsService.findAll(filters);
-    }
-    getStats() {
-        return this.destinationsService.getStats();
     }
     findOne(id) {
         return this.destinationsService.findOne(id);
@@ -51,7 +56,26 @@ let DestinationsController = class DestinationsController {
 };
 exports.DestinationsController = DestinationsController;
 __decorate([
+    (0, common_1.Get)('featured'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get featured destinations for homepage' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Featured destinations retrieved successfully' }),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DestinationsController.prototype, "getFeatured", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get destination statistics' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Destination statistics retrieved successfully' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], DestinationsController.prototype, "getStats", null);
+__decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all destinations' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Destinations retrieved successfully' }),
     __param(0, (0, common_1.Query)('search')),
@@ -63,15 +87,9 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], DestinationsController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('stats'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get destination statistics' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Destination statistics retrieved successfully' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], DestinationsController.prototype, "getStats", null);
-__decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get destination by ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Destination retrieved successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Destination not found' }),
@@ -82,6 +100,8 @@ __decorate([
 ], DestinationsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create new destination' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Destination created successfully' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
@@ -92,6 +112,8 @@ __decorate([
 ], DestinationsController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update destination' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Destination updated successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Destination not found' }),
@@ -103,6 +125,8 @@ __decorate([
 ], DestinationsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Delete destination' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Destination deleted successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Destination not found' }),
@@ -114,8 +138,6 @@ __decorate([
 exports.DestinationsController = DestinationsController = __decorate([
     (0, swagger_1.ApiTags)('Destinations'),
     (0, common_1.Controller)('destinations'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, admin_guard_1.AdminGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [destinations_service_1.DestinationsService])
 ], DestinationsController);
 //# sourceMappingURL=destinations.controller.js.map

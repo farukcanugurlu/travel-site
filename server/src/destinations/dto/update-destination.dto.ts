@@ -1,5 +1,5 @@
 // server/src/destinations/dto/update-destination.dto.ts
-import { IsString, IsOptional, MinLength, Matches } from 'class-validator';
+import { IsString, IsOptional, MinLength, Matches, IsBoolean, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateDestinationDto {
@@ -22,4 +22,19 @@ export class UpdateDestinationDto {
   @IsString()
   @MinLength(2)
   country?: string;
+
+  @ApiProperty({ description: 'Featured image URL', required: false })
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @ApiProperty({ description: 'Show on homepage', required: false })
+  @IsOptional()
+  @IsBoolean()
+  featured?: boolean;
+
+  @ApiProperty({ description: 'Display order on homepage', required: false })
+  @IsOptional()
+  @IsInt()
+  displayOrder?: number;
 }

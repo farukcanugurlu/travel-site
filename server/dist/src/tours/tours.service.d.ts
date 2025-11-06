@@ -10,21 +10,35 @@ export declare class ToursService {
         packages?: any[];
     }): Promise<{
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
-        packages: {
-            name: string;
-            description: string | null;
+        reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
+            tourId: string;
+            rating: number;
+            approved: boolean;
+            userId: string;
+        }[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -32,30 +46,21 @@ export declare class ToursService {
             capacity: number | null;
             tourId: string;
         }[];
-        reviews: {
-            title: string | null;
-            content: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tourId: string;
-            rating: number;
-            approved: boolean;
-            userId: string;
-        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -65,12 +70,10 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     }>;
     findAll(filters?: {
         destination?: string;
@@ -79,21 +82,35 @@ export declare class ToursService {
         search?: string;
     }): Promise<({
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
-        packages: {
-            name: string;
-            description: string | null;
+        reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
+            tourId: string;
+            rating: number;
+            approved: boolean;
+            userId: string;
+        }[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -101,30 +118,21 @@ export declare class ToursService {
             capacity: number | null;
             tourId: string;
         }[];
-        reviews: {
-            title: string | null;
-            content: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tourId: string;
-            rating: number;
-            approved: boolean;
-            userId: string;
-        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -134,37 +142,25 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     })[]>;
     findOne(id: string): Promise<{
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
-        };
-        packages: {
-            name: string;
-            description: string | null;
-            id: string;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
             createdAt: Date;
             updatedAt: Date;
-            adultPrice: import("@prisma/client/runtime/library").Decimal;
-            childPrice: import("@prisma/client/runtime/library").Decimal;
-            infantPrice: import("@prisma/client/runtime/library").Decimal;
-            language: string;
-            capacity: number | null;
-            tourId: string;
-        }[];
+        };
         reviews: ({
             user: {
                 id: string;
@@ -179,29 +175,44 @@ export declare class ToursService {
                 lastLoginAt: Date | null;
             };
         } & {
-            title: string | null;
-            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
             tourId: string;
             rating: number;
             approved: boolean;
             userId: string;
         })[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            adultPrice: import("@prisma/client/runtime/library").Decimal;
+            childPrice: import("@prisma/client/runtime/library").Decimal;
+            infantPrice: import("@prisma/client/runtime/library").Decimal;
+            language: string;
+            capacity: number | null;
+            tourId: string;
+        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -211,37 +222,25 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     }>;
     findBySlug(slug: string): Promise<{
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
-        };
-        packages: {
-            name: string;
-            description: string | null;
-            id: string;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
             createdAt: Date;
             updatedAt: Date;
-            adultPrice: import("@prisma/client/runtime/library").Decimal;
-            childPrice: import("@prisma/client/runtime/library").Decimal;
-            infantPrice: import("@prisma/client/runtime/library").Decimal;
-            language: string;
-            capacity: number | null;
-            tourId: string;
-        }[];
+        };
         reviews: ({
             user: {
                 id: string;
@@ -256,62 +255,22 @@ export declare class ToursService {
                 lastLoginAt: Date | null;
             };
         } & {
-            title: string | null;
-            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
             tourId: string;
             rating: number;
             approved: boolean;
             userId: string;
         })[];
-    } & {
-        type: string | null;
-        description: string | null;
-        title: string;
-        slug: string;
-        excerpt: string | null;
-        featured: boolean;
-        popular: boolean;
-        published: boolean;
-        duration: string | null;
-        thumbnail: string | null;
-        images: string[];
-        destinationId: string;
-        included: import("@prisma/client/runtime/library").JsonValue | null;
-        excluded: import("@prisma/client/runtime/library").JsonValue | null;
-        highlights: import("@prisma/client/runtime/library").JsonValue | null;
-        itinerary: import("@prisma/client/runtime/library").JsonValue | null;
-        locationLatitude: number | null;
-        locationLongitude: number | null;
-        locationDescription: string | null;
-        meetingPointAddress: string | null;
-        meetingPointMapUrl: string | null;
-        category: string | null;
-        groupSize: string | null;
-        languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
-    update(id: string, updateTourDto: UpdateTourDto): Promise<{
-        destination: {
-            name: string;
-            slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            country: string;
-            latitude: number | null;
-            longitude: number | null;
-        };
         packages: {
-            name: string;
-            description: string | null;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
+            description: string | null;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -319,30 +278,88 @@ export declare class ToursService {
             capacity: number | null;
             tourId: string;
         }[];
+    } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string | null;
+        description: string | null;
+        title: string;
+        excerpt: string | null;
+        popular: boolean;
+        published: boolean;
+        duration: string | null;
+        thumbnail: string | null;
+        images: string[];
+        included: import("@prisma/client/runtime/library").JsonValue | null;
+        excluded: import("@prisma/client/runtime/library").JsonValue | null;
+        highlights: import("@prisma/client/runtime/library").JsonValue | null;
+        itinerary: import("@prisma/client/runtime/library").JsonValue | null;
+        locationLatitude: number | null;
+        locationLongitude: number | null;
+        locationDescription: string | null;
+        meetingPointAddress: string | null;
+        meetingPointMapUrl: string | null;
+        groupSize: string | null;
+        languages: import("@prisma/client/runtime/library").JsonValue | null;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
+    }>;
+    update(id: string, updateTourDto: UpdateTourDto): Promise<{
+        destination: {
+            id: string;
+            name: string;
+            slug: string;
+            country: string;
+            latitude: number | null;
+            longitude: number | null;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
         reviews: {
-            title: string | null;
-            content: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
             tourId: string;
             rating: number;
             approved: boolean;
             userId: string;
         }[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            adultPrice: import("@prisma/client/runtime/library").Decimal;
+            childPrice: import("@prisma/client/runtime/library").Decimal;
+            infantPrice: import("@prisma/client/runtime/library").Decimal;
+            language: string;
+            capacity: number | null;
+            tourId: string;
+        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -352,26 +369,26 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     }>;
     remove(id: string): Promise<{
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -381,19 +398,17 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     }>;
     createPackage(tourId: string, createPackageDto: CreateTourPackageDto): Promise<{
-        name: string;
-        description: string | null;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         adultPrice: import("@prisma/client/runtime/library").Decimal;
         childPrice: import("@prisma/client/runtime/library").Decimal;
         infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -402,11 +417,11 @@ export declare class ToursService {
         tourId: string;
     }>;
     updatePackage(id: string, updatePackageDto: UpdateTourPackageDto): Promise<{
-        name: string;
-        description: string | null;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         adultPrice: import("@prisma/client/runtime/library").Decimal;
         childPrice: import("@prisma/client/runtime/library").Decimal;
         infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -415,11 +430,11 @@ export declare class ToursService {
         tourId: string;
     }>;
     removePackage(id: string): Promise<{
-        name: string;
-        description: string | null;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
         adultPrice: import("@prisma/client/runtime/library").Decimal;
         childPrice: import("@prisma/client/runtime/library").Decimal;
         infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -428,32 +443,49 @@ export declare class ToursService {
         tourId: string;
     }>;
     getDestinations(): Promise<{
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     getFeaturedTours(limit?: number): Promise<({
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
-        packages: {
-            name: string;
-            description: string | null;
+        reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
+            tourId: string;
+            rating: number;
+            approved: boolean;
+            userId: string;
+        }[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -461,30 +493,21 @@ export declare class ToursService {
             capacity: number | null;
             tourId: string;
         }[];
-        reviews: {
-            title: string | null;
-            content: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tourId: string;
-            rating: number;
-            approved: boolean;
-            userId: string;
-        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -494,30 +517,42 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     })[]>;
     getPopularTours(limit?: number): Promise<({
         destination: {
+            id: string;
             name: string;
             slug: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             country: string;
             latitude: number | null;
             longitude: number | null;
+            image: string | null;
+            featured: boolean;
+            displayOrder: number | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
-        packages: {
-            name: string;
-            description: string | null;
+        reviews: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
+            content: string;
+            tourId: string;
+            rating: number;
+            approved: boolean;
+            userId: string;
+        }[];
+        packages: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
             adultPrice: import("@prisma/client/runtime/library").Decimal;
             childPrice: import("@prisma/client/runtime/library").Decimal;
             infantPrice: import("@prisma/client/runtime/library").Decimal;
@@ -525,30 +560,21 @@ export declare class ToursService {
             capacity: number | null;
             tourId: string;
         }[];
-        reviews: {
-            title: string | null;
-            content: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tourId: string;
-            rating: number;
-            approved: boolean;
-            userId: string;
-        }[];
     } & {
+        id: string;
+        slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         type: string | null;
         description: string | null;
         title: string;
-        slug: string;
         excerpt: string | null;
-        featured: boolean;
         popular: boolean;
         published: boolean;
         duration: string | null;
         thumbnail: string | null;
         images: string[];
-        destinationId: string;
         included: import("@prisma/client/runtime/library").JsonValue | null;
         excluded: import("@prisma/client/runtime/library").JsonValue | null;
         highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -558,27 +584,27 @@ export declare class ToursService {
         locationDescription: string | null;
         meetingPointAddress: string | null;
         meetingPointMapUrl: string | null;
-        category: string | null;
         groupSize: string | null;
         languages: import("@prisma/client/runtime/library").JsonValue | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
+        availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+        destinationId: string;
     })[]>;
     getPopularDestinations(limit?: number): Promise<({
         tours: {
+            id: string;
+            slug: string;
+            featured: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             type: string | null;
             description: string | null;
             title: string;
-            slug: string;
             excerpt: string | null;
-            featured: boolean;
             popular: boolean;
             published: boolean;
             duration: string | null;
             thumbnail: string | null;
             images: string[];
-            destinationId: string;
             included: import("@prisma/client/runtime/library").JsonValue | null;
             excluded: import("@prisma/client/runtime/library").JsonValue | null;
             highlights: import("@prisma/client/runtime/library").JsonValue | null;
@@ -588,21 +614,22 @@ export declare class ToursService {
             locationDescription: string | null;
             meetingPointAddress: string | null;
             meetingPointMapUrl: string | null;
-            category: string | null;
             groupSize: string | null;
             languages: import("@prisma/client/runtime/library").JsonValue | null;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
+            availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
+            destinationId: string;
         }[];
     } & {
+        id: string;
         name: string;
         slug: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         country: string;
         latitude: number | null;
         longitude: number | null;
+        image: string | null;
+        featured: boolean;
+        displayOrder: number | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
 }

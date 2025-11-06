@@ -143,12 +143,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateTourDto.prototype, "type", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Cultural' }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateTourDto.prototype, "category", void 0);
-__decorate([
     (0, swagger_1.ApiProperty)({ example: 'Small Group (Max 12 People)' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
@@ -160,4 +154,10 @@ __decorate([
     (0, class_validator_1.IsArray)(),
     __metadata("design:type", Object)
 ], CreateTourDto.prototype, "languages", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: ['09:00', '14:00', '18:00'] }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Object)
+], CreateTourDto.prototype, "availableTimes", void 0);
 //# sourceMappingURL=create-tour.dto.js.map

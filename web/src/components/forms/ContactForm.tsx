@@ -58,7 +58,11 @@ function getErrorText(err: unknown): string {
   return "Failed to send message. Please try again.";
 }
 
-const ContactForm = () => {
+interface ContactFormProps {
+  whatsappUrl?: string;
+}
+
+const ContactForm = ({ whatsappUrl }: ContactFormProps) => {
   const {
     register,
     handleSubmit,
@@ -142,6 +146,35 @@ const ContactForm = () => {
         .textarea::placeholder{
           opacity: 0.85;
         }
+        .tg-btn-whatsapp {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: #25D366;
+          color: #fff;
+          padding: 12px 27px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          border: none;
+          cursor: pointer;
+          text-transform: uppercase;
+          font-size: 15px;
+        }
+        .tg-btn-whatsapp:hover {
+          background: #20BA5A;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+          color: #fff;
+        }
+        .tg-btn-whatsapp i {
+          font-size: 20px;
+        }
+        .w-100 {
+          width: 100%;
+        }
       `}</style>
 
       {/* Şablonda şu alanların tanımlı olduğundan emin olun:
@@ -192,7 +225,7 @@ const ContactForm = () => {
             <p className="form_error">{errors.subject?.toString()}</p>
           </div>
 
-          <div className="col-lg-12">
+          <div className="col-lg-12 mb-25">
             <textarea
               className="textarea mb-5"
               {...register("message")}
@@ -202,12 +235,28 @@ const ContactForm = () => {
               style={{ paddingTop: 15, lineHeight: 1.45, minHeight: 170 }}
             />
             <p className="form_error">{errors.message?.message}</p>
+          </div>
 
-            <button type="submit" className="tg-btn" name="message">
+          <div className="col-lg-6 mb-25">
+            <button type="submit" className="tg-btn w-100" name="message">
               SEND MESSAGE
             </button>
             <p className="ajax-response mb-0 pt-10"></p>
           </div>
+
+          {whatsappUrl && (
+            <div className="col-lg-6 mb-25">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tg-btn tg-btn-whatsapp w-100"
+              >
+                <i className="fa-brands fa-whatsapp"></i>
+                <span>Contact us on WhatsApp</span>
+              </a>
+            </div>
+          )}
         </div>
       </form>
     </>

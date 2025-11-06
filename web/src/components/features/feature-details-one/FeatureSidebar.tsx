@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,9 +17,55 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   const [youthCount, setYouthCount] = useState(0);
   const [childrenCount, setChildrenCount] = useState(0);
   const [tourDate, setTourDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("12:00");
+  
+  // Parse availableTimes from tour data
+  const getAvailableTimes = () => {
+    console.log('Tour availableTimes:', tour.availableTimes, 'Type:', typeof tour.availableTimes);
+    
+    if (!tour.availableTimes) {
+      console.log('No availableTimes, using default');
+      return ["12:00", "19:00"];
+    }
+    
+    // If it's already an array, use it
+    if (Array.isArray(tour.availableTimes) && tour.availableTimes.length > 0) {
+      console.log('Using array availableTimes:', tour.availableTimes);
+      return tour.availableTimes;
+    }
+    
+    // If it's a string, try to parse it
+    if (typeof tour.availableTimes === 'string') {
+      try {
+        const parsed = JSON.parse(tour.availableTimes);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          console.log('Parsed string availableTimes:', parsed);
+          return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse availableTimes:', e);
+      }
+    }
+    
+    console.log('Using default times');
+    return ["12:00", "19:00"]; // Fallback to default times
+  };
+  
+  const availableTimes = getAvailableTimes();
+  console.log('Final availableTimes:', availableTimes);
+  const [selectedTime, setSelectedTime] = useState(availableTimes[0] || "12:00");
   const [servicePerBooking, setServicePerBooking] = useState(false);
   const [servicePerPerson, setServicePerPerson] = useState(false);
+
+  // Update selectedTime when availableTimes changes
+  useEffect(() => {
+    const times = getAvailableTimes();
+    if (times.length > 0) {
+      // If current selectedTime is not in the new times, select the first one
+      if (!times.includes(selectedTime)) {
+        setSelectedTime(times[0]);
+      }
+    }
+  }, [tour.availableTimes, selectedTime]);
 
   // Get the first package for pricing (or you can add package selection)
   const tourPackage = tour.packages?.[0];
@@ -114,10 +160,22 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
             type="date"
             value={tourDate}
             onChange={(e) => setTourDate(e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
             placeholder="When (Date)"
             required
+            style={{ 
+              position: 'relative',
+              zIndex: 1,
+              cursor: 'pointer'
+            }}
           />
-          <span className="calender">
+          <span 
+            className="calender"
+            style={{ 
+              pointerEvents: 'none',
+              zIndex: 0
+            }}
+          >
             <svg
               width="16"
               height="16"
@@ -134,40 +192,37 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
               />
             </svg>
           </span>
-          <span className="angle">
+          <span 
+            className="angle"
+            style={{ 
+              pointerEvents: 'none',
+              zIndex: 0
+            }}
+          >
             <i className="fa-sharp fa-solid fa-angle-down"></i>
           </span>
         </div>
       </div>
-      <div className="tg-tour-about-time d-flex align-items-center mb-10">
-        <span className="time">Time:</span>
-        <div className="form-check mr-15">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="flexRadioDefault"
-            id="time1"
-            checked={selectedTime === "12:00"}
-            onChange={() => setSelectedTime("12:00")}
-          />
-          <label className="form-check-label" htmlFor="time1">
-            12:00
-          </label>
+      {availableTimes.length > 0 && (
+        <div className="tg-tour-about-time d-flex align-items-center mb-10" style={{ flexWrap: 'wrap', gap: '10px' }}>
+          <span className="time" style={{ marginRight: '10px' }}>Time:</span>
+          {availableTimes.map((time, index) => (
+            <div key={index} className="form-check" style={{ marginRight: '15px' }}>
+              <input
+                className="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                id={`time${index}`}
+                checked={selectedTime === time}
+                onChange={() => setSelectedTime(time)}
+              />
+              <label className="form-check-label" htmlFor={`time${index}`}>
+                {time}
+              </label>
+            </div>
+          ))}
         </div>
-        <div className="form-check">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="flexRadioDefault"
-            id="time2"
-            checked={selectedTime === "19:00"}
-            onChange={() => setSelectedTime("19:00")}
-          />
-          <label className="form-check-label" htmlFor="time2">
-            19:00
-          </label>
-        </div>
-      </div>
+      )}
       <div className="tg-tour-about-border-doted mb-15"></div>
       <div className="tg-tour-about-tickets-wrap mb-15">
         <span className="tg-tour-about-sidebar-title">Tickets:</span>

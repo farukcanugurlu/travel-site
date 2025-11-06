@@ -9,12 +9,29 @@ import { AdminGuard } from '../auth/admin.guard';
 
 @ApiTags('Destinations')
 @Controller('destinations')
-@UseGuards(JwtAuthGuard, AdminGuard)
-@ApiBearerAuth()
 export class DestinationsController {
   constructor(private readonly destinationsService: DestinationsService) {}
 
+  // Public endpoint - must be before @Get(':id') to avoid route conflict
+  @Get('featured')
+  @ApiOperation({ summary: 'Get featured destinations for homepage' })
+  @ApiResponse({ status: 200, description: 'Featured destinations retrieved successfully' })
+  getFeatured(@Query('limit') limit?: string) {
+    const limitNum = limit ? parseInt(limit) : 8;
+    return this.destinationsService.getFeaturedDestinations(limitNum);
+  }
+
+  // Public endpoint - must be before @Get(':id') to avoid route conflict
+  @Get('stats')
+  @ApiOperation({ summary: 'Get destination statistics' })
+  @ApiResponse({ status: 200, description: 'Destination statistics retrieved successfully' })
+  getStats() {
+    return this.destinationsService.getStats();
+  }
+
   @Get()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all destinations' })
   @ApiResponse({ status: 200, description: 'Destinations retrieved successfully' })
   findAll(
@@ -32,14 +49,9 @@ export class DestinationsController {
     return this.destinationsService.findAll(filters);
   }
 
-  @Get('stats')
-  @ApiOperation({ summary: 'Get destination statistics' })
-  @ApiResponse({ status: 200, description: 'Destination statistics retrieved successfully' })
-  getStats() {
-    return this.destinationsService.getStats();
-  }
-
   @Get(':id')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get destination by ID' })
   @ApiResponse({ status: 200, description: 'Destination retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Destination not found' })
@@ -48,6 +60,8 @@ export class DestinationsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new destination' })
   @ApiResponse({ status: 201, description: 'Destination created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -56,6 +70,8 @@ export class DestinationsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update destination' })
   @ApiResponse({ status: 200, description: 'Destination updated successfully' })
   @ApiResponse({ status: 404, description: 'Destination not found' })
@@ -64,6 +80,8 @@ export class DestinationsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete destination' })
   @ApiResponse({ status: 200, description: 'Destination deleted successfully' })
   @ApiResponse({ status: 404, description: 'Destination not found' })

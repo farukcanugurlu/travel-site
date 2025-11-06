@@ -1,15 +1,27 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { blogApiService } from "../../../api/blog";
+import settingsApi, { type SiteSettingsData } from "../../../api/settings";
 import type { BlogPost } from "../../../api/blog";
 
 const Blog = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
 
   useEffect(() => {
     fetchBlogPosts();
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const data = await settingsApi.getSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+    }
+  };
 
   const fetchBlogPosts = async () => {
     try {
@@ -69,23 +81,36 @@ const Blog = () => {
                 data-wow-delay=".3s"
                 data-wow-duration=".9s"
               >
-                Blog And Article
+                {settings?.blogSubtitle || "Blog And Article"}
               </h5>
               <h2
                 className="mb-15 text-capitalize wow fadeInUp"
                 data-wow-delay=".4s"
                 data-wow-duration=".9s"
-              >
-                Latest News & Articles
-              </h2>
-              <p
-                className="text-capitalize wow fadeInUp"
-                data-wow-delay=".5s"
-                data-wow-duration=".9s"
-              >
-                Are you tired of the typical tourist destinations and
-                <br /> looking to step out of your comfort zonetravel
-              </p>
+                dangerouslySetInnerHTML={{
+                  __html: settings?.blogTitle || "Latest News & Articles"
+                }}
+              />
+              {settings?.blogDescription && (
+                <p
+                  className="text-capitalize wow fadeInUp"
+                  data-wow-delay=".5s"
+                  data-wow-duration=".9s"
+                  dangerouslySetInnerHTML={{
+                    __html: settings.blogDescription.replace(/\n/g, '<br />')
+                  }}
+                />
+              )}
+              {!settings?.blogDescription && (
+                <p
+                  className="text-capitalize wow fadeInUp"
+                  data-wow-delay=".5s"
+                  data-wow-duration=".9s"
+                >
+                  Are you tired of the typical tourist destinations and
+                  <br /> looking to step out of your comfort zonetravel
+                </p>
+              )}
             </div>
           </div>
 

@@ -106,6 +106,17 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
 
   return (
     <>
+      <style>{`
+        /* (TR) Tour detay sayfasında footer üst boşluğunu ana sayfayla aynı yap */
+        footer .tg-footer-area.tg-footer-space {
+          padding-top: 56px !important;
+        }
+        @media (min-width: 1200px) {
+          footer .tg-footer-area.tg-footer-space {
+            padding-top: 64px !important;
+          }
+        }
+      `}</style>
       <HeaderThree />
       <main>
         <Breadcrumb tour={tour} />

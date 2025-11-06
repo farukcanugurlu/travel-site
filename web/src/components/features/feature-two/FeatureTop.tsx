@@ -28,6 +28,21 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
    const filteredAllProduct = allProducts;
    const [, setSelected] = useState('');
 
+   // Helper function to get the minimum price from packages or fallback to price field
+   const getPrice = (item: any): number => {
+      // Packages'dan en düşük fiyatı al
+      if (item.packages && Array.isArray(item.packages) && item.packages.length > 0) {
+         const prices = item.packages
+            .map((pkg: any) => Number(pkg?.adultPrice || 0))
+            .filter((p: number) => p > 0);
+         if (prices.length > 0) {
+            return Math.min(...prices);
+         }
+      }
+      // Fallback to direct price field or 0
+      return Number(item.price || 0);
+   };
+
    const niceSelectHandler = (item: Option) => {
       setSelected(item.value);
 
@@ -44,7 +59,11 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                });
             break;
          case 'price':
-            sortedProducts = sortedProducts.sort((a, b) => a.price - b.price);
+            sortedProducts = sortedProducts.sort((a, b) => {
+               const priceA = getPrice(a);
+               const priceB = getPrice(b);
+               return priceA - priceB;
+            });
             break;
          case 'rating':
             sortedProducts = sortedProducts.sort((a, b) => b.review - a.review);

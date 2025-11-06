@@ -39,10 +39,10 @@ export interface Tour {
     longitude?: number;
     description?: string;
   };
-  category?: string;
   type?: string; // "Adventure", "Cultural", "Beach", etc.
   groupSize?: string;
   languages?: string[];
+  availableTimes?: string[]; // Array of available time slots: ["09:00", "14:00", "18:00"]
   rating?: {
     average: number;
     total: number;
@@ -76,7 +76,6 @@ export interface Review {
 }
 
 export interface TourFilters {
-  category?: string;
   destination?: string;
   featured?: boolean;
   published?: boolean;
@@ -138,10 +137,25 @@ const transformTour = (tour: any): Tour => {
     };
   }
 
+  // Parse availableTimes if it's a JSON string
+  let availableTimes = tour.availableTimes;
+  if (availableTimes && typeof availableTimes === 'string') {
+    try {
+      availableTimes = JSON.parse(availableTimes);
+    } catch (e) {
+      console.warn('Failed to parse availableTimes:', e);
+      availableTimes = [];
+    }
+  }
+  if (!Array.isArray(availableTimes)) {
+    availableTimes = [];
+  }
+
   return {
     ...tour,
     rating,
     reviews: tour.reviews || [], // Reviews'ı da ekle
+    availableTimes: availableTimes.length > 0 ? availableTimes : undefined,
     location: tour.locationLatitude || tour.locationLongitude || tour.locationDescription
       ? {
           latitude: tour.locationLatitude,

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { destinationsApiService } from '../../api/destinations';
 import type { DestinationFilters, Destination } from '../../api/destinations';
 import { toast } from 'react-toastify';
+import ImageUpload from '../common/ImageUpload';
 
 const DestinationsAdmin: React.FC = () => {
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -217,10 +218,37 @@ const DestinationsAdmin: React.FC = () => {
                   </div>
                 </div>
                 <div className="card-content">
+                  {(destination as any)?.image && (
+                    <div style={{ marginBottom: '12px' }}>
+                      <img 
+                        src={(destination as any).image.startsWith('http') ? (destination as any).image : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${(destination as any).image}`}
+                        alt={destination.name}
+                        style={{ 
+                          width: '100%', 
+                          height: '150px', 
+                          objectFit: 'cover', 
+                          borderRadius: '8px',
+                          border: '1px solid #e0e0e0'
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className="info-row">
                     <span className="info-label">Slug:</span>
                     <span className="info-value">{destination.slug}</span>
                   </div>
+                  {(destination as any)?.featured && (
+                    <div className="info-row">
+                      <span className="info-label">Featured:</span>
+                      <span className="info-value" style={{ color: '#4caf50', fontWeight: 600 }}>✓ Yes</span>
+                    </div>
+                  )}
+                  {(destination as any)?.displayOrder !== undefined && (destination as any)?.displayOrder !== null && (
+                    <div className="info-row">
+                      <span className="info-label">Order:</span>
+                      <span className="info-value">{(destination as any).displayOrder}</span>
+                    </div>
+                  )}
                   <div className="info-row">
                     <span className="info-label">Created:</span>
                     <span className="info-value">{new Date(destination.createdAt).toLocaleDateString()}</span>
@@ -590,20 +618,52 @@ const DestinationModal: React.FC<DestinationModalProps> = ({ destination, onSave
     name: destination?.name || '',
     slug: destination?.slug || '',
     country: destination?.country || '',
+    image: (destination as any)?.image || '',
+    featured: (destination as any)?.featured || false,
+    displayOrder: (destination as any)?.displayOrder || 0,
   });
+
+  // Update formData when destination prop changes
+  useEffect(() => {
+    if (destination) {
+      setFormData({
+        name: destination.name || '',
+        slug: destination.slug || '',
+        country: destination.country || '',
+        image: (destination as any)?.image || '',
+        featured: (destination as any)?.featured || false,
+        displayOrder: (destination as any)?.displayOrder || 0,
+      });
+    }
+  }, [destination]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.slug || !formData.country) {
-      toast.error('Please fill in all fields');
+      toast.error('Please fill in all required fields');
       return;
     }
-    onSave(formData);
+    // Clean up data - always send featured and displayOrder, send image if provided
+    const cleanData: any = {
+      name: formData.name,
+      slug: formData.slug,
+      country: formData.country,
+      featured: formData.featured || false,
+      displayOrder: parseInt(formData.displayOrder.toString()) || 0,
+    };
+    // Always send image field, even if empty (to allow clearing it)
+    cleanData.image = formData.image && formData.image.trim() ? formData.image : null;
+    onSave(cleanData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : (type === 'number' ? parseInt(value) || 0 : value)
+    }));
     
     // Auto-generate slug from name
     if (name === 'name' && !destination) {
@@ -644,7 +704,7 @@ const DestinationModal: React.FC<DestinationModalProps> = ({ destination, onSave
               onChange={handleChange}
               required
               placeholder="e.g., antalya"
-              pattern="[a-z0-9-]+"
+              pattern="[a-z0-9\-]+"
               title="Only lowercase letters, numbers, and hyphens allowed"
             />
           </div>
@@ -659,6 +719,63 @@ const DestinationModal: React.FC<DestinationModalProps> = ({ destination, onSave
               placeholder="e.g., Turkey"
             />
           </div>
+          
+          <div className="form-group">
+            <label>Featured Image</label>
+            <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+              Upload an image for homepage display. If not provided, default image will be used.
+            </p>
+            <ImageUpload
+              onImageUploaded={(url) => {
+                setFormData(prev => ({ ...prev, image: url }));
+              }}
+              currentImage={formData.image}
+            />
+            {formData.image && (
+              <div style={{ marginTop: '10px' }}>
+                <img 
+                  src={formData.image.startsWith('http') ? formData.image : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${formData.image}`}
+                  alt="Preview"
+                  style={{ maxWidth: '200px', maxHeight: '150px', borderRadius: '8px', border: '1px solid #ddd' }}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="checkbox"
+                name="featured"
+                checked={formData.featured}
+                onChange={handleChange}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+              <span>Show on Homepage</span>
+            </label>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px', marginLeft: '28px' }}>
+              Enable this to display this destination on the homepage
+            </p>
+          </div>
+
+          {formData.featured && (
+            <div className="form-group">
+              <label>Display Order</label>
+              <input
+                type="number"
+                name="displayOrder"
+                value={formData.displayOrder}
+                onChange={handleChange}
+                min="0"
+                placeholder="0"
+                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+              />
+              <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                Lower numbers appear first on homepage (0 = first)
+              </p>
+            </div>
+          )}
+          
           <div className="modal-actions">
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel

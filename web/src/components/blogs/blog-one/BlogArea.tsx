@@ -8,14 +8,17 @@ import Button from "../../common/Button";
 
 const BlogArea = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   const itemsPerPage = 8;
   const [itemOffset, setItemOffset] = useState(0);
   const endOffset = itemOffset + itemsPerPage;
-  const currentItems = blogPosts.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(blogPosts.length / itemsPerPage);
+  const currentItems = filteredPosts.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(filteredPosts.length / itemsPerPage);
 
   useEffect(() => {
     fetchBlogPosts();
@@ -27,6 +30,7 @@ const BlogArea = () => {
       setError(null);
       const posts = await blogApiService.getPosts({ published: true });
       setBlogPosts(posts);
+      setFilteredPosts(posts);
     } catch (err) {
       setError('Failed to fetch blog posts');
       console.error('Error fetching blog posts:', err);
@@ -35,9 +39,46 @@ const BlogArea = () => {
     }
   };
 
+  // Filter posts based on search and category
+  useEffect(() => {
+    setItemOffset(0); // Reset pagination when filtering
+    
+    let filtered = [...blogPosts];
+
+    // Apply category filter
+    if (selectedCategoryId) {
+      filtered = filtered.filter((post) => post.category?.id === selectedCategoryId);
+    }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const searchLower = searchQuery.toLowerCase();
+      filtered = filtered.filter((post) => {
+        return (
+          post.title.toLowerCase().includes(searchLower) ||
+          post.excerpt?.toLowerCase().includes(searchLower) ||
+          post.content.toLowerCase().includes(searchLower) ||
+          post.tags?.some(tag => tag.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    setFilteredPosts(filtered);
+  }, [blogPosts, searchQuery, selectedCategoryId]);
+
+  // Search function
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // Category filter function
+  const handleCategoryFilter = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+  };
+
   // click to request another page.
   const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * itemsPerPage) % blogPosts.length;
+    const newOffset = (event.selected * itemsPerPage) % filteredPosts.length;
     setItemOffset(newOffset);
   };
 
@@ -108,18 +149,52 @@ const BlogArea = () => {
                   <h3>No blog posts found</h3>
                   <p>Check back later for new content!</p>
                 </div>
+              ) : filteredPosts.length === 0 ? (
+                <div className="text-center py-5">
+                  <h3>No results found</h3>
+                  <p>Try searching with different keywords.</p>
+                </div>
               ) : (
                 <>
+                  {(searchQuery || selectedCategoryId) && (
+                    <div className="mb-20" style={{ fontSize: '14px', color: '#666' }}>
+                      Found {filteredPosts.length} result{filteredPosts.length !== 1 ? 's' : ''}
+                      {selectedCategoryId && (
+                        <>
+                          {' in '}
+                          <strong>
+                            {blogPosts.find(p => p.category?.id === selectedCategoryId)?.category?.name || 'category'}
+                          </strong>
+                        </>
+                      )}
+                      {searchQuery && (
+                        <>
+                          {selectedCategoryId ? ' matching' : ' for'} "{searchQuery}"
+                        </>
+                      )}
+                    </div>
+                  )}
                   <div className="row">
                     {currentItems.map((post) => (
                       <div key={post.id} className="col-xl-6 col-lg-12 col-md-6">
                         <div className="tg-blog-grid-item mb-30">
-                          <div className="tg-blog-standard-thumb mb-15">
-                            <Link to={`/blog-details/${post.slug}`}>
+                          <div className="tg-blog-standard-thumb mb-15" style={{ 
+                            width: '100%',
+                            aspectRatio: '16/9',
+                            overflow: 'hidden',
+                            borderRadius: '8px'
+                          }}>
+                            <Link to={`/blog-details/${post.slug}`} style={{ display: 'block', width: '100%', height: '100%' }}>
                               <img 
                                 className="w-100" 
                                 src={post.featuredImage || '/assets/img/blog/blog-1.jpg'} 
-                                alt={post.title} 
+                                alt={post.title}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  display: 'block'
+                                }}
                               />
                             </Link>
                           </div>
@@ -199,7 +274,7 @@ const BlogArea = () => {
                 </>
               )}
 
-              {blogPosts.length > itemsPerPage && (
+              {filteredPosts.length > itemsPerPage && (
                 <div className="tg-pagenation-wrap text-center pt-80 mb-30">
                   <nav>
                     <ReactPaginate
@@ -218,7 +293,12 @@ const BlogArea = () => {
           </div>
 
           <div className="col-xl-3 col-lg-4">
-            <BlogSidebar />
+            <BlogSidebar 
+              onSearch={handleSearch} 
+              searchQuery={searchQuery}
+              onCategoryFilter={handleCategoryFilter}
+              selectedCategoryId={selectedCategoryId}
+            />
           </div>
         </div>
       </div>

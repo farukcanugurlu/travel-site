@@ -50,6 +50,11 @@ export interface SiteSettingsData {
   chooseImage1?: string;
   chooseImage2?: string;
 
+  // Blog section settings
+  blogSubtitle?: string;
+  blogTitle?: string;
+  blogDescription?: string;
+
   // SEO Settings
   siteTitle?: string;
   siteDescription?: string;

@@ -208,28 +208,104 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                         <h2 className="tg-tour-details-video-title mb-15">{tour.title}</h2>
                         <div className="tg-tour-details-video-location d-flex flex-wrap">
                            <span className="mr-25"><i className="fa-regular fa-location-dot"></i> {typeof tour.destination === 'string' ? tour.destination : tour.destination?.name || 'Location not specified'}</span>
-                           <div className="tg-tour-details-video-ratings">
+                           <div className="tg-tour-details-video-ratings" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               {(() => {
-                                const totalReviews = tour.rating?.total || tour.reviews?.length || 0;
+                                // Sadece approved review'ları al
+                                const approvedReviews = tour.reviews?.filter((r: any) => r.approved !== false) || [];
+                                const totalReviews = tour.rating?.total || approvedReviews.length || 0;
+                                
                                 const averageRating = tour.rating?.average || 
-                                  (tour.reviews && tour.reviews.length > 0
-                                    ? tour.reviews.reduce((sum, review) => sum + review.rating, 0) / tour.reviews.length
+                                  (approvedReviews.length > 0
+                                    ? (() => {
+                                        return approvedReviews.reduce((sum: number, review: any) => {
+                                          // review.rating bir obje olabilir (location, price, amenities, rooms, services)
+                                          // Eğer obje ise ortalamasını al, değilse direkt sayıyı kullan
+                                          let ratingValue = 0;
+                                          if (typeof review.rating === 'number') {
+                                            ratingValue = review.rating;
+                                          } else if (typeof review.rating === 'object' && review.rating !== null) {
+                                            const ratings = Object.values(review.rating).filter((v: any) => typeof v === 'number' && v > 0) as number[];
+                                            if (ratings.length > 0) {
+                                              ratingValue = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+                                            }
+                                          }
+                                          return sum + ratingValue;
+                                        }, 0) / approvedReviews.length;
+                                      })()
                                     : 0);
-                                const fullStars = Math.floor(averageRating);
-                                const hasHalfStar = averageRating % 1 >= 0.5;
+                                
+                                const displayRating = averageRating > 0 ? averageRating : 0;
+                                const fullStars = Math.floor(displayRating);
+                                const hasHalfStar = displayRating % 1 >= 0.5;
                                 
                                 return (
                                   <>
-                                    {[...Array(5)].map((_, i) => {
-                                      if (i < fullStars) {
-                                        return <span key={i}><i className="fa-sharp fa-solid fa-star"></i></span>;
-                                      } else if (i === fullStars && hasHalfStar) {
-                                        return <span key={i}><i className="fa-sharp fa-solid fa-star-half-stroke"></i></span>;
-                                      } else {
-                                        return <span key={i}><i className="fa-sharp fa-regular fa-star"></i></span>;
-                                      }
-                                    })}
-                                    <span className="review">({totalReviews} {totalReviews === 1 ? 'Review' : 'Reviews'})</span>
+                                    {/* Ortalama Puan */}
+                                    <span style={{ 
+                                      fontWeight: 700, 
+                                      fontSize: '14px', 
+                                      color: '#2c3e50',
+                                      lineHeight: 1,
+                                      flexShrink: 0
+                                    }}>
+                                      {displayRating.toFixed(1)}
+                                    </span>
+                                    
+                                    {/* Yıldızlar */}
+                                    <span 
+                                      className="tg-listing-rating-icon" 
+                                      style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '1px',
+                                        fontSize: '12px',
+                                        flexShrink: 0,
+                                        lineHeight: 1
+                                      }}
+                                    >
+                                      {[...Array(5)].map((_, i) => {
+                                        if (i < fullStars) {
+                                          return (
+                                            <i 
+                                              key={i} 
+                                              className="fa-sharp fa-solid fa-star"
+                                              style={{ color: '#FFA500' }}
+                                            ></i>
+                                          );
+                                        } else if (i === fullStars && hasHalfStar) {
+                                          return (
+                                            <i 
+                                              key={i} 
+                                              className="fa-sharp fa-solid fa-star-half-stroke"
+                                              style={{ color: '#FFA500' }}
+                                            ></i>
+                                          );
+                                        } else {
+                                          return (
+                                            <i 
+                                              key={i} 
+                                              className="fa-sharp fa-regular fa-star"
+                                              style={{ color: '#E0E0E0' }}
+                                            ></i>
+                                          );
+                                        }
+                                      })}
+                                    </span>
+                                    
+                                    {/* Review Sayısı */}
+                                    <span 
+                                      className="tg-listing-rating-percent" 
+                                      style={{ 
+                                        color: '#757575', 
+                                        fontSize: '12px',
+                                        fontWeight: 400,
+                                        flexShrink: 0,
+                                        lineHeight: 1,
+                                        whiteSpace: 'nowrap'
+                                      }}
+                                    >
+                                      ({totalReviews})
+                                    </span>
                                   </>
                                 );
                               })()}
@@ -614,11 +690,14 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                    <div
                      onClick={(e) => e.stopPropagation()}
                      style={{
-                       maxWidth: '90vw',
-                       maxHeight: '90vh',
+                       maxWidth: '95vw',
+                       maxHeight: '95vh',
+                       width: '100%',
+                       height: '100%',
                        display: 'flex',
                        alignItems: 'center',
-                       justifyContent: 'center'
+                       justifyContent: 'center',
+                       padding: '40px'
                      }}
                    >
                      {(() => {
@@ -633,9 +712,12 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                            alt={`${tour.title} - Image ${selectedImageIndex! + 1}`}
                            style={{
                              maxWidth: '100%',
-                             maxHeight: '90vh',
+                             maxHeight: '95vh',
+                             width: 'auto',
+                             height: 'auto',
                              objectFit: 'contain',
-                             borderRadius: '8px'
+                             borderRadius: '8px',
+                             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
                            }}
                          />
                        );

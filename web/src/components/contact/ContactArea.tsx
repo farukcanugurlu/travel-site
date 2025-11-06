@@ -132,55 +132,18 @@ const ContactArea = () => {
                 hours.
               </p>
               <div className="tg-contact-form tg-tour-about-review-form">
-                <ContactForm />
+                <ContactForm whatsappUrl={whatsappUrl} />
               </div>
               
-              {/* WhatsApp Button */}
-              <div className="tg-whatsapp-contact mt-30">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="tg-btn tg-btn-whatsapp"
-                >
-                  <i className="fa-brands fa-whatsapp"></i>
-                  <span>Contact us on WhatsApp</span>
-                </a>
-                <p className="whatsapp-note mt-15">
-                  Or call us directly: <Link to={`tel:${phone}`}>{phone}</Link>
-                </p>
-              </div>
+              <p className="whatsapp-note mt-15" style={{ textAlign: 'center' }}>
+                Or call us directly: <Link to={`tel:${phone}`}>{phone}</Link>
+              </p>
             </div>
           </div>
         </div>
       </div>
       
       <style>{`
-        .tg-whatsapp-contact {
-          text-align: center;
-        }
-        .tg-btn-whatsapp {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          background: #25D366;
-          color: #fff;
-          padding: 14px 28px;
-          border-radius: 10px;
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          border: none;
-          cursor: pointer;
-        }
-        .tg-btn-whatsapp:hover {
-          background: #20BA5A;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-        }
-        .tg-btn-whatsapp i {
-          font-size: 20px;
-        }
         .whatsapp-note {
           font-size: 14px;
           color: #666;

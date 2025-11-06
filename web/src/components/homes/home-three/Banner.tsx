@@ -37,30 +37,45 @@ const Banner = () => {
   const heroTitle = settings?.heroTitle || "Lexor Holiday";
   const heroSubtitle = settings?.heroSubtitle || "From the first click to the final memory: <br /> Lexor Holiday is with you.";
   const heroButtonText = settings?.heroButtonText || "Take a Tour";
-  const heroSliderImages = settings?.heroSliderImages && settings.heroSliderImages.length > 0 
-    ? settings.heroSliderImages 
+  
+  // Filter out empty strings and invalid URLs from heroSliderImages
+  const validHeroImages = settings?.heroSliderImages 
+    ? settings.heroSliderImages.filter(img => img && img.trim() !== '' && img !== 'undefined' && img !== 'null')
+    : [];
+  
+  const heroSliderImages = validHeroImages.length > 0 
+    ? validHeroImages 
     : banner_thumb;
 
   return (
     <div className="tg-hero-area fix p-relative">
       <div className="tg-hero-top-shadow"></div>
       <div className="shop-slider-wrapper">
-        <Swiper
-          {...setting}
-          modules={[Navigation, EffectFade, Autoplay]}
-          className="swiper-container tg-hero-slider-active"
-        >
-          {heroSliderImages.map((thumb, i) => (
-            <SwiperSlide key={i} className="swiper-slide">
-              <div className="tg-hero-bg">
-                <div
-                  className="tg-hero-thumb"
-                  style={{ backgroundImage: `url(${thumb})` }}
-                ></div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {heroSliderImages.length > 0 ? (
+          <Swiper
+            {...setting}
+            modules={[Navigation, EffectFade, Autoplay]}
+            className="swiper-container tg-hero-slider-active"
+          >
+            {heroSliderImages.map((thumb, i) => (
+              <SwiperSlide key={i} className="swiper-slide">
+                <div className="tg-hero-bg">
+                  <div
+                    className="tg-hero-thumb"
+                    style={{ backgroundImage: `url(${thumb})` }}
+                  ></div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : (
+          <div className="tg-hero-bg">
+            <div
+              className="tg-hero-thumb"
+              style={{ backgroundImage: `url(${banner_thumb[0]})` }}
+            ></div>
+          </div>
+        )}
       </div>
 
       <div className="tg-hero-content-area">

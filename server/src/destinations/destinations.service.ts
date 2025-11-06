@@ -91,6 +91,9 @@ export class DestinationsService {
         name: createDestinationDto.name,
         slug: createDestinationDto.slug,
         country: createDestinationDto.country,
+        image: createDestinationDto.image,
+        featured: createDestinationDto.featured ?? false,
+        displayOrder: createDestinationDto.displayOrder ?? 0,
       },
       include: {
         _count: {
@@ -134,13 +137,18 @@ export class DestinationsService {
       }
     }
 
+    // Build update data object, only including defined fields
+    const updateData: any = {};
+    if (updateDestinationDto.name !== undefined) updateData.name = updateDestinationDto.name;
+    if (updateDestinationDto.slug !== undefined) updateData.slug = updateDestinationDto.slug;
+    if (updateDestinationDto.country !== undefined) updateData.country = updateDestinationDto.country;
+    if (updateDestinationDto.image !== undefined) updateData.image = updateDestinationDto.image;
+    if (updateDestinationDto.featured !== undefined) updateData.featured = updateDestinationDto.featured;
+    if (updateDestinationDto.displayOrder !== undefined) updateData.displayOrder = updateDestinationDto.displayOrder;
+
     const updatedDestination = await this.prisma.destination.update({
       where: { id },
-      data: {
-        name: updateDestinationDto.name,
-        slug: updateDestinationDto.slug,
-        country: updateDestinationDto.country,
-      },
+      data: updateData,
       include: {
         _count: {
           select: {
@@ -209,5 +217,29 @@ export class DestinationsService {
       destinationsWithTours,
       destinationsWithoutTours: total - destinationsWithTours,
     };
+  }
+
+  async getFeaturedDestinations(limit: number = 8) {
+    return this.prisma.destination.findMany({
+      where: {
+        featured: true,
+      },
+      include: {
+        _count: {
+          select: {
+            tours: {
+              where: {
+                published: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        { displayOrder: 'asc' },
+        { name: 'asc' },
+      ],
+      take: limit,
+    });
   }
 }

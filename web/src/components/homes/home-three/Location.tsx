@@ -2,7 +2,9 @@ import { Link } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import location_data from "../../../data/LocationData";
 import toursApiService from "../../../api/tours";
+import { destinationsApiService } from "../../../api/destinations";
 import type { Tour } from "../../../api/tours";
+import type { Destination } from "../../../api/destinations";
 
 // --- Yardımcı tipler ---
 type LocItem = {
@@ -38,28 +40,36 @@ const WANTED: readonly string[] = [
 
 const Location = () => {
   const [tours, setTours] = useState<Tour[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>([]);
 
   useEffect(() => {
-    fetchTours();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const [fetchedTours, destinations] = await Promise.all([
+        toursApiService.getTours({}),
+        destinationsApiService.getFeaturedDestinations(8)
+      ]);
+      setTours(fetchedTours);
+      setFeaturedDestinations(destinations || []);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      // Fallback to old method if API fails
+      fetchTours();
+      setFeaturedDestinations([]);
+    }
+  };
 
   const fetchTours = async () => {
     try {
-      setLoading(true);
       const fetchedTours = await toursApiService.getTours({});
       setTours(fetchedTours);
     } catch (error) {
       console.error('Failed to fetch tours:', error);
-    } finally {
-      setLoading(false);
     }
   };
-
-  // Verileri tipleyerek al
-  const locList: LocItem[] = (location_data as unknown as LocItem[]).filter(
-    (i) => i.page === "home_3"
-  );
 
   // API'den gelen turları say ve destinasyon başına bir sayaç oluştur
   const tourCountByDest = useMemo(() => {
@@ -80,19 +90,41 @@ const Location = () => {
     return map;
   }, [tours]);
 
-  // Sadece istediğimiz 8 destinasyonu, belirlediğimiz sırada al
-  const wantedNorm = WANTED.map(canonical);
-  const picked: LocItem[] = locList
-    .filter((i) => wantedNorm.includes(canonical(i.title)))
-    .sort(
-      (a, b) =>
-        wantedNorm.indexOf(canonical(a.title)) -
-        wantedNorm.indexOf(canonical(b.title))
-    )
-    .slice(0, 8);
+  // Use featured destinations from API if available, otherwise fallback to hardcoded data
+  const cards = useMemo(() => {
+    // Always prioritize API data if available
+    if (featuredDestinations && featuredDestinations.length > 0) {
+      const mappedCards = featuredDestinations.map(dest => {
+        const tourCount = dest._count?.tours || tourCountByDest.get(canonical(dest.name)) || 0;
+        const imageUrl = dest.image 
+          ? (dest.image.startsWith('http') ? dest.image : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${dest.image}`)
+          : `/assets/img/destination/${dest.slug}.jpg`;
+        
+        return {
+          id: dest.id,
+          title: dest.name,
+          thumb: imageUrl,
+          total: tourCount.toString(),
+        };
+      });
+      return mappedCards;
+    }
 
-  // Fallback: veri eksikse ilk 8’i göster
-  const cards: LocItem[] = picked.length ? picked : locList.slice(0, 8);
+    // Fallback to old method only if no featured destinations from API
+    const locList: LocItem[] = (location_data as unknown as LocItem[]).filter(
+      (i) => i.page === "home_3"
+    );
+    const wantedNorm = WANTED.map(canonical);
+    const picked: LocItem[] = locList
+      .filter((i) => wantedNorm.includes(canonical(i.title)))
+      .sort(
+        (a, b) =>
+          wantedNorm.indexOf(canonical(a.title)) -
+          wantedNorm.indexOf(canonical(b.title))
+      )
+      .slice(0, 8);
+    return picked.length ? picked : locList.slice(0, 8);
+  }, [featuredDestinations, tourCountByDest]);
 
   return (
     <div className="tg-location-area p-relative pb-40 tg-grey-bg pt-140">
@@ -134,12 +166,17 @@ const Location = () => {
 
           {cards.map((item) => {
             const destKey = canonical(item.title);
-            const count = tourCountByDest.get(destKey) ?? 0;
+            const count = typeof item.total === 'string' ? parseInt(item.total) : (tourCountByDest.get(destKey) ?? 0);
             const destParam = encodeURIComponent(item.title);
+            const imageUrl = item.thumb?.startsWith('http') 
+              ? item.thumb 
+              : (item.thumb?.startsWith('/uploads/') 
+                ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${item.thumb}`
+                : item.thumb || '/assets/img/destination/des.jpg');
 
             return (
               <div
-                key={item.id}
+                key={item.id || item.title}
                 className="col-lg-3 col-md-6 col-sm-6 wow fadeInUp"
                 data-wow-delay=".3s"
                 data-wow-duration=".9s"
@@ -153,8 +190,12 @@ const Location = () => {
                       >
                         <img
                           className="w-100"
-                          src={item.thumb}
-                          alt="location"
+                          src={imageUrl}
+                          alt={item.title}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/assets/img/destination/des.jpg';
+                          }}
                         />
                       </Link>
                     </div>
