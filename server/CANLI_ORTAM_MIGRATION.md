@@ -3,7 +3,28 @@
 ## ⚠️ ÖNEMLİ: ÖNCE YEDEK ALIN!
 ```bash
 pg_dump -h [HOST] -U [USER] -d [DATABASE] > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Veya Docker container içindeyse
+docker exec travel-site-postgres pg_dump -U appuser appdb > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
+
+## 🔄 Alternatif: Veritabanını Sıfırdan Kurma
+
+Eğer migration sorunları çok karmaşıksa ve **veriler önemli değilse**, veritabanını sıfırdan kurabilirsiniz:
+
+```bash
+# ⚠️ DİKKAT: Bu komut TÜM VERİLERİ SİLER!
+cd server
+npx prisma migrate reset --force
+
+# Bu komut:
+# 1. Tüm tabloları siler
+# 2. Migration geçmişini temizler  
+# 3. Tüm migration'ları sıfırdan uygular
+# 4. Seed dosyasını çalıştırır (eğer varsa)
+```
+
+**Detaylı rehber için:** `RESET_DATABASE_PRODUCTION.md` dosyasına bakın.
 
 ## Adım Adım Çözüm
 
@@ -17,9 +38,24 @@ npx prisma migrate status
 
 **ÖNEMLİ:** İlk migration henüz uygulanmamış görünüyor ama veritabanında tablolar olabilir. Önce kontrol edin:
 
+**Yöntem 1: Echo ile pipe (Docker container'da çalışır)**
 ```bash
-# Veritabanındaki tabloları kontrol et
-npx prisma db execute --stdin --schema prisma/schema.prisma <<< "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name;"
+echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name;" | npx prisma db execute --stdin --schema prisma/schema.prisma
+```
+
+**Yöntem 2: SQL dosyası oluştur (Daha kolay)**
+```bash
+# SQL dosyası oluştur
+echo "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name;" > check-tables.sql
+
+# Çalıştır
+npx prisma db execute --file check-tables.sql --schema prisma/schema.prisma
+```
+
+**Yöntem 3: Prisma Studio ile (Görsel kontrol)**
+```bash
+# Prisma Studio'yu aç (tarayıcıda görüntüle)
+npx prisma studio --schema prisma/schema.prisma
 ```
 
 **Eğer `tours` tablosu varsa:** Migration geçmişi bozuk demektir. Zaten uygulanmış migration'ları işaretlemeniz gerekir (3. adıma geçin).
@@ -52,12 +88,35 @@ npx prisma migrate resolve --applied 20250105_remove_category_add_available_time
 
 **Not:** Her migration'ı işaretlemeden önce, o migration'ın yaptığı değişikliklerin veritabanında zaten olup olmadığını kontrol edin.
 
-### 4. Kalan Migration'ları Uygula
+### 4. Başarısız Migration'ları Resolve Et
+
+Eğer `migrate deploy` sırasında "failed migrations" hatası alırsanız:
+
+```bash
+# Başarısız migration'ı kontrol et
+npx prisma migrate status
+
+# Eğer kolonlar zaten varsa, migration'ı applied olarak işaretle
+npx prisma migrate resolve --applied 20250104_add_meeting_point_fields
+
+# Eğer kolonlar yoksa ve migration gerçekten başarısız olduysa, rolled-back olarak işaretle
+npx prisma migrate resolve --rolled-back 20250104_add_meeting_point_fields
+```
+
+**Önce kolonları kontrol edin:**
+```bash
+echo "SELECT column_name FROM information_schema.columns WHERE table_name = 'tours' AND column_name IN ('meetingPointAddress', 'meetingPointMapUrl');" | npx prisma db execute --stdin --schema prisma/schema.prisma
+```
+
+- **Eğer kolonlar varsa:** `--applied` kullanın
+- **Eğer kolonlar yoksa:** `--rolled-back` kullanın, sonra tekrar deploy edin
+
+### 5. Kalan Migration'ları Uygula
 ```bash
 npx prisma migrate deploy
 ```
 
-### 5. Durumu Doğrula
+### 6. Durumu Doğrula
 ```bash
 npx prisma migrate status
 # "Database schema is up to date!" mesajını görmelisiniz
