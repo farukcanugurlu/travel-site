@@ -13,6 +13,7 @@ const FeatureArea = () => {
   const [isListView, setIsListView] = useState(false);
   const [itemOffset, setItemOffset] = useState(0);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isInitialMount = useRef(true);
 
   // Debug: API'den gelen verileri konsola yazdır
@@ -150,12 +151,56 @@ const FeatureArea = () => {
           `}</style>
 
       <div className="container">
+        {/* Mobile Filter Toggle Button */}
+        <div className="d-lg-none mb-20" style={{ position: 'relative', zIndex: 10 }}>
+          <button
+            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+            style={{
+              width: '100%',
+              padding: '12px 20px',
+              background: '#560CE3',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 4px 12px rgba(86, 12, 227, 0.3)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#4a0ac8';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(86, 12, 227, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#560CE3';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(86, 12, 227, 0.3)';
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            {isMobileSidebarOpen ? 'Close Filters' : 'Show Filters'}
+          </button>
+        </div>
+
         <div className="row">
           {/* SOL FİLTRE */}
-          <FeatureSidebar setProducts={setFilteredProducts} allProducts={shopItems} />
+          <FeatureSidebar 
+            setProducts={setFilteredProducts} 
+            allProducts={shopItems}
+            isMobileOpen={isMobileSidebarOpen}
+            onMobileClose={() => setIsMobileSidebarOpen(false)}
+          />
 
           {/* SAĞ LİSTE */}
-          <div className="col-xl-9 col-lg-8">
+          <div className="col-xl-9 col-lg-8 order-first order-lg-last">
             <div className="tg-listing-item-box-wrap ml-10">
               <FeatureTop
                 startOffset={startOffset}

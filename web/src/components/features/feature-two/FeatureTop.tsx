@@ -78,14 +78,47 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
 
    return (
       <div className="tg-listing-box-filter mb-15">
+         <style>{`
+           @media (max-width: 991px) {
+             .tg-listing-box-filter .row {
+               flex-direction: column;
+               gap: 15px;
+             }
+             .tg-listing-box-view-type {
+               width: 100%;
+               justify-content: space-between !important;
+               flex-wrap: wrap;
+               gap: 10px;
+             }
+             .tg-listing-sort {
+               order: 1;
+               flex: 1;
+               min-width: 140px;
+             }
+             .tg-listing-select-price {
+               order: 2;
+               flex: 1;
+               min-width: 180px;
+             }
+             .tg-listing-box-view {
+               order: 3;
+               margin-left: 0 !important;
+             }
+             .tg-listing-box-number-found {
+               width: 100%;
+               text-align: center;
+               font-size: 14px;
+             }
+           }
+         `}</style>
          <div className="row align-items-center">
-            <div className="col-lg-5 col-md-5 mb-15">
+            <div className="col-lg-5 col-md-12 mb-15 mb-lg-0">
                <div className="tg-listing-box-number-found">
                   <span> Showing {startOffset}-{endOffset} of {totalItems} Results</span>
                </div>
             </div>
-            <div className="col-lg-7 col-md-7 mb-15">
-               <div className="tg-listing-box-view-type d-flex justify-content-end align-items-center">
+            <div className="col-lg-7 col-md-12 mb-15 mb-lg-0">
+               <div className="tg-listing-box-view-type d-flex justify-content-end align-items-center flex-wrap">
                   <div className="tg-listing-sort">
                      <span>Sort by:</span>
                      <Link to="#">
@@ -108,25 +141,23 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                         name=""
                         placeholder="" />
                   </div>
-                  <div className="d-none d-sm-block">
-                     <div className="tg-listing-box-view ml-10 d-flex">
-                        <div className="list-switch-item">
-                           <button className={`grid-view ${!isListView ? 'active' : ''}`} onClick={handleGridViewClick}>
-                              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                 <path d="M8 1H1V8H8V1Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                                 <path d="M19 1H12V8H19V1Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                                 <path d="M19 12H12V19H19V12Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                                 <path d="M8 12H1V19H8V12Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                           </button>
-                        </div>
-                        <div className="list-switch-item ml-5">
-                           <button className={`list-view ${isListView ? 'active' : ''}`} onClick={handleListViewClick}>
-                              <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                 <path d="M6 1H19M6 7H19M6 13H19M1 1H1.01M1 7H1.01M1 13H1.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                           </button>
-                        </div>
+                  <div className="tg-listing-box-view ml-10 d-flex">
+                     <div className="list-switch-item">
+                        <button className={`grid-view ${!isListView ? 'active' : ''}`} onClick={handleGridViewClick}>
+                           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8 1H1V8H8V1Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M19 1H12V8H19V1Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M19 12H12V19H19V12Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M8 12H1V19H8V12Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                           </svg>
+                        </button>
+                     </div>
+                     <div className="list-switch-item ml-5">
+                        <button className={`list-view ${isListView ? 'active' : ''}`} onClick={handleListViewClick}>
+                           <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M6 1H19M6 7H19M6 13H19M1 1H1.01M1 7H1.01M1 13H1.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                           </svg>
+                        </button>
                      </div>
                   </div>
                </div>

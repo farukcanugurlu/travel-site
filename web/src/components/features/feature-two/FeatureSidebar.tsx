@@ -12,9 +12,11 @@ const LANGUAGE_OPTIONS = ["English", "Russian"] as const;
 interface FeatureSidebarProps {
   setProducts: (products: any[]) => void;
   allProducts?: any[]; // API'den gelen veriler
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-const FeatureSidebar = ({ setProducts, allProducts = [] }: FeatureSidebarProps) => {
+const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, onMobileClose }: FeatureSidebarProps) => {
   const locationHook = useLocation();
 
   // Destinations state
@@ -231,11 +233,48 @@ const FeatureSidebar = ({ setProducts, allProducts = [] }: FeatureSidebarProps) 
   ]);
 
   return (
-    <div className="col-xl-3 col-lg-4 order-last order-lg-first">
-      <div
-        className="tg-filter-sidebar mb-40 top-sticky"
-        style={{ position: "sticky", top: 110, zIndex: 2 }}
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="d-lg-none"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9998,
+          }}
+          onClick={onMobileClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div 
+        className={`col-xl-3 col-lg-4 order-last order-lg-first ${isMobileOpen ? 'd-block' : 'd-none d-lg-block'}`}
+        style={{
+          position: isMobileOpen ? 'fixed' : 'relative',
+          top: isMobileOpen ? '0' : 'auto',
+          left: isMobileOpen ? '0' : 'auto',
+          right: isMobileOpen ? '0' : 'auto',
+          bottom: isMobileOpen ? '0' : 'auto',
+          zIndex: isMobileOpen ? 9999 : 2,
+          background: isMobileOpen ? '#fff' : 'transparent',
+          overflowY: isMobileOpen ? 'auto' : 'visible',
+          maxHeight: isMobileOpen ? '100vh' : 'none',
+          padding: isMobileOpen ? '20px' : '0',
+        }}
       >
+        <div
+          className="tg-filter-sidebar mb-40"
+          style={{ 
+            position: isMobileOpen ? "relative" : "sticky", 
+            top: isMobileOpen ? 0 : 110, 
+            zIndex: 2 
+          }}
+        >
         <div className="tg-filter-item">
           {/* DESTINATION */}
           <h4 className="tg-filter-title mb-15">Destination</h4>
@@ -367,7 +406,8 @@ const FeatureSidebar = ({ setProducts, allProducts = [] }: FeatureSidebarProps) 
           {/* Kaldırılanlar: Duration, Amenities, Top Reviews */}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
