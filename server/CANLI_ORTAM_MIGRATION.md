@@ -14,13 +14,29 @@ npx prisma migrate status
 ```
 
 ### 2. Veritabanında Çakışan Migration'ları Temizle
-PostgreSQL'e bağlan ve şu SQL'i çalıştır:
-```sql
-DELETE FROM "_prisma_migrations" 
-WHERE migration_name IN (
-  '20251104212100_add_popular_field_to_tours',
-  '20251104212234_add_popular_field_to_tours'
-);
+
+**Yöntem 1: Prisma ile (Önerilen - Sadece SSH'da migration komutları çalıştırabiliyorsanız)**
+```bash
+# Çakışan migration'ları rolled-back olarak işaretle
+npx prisma migrate resolve --rolled-back 20251104212100_add_popular_field_to_tours
+npx prisma migrate resolve --rolled-back 20251104212234_add_popular_field_to_tours
+```
+
+**Yöntem 2: Prisma db execute ile (SSH'da SQL çalıştırabiliyorsanız)**
+```bash
+# cleanup-migrations.sql dosyasını kullan
+npx prisma db execute --file cleanup-migrations.sql --schema prisma/schema.prisma
+```
+
+**Yöntem 3: psql ile (PostgreSQL client varsa)**
+```bash
+# cleanup-migrations.sql dosyasını kullan
+psql -h [HOST] -U [USER] -d [DATABASE] -f cleanup-migrations.sql
+```
+
+**Yöntem 4: Tek satır SQL (psql ile)**
+```bash
+psql -h [HOST] -U [USER] -d [DATABASE] -c "DELETE FROM \"_prisma_migrations\" WHERE migration_name IN ('20251104212100_add_popular_field_to_tours', '20251104212234_add_popular_field_to_tours');"
 ```
 
 ### 3. Zaten Uygulanmış Migration'ları İşaretle
