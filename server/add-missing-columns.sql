@@ -1,0 +1,23 @@
+-- Eksik kolonları ekle
+
+-- Destinations tablosuna eksik kolonları ekle
+ALTER TABLE "destinations" 
+ADD COLUMN IF NOT EXISTS "latitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "longitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "image" TEXT,
+ADD COLUMN IF NOT EXISTS "featured" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN IF NOT EXISTS "displayOrder" INTEGER DEFAULT 0;
+
+-- Tours tablosuna eksik kolonları ekle
+ALTER TABLE "tours" 
+ADD COLUMN IF NOT EXISTS "included" JSONB,
+ADD COLUMN IF NOT EXISTS "excluded" JSONB,
+ADD COLUMN IF NOT EXISTS "highlights" JSONB,
+ADD COLUMN IF NOT EXISTS "itinerary" JSONB,
+ADD COLUMN IF NOT EXISTS "locationLatitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "locationLongitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "locationDescription" TEXT,
+ADD COLUMN IF NOT EXISTS "type" TEXT,
+ADD COLUMN IF NOT EXISTS "groupSize" TEXT,
+ADD COLUMN IF NOT EXISTS "languages" JSONB;
+
