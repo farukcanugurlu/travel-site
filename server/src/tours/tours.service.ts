@@ -185,9 +185,14 @@ export class ToursService {
 
   // Destinations
   async getDestinations() {
-    return this.prisma.destination.findMany({
-      orderBy: { name: 'asc' },
-    });
+    try {
+      return await this.prisma.destination.findMany({
+        orderBy: { name: 'asc' },
+      });
+    } catch (error) {
+      console.error('Error fetching destinations:', error);
+      throw new Error('Failed to fetch destinations');
+    }
   }
 
   async getFeaturedTours(limit: number = 8) {

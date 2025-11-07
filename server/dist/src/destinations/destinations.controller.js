@@ -26,7 +26,6 @@ let DestinationsController = class DestinationsController {
     }
     getFeatured(limit) {
         const limitNum = limit ? parseInt(limit) : 8;
-        console.log('Featured destinations endpoint called with limit:', limitNum);
         return this.destinationsService.getFeaturedDestinations(limitNum);
     }
     getStats() {

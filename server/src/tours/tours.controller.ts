@@ -57,20 +57,20 @@ export class ToursController {
     return this.toursService.getDestinations();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get tour by ID' })
-  @ApiResponse({ status: 200, description: 'Tour retrieved successfully' })
-  @ApiResponse({ status: 404, description: 'Tour not found' })
-  findOne(@Param('id') id: string) {
-    return this.toursService.findOne(id);
-  }
-
   @Get('slug/:slug')
   @ApiOperation({ summary: 'Get tour by slug' })
   @ApiResponse({ status: 200, description: 'Tour retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Tour not found' })
   findBySlug(@Param('slug') slug: string) {
     return this.toursService.findBySlug(slug);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get tour by ID' })
+  @ApiResponse({ status: 200, description: 'Tour retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Tour not found' })
+  findOne(@Param('id') id: string) {
+    return this.toursService.findOne(id);
   }
 
   @Patch(':id')
