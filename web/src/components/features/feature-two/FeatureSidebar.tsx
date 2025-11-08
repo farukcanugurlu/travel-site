@@ -245,7 +245,7 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
             right: 0,
             bottom: 0,
             background: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 9998,
+            zIndex: 10001,
             cursor: 'pointer',
             pointerEvents: 'auto',
           }}
@@ -263,14 +263,14 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
         className={`col-xl-3 col-lg-4 order-last order-lg-first ${isMobileOpen ? 'd-block' : 'd-none d-lg-block'}`}
         style={{
           position: isMobileOpen ? 'fixed' : 'relative',
-          top: isMobileOpen ? '0' : 'auto',
+          top: isMobileOpen ? '80px' : 'auto', // Header yüksekliği kadar boşluk
           left: isMobileOpen ? '0' : 'auto',
           right: isMobileOpen ? '0' : 'auto',
           bottom: isMobileOpen ? '0' : 'auto',
-          zIndex: isMobileOpen ? 9999 : 2,
+          zIndex: isMobileOpen ? 10002 : 2,
           background: isMobileOpen ? '#fff' : 'transparent',
           overflowY: isMobileOpen ? 'auto' : 'visible',
-          maxHeight: isMobileOpen ? '100vh' : 'none',
+          maxHeight: isMobileOpen ? 'calc(100vh - 80px)' : 'none', // Header yüksekliği kadar çıkar
           padding: isMobileOpen ? '20px' : '0',
           pointerEvents: 'auto',
         }}
@@ -285,16 +285,21 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
             display: 'flex', 
             justifyContent: 'flex-end', 
             marginBottom: '20px',
+            paddingTop: '10px',
             paddingBottom: '15px',
-            borderBottom: '1px solid #e0e0e0'
+            borderBottom: '1px solid #e0e0e0',
+            position: 'sticky',
+            top: '0',
+            background: '#fff',
+            zIndex: 10003
           }}>
             <button
               onClick={onMobileClose}
               style={{
-                background: 'transparent',
+                background: '#560CE3',
                 border: 'none',
-                fontSize: '24px',
-                color: '#666',
+                fontSize: '20px',
+                color: '#fff',
                 cursor: 'pointer',
                 padding: '5px 10px',
                 display: 'flex',
@@ -303,19 +308,21 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
                 borderRadius: '50%',
                 width: '36px',
                 height: '36px',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                zIndex: 10003
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#f0f0f0';
-                e.currentTarget.style.color = '#333';
+                e.currentTarget.style.background = '#4a0ac8';
+                e.currentTarget.style.color = '#fff';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#666';
+                e.currentTarget.style.background = '#560CE3';
+                e.currentTarget.style.color = '#fff';
               }}
               aria-label="Close filters"
             >
-              <i className="fa-regular fa-xmark" style={{ fontSize: '20px' }}></i>
+              <i className="fa-regular fa-xmark" style={{ fontSize: '18px' }}></i>
             </button>
           </div>
         )}

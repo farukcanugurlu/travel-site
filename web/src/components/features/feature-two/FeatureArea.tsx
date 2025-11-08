@@ -152,7 +152,7 @@ const FeatureArea = () => {
 
       <div className="container">
         {/* Mobile Filter Toggle Button */}
-        <div className="d-lg-none mb-20" style={{ position: 'relative', zIndex: 10 }}>
+        <div className="d-lg-none mb-20" style={{ position: 'relative', zIndex: 10000 }}>
           <button
             onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
             style={{
@@ -170,7 +170,9 @@ const FeatureArea = () => {
               justifyContent: 'center',
               gap: '10px',
               boxShadow: '0 4px 12px rgba(86, 12, 227, 0.3)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              position: 'relative',
+              zIndex: 10000
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = '#4a0ac8';
