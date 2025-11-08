@@ -114,15 +114,15 @@ const Location = () => {
     const locList: LocItem[] = (location_data as unknown as LocItem[]).filter(
       (i) => i.page === "home_3"
     );
-    const wantedNorm = WANTED.map(canonical);
-    const picked: LocItem[] = locList
-      .filter((i) => wantedNorm.includes(canonical(i.title)))
-      .sort(
-        (a, b) =>
-          wantedNorm.indexOf(canonical(a.title)) -
-          wantedNorm.indexOf(canonical(b.title))
-      )
-      .slice(0, 8);
+  const wantedNorm = WANTED.map(canonical);
+  const picked: LocItem[] = locList
+    .filter((i) => wantedNorm.includes(canonical(i.title)))
+    .sort(
+      (a, b) =>
+        wantedNorm.indexOf(canonical(a.title)) -
+        wantedNorm.indexOf(canonical(b.title))
+    )
+    .slice(0, 8);
     return picked.length ? picked : locList.slice(0, 8);
   }, [featuredDestinations, tourCountByDest]);
 

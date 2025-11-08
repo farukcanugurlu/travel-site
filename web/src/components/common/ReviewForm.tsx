@@ -134,7 +134,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ tourId, onReviewSubmitted, clas
           disabled={loading || !formData.content.trim()}
           className="submit-btn"
         >
-          {loading ? 'Submitting...' : 'Submit Review'}
+          {loading ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
         </button>
       </form>
 

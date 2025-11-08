@@ -151,15 +151,49 @@ let ToursService = class ToursService {
             data: updatePackageDto,
         });
     }
-    async removePackage(id) {
-        return this.prisma.tourPackage.delete({
-            where: { id },
-        });
+    async removePackage(id, forceDelete = false) {
+        try {
+            const packageToDelete = await this.prisma.tourPackage.findUnique({
+                where: { id },
+                include: {
+                    bookings: true,
+                },
+            });
+            if (!packageToDelete) {
+                throw new common_1.NotFoundException(`Package with ID ${id} not found`);
+            }
+            if (packageToDelete.bookings && packageToDelete.bookings.length > 0) {
+                if (!forceDelete) {
+                    throw new common_1.BadRequestException(`Cannot delete package "${packageToDelete.name}" because it has ${packageToDelete.bookings.length} associated booking(s). Please delete or reassign the bookings first, or use force delete.`);
+                }
+                console.warn(`⚠️ Force deleting package "${packageToDelete.name}" and ${packageToDelete.bookings.length} associated booking(s)`);
+                await this.prisma.booking.deleteMany({
+                    where: { packageId: id },
+                });
+                console.log(`✅ Deleted ${packageToDelete.bookings.length} booking(s) associated with package "${packageToDelete.name}"`);
+            }
+            return await this.prisma.tourPackage.delete({
+                where: { id },
+            });
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.BadRequestException) {
+                throw error;
+            }
+            console.error('Error deleting package:', error);
+            throw new common_1.BadRequestException(error?.message || 'Failed to delete package');
+        }
     }
     async getDestinations() {
-        return this.prisma.destination.findMany({
-            orderBy: { name: 'asc' },
-        });
+        try {
+            return await this.prisma.destination.findMany({
+                orderBy: { name: 'asc' },
+            });
+        }
+        catch (error) {
+            console.error('Error fetching destinations:', error);
+            throw new Error('Failed to fetch destinations');
+        }
     }
     async getFeaturedTours(limit = 8) {
         return this.prisma.tour.findMany({

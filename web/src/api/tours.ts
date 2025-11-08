@@ -49,6 +49,12 @@ export interface Tour {
   };
 }
 
+export interface MonthlyPrices {
+  adultPrice?: number;
+  childPrice?: number;
+  infantPrice?: number;
+}
+
 export interface TourPackage {
   id: string;
   name: string;
@@ -58,6 +64,9 @@ export interface TourPackage {
   infantPrice: number;
   language: string;
   capacity?: number;
+  childMaxAge?: number;
+  infantMaxAge?: number;
+  monthlyPrices?: Record<string, MonthlyPrices>; // Keys are month numbers (1-12)
   tourId: string;
 }
 
@@ -281,8 +290,9 @@ class ToursApiService {
   }
 
   // Delete tour package (Admin only)
-  async deleteTourPackage(id: string): Promise<void> {
-    return apiService.delete<void>(`/tours/packages/${id}`);
+  async deleteTourPackage(id: string, forceDelete: boolean = false): Promise<void> {
+    const url = forceDelete ? `/tours/packages/${id}?force=true` : `/tours/packages/${id}`;
+    return apiService.delete<void>(url);
   }
 }
 

@@ -5,25 +5,25 @@ export declare class ReviewsService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createReviewDto: CreateReviewDto): Promise<{
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     }>;
@@ -32,25 +32,25 @@ export declare class ReviewsService {
         approved?: boolean;
         userId?: string;
     }): Promise<({
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     })[]>;
@@ -62,127 +62,127 @@ export declare class ReviewsService {
         };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     })[]>;
     findPending(): Promise<({
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     })[]>;
     findOne(id: string): Promise<{
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     }>;
     update(id: string, updateReviewDto: UpdateReviewDto): Promise<{
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     }>;
     approve(id: string): Promise<{
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     }>;
     reject(id: string): Promise<{
+        tour: {
+            id: string;
+            slug: string;
+            title: string;
+        };
         user: {
             id: string;
             email: string;
             firstName: string;
             lastName: string;
         };
-        tour: {
-            id: string;
-            slug: string;
-            title: string;
-        };
     } & {
         id: string;
+        title: string | null;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        content: string;
         tourId: string;
         rating: number;
+        content: string;
         approved: boolean;
         userId: string;
     }>;

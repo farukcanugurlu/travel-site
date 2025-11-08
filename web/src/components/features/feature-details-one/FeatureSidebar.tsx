@@ -14,8 +14,8 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [adultCount, setAdultCount] = useState(0);
-  const [youthCount, setYouthCount] = useState(0);
-  const [childrenCount, setChildrenCount] = useState(0);
+  const [childCount, setChildCount] = useState(0);
+  const [infantCount, setInfantCount] = useState(0);
   const [tourDate, setTourDate] = useState("");
   
   // Parse availableTimes from tour data
@@ -53,8 +53,6 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   const availableTimes = getAvailableTimes();
   console.log('Final availableTimes:', availableTimes);
   const [selectedTime, setSelectedTime] = useState(availableTimes[0] || "12:00");
-  const [servicePerBooking, setServicePerBooking] = useState(false);
-  const [servicePerPerson, setServicePerPerson] = useState(false);
 
   // Update selectedTime when availableTimes changes
   useEffect(() => {
@@ -70,19 +68,51 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   // Get the first package for pricing (or you can add package selection)
   const tourPackage = tour.packages?.[0];
   
-  const adultPrice = tourPackage?.adultPrice || 0;
-  const youthPrice = tourPackage?.childPrice || 0; // Using childPrice for youth
-  const childrenPrice = tourPackage?.childPrice || 0; // Using childPrice for children
+  // Get prices based on selected date (monthly pricing if available)
+  const getPricesForDate = (dateString: string) => {
+    if (!dateString || !tourPackage) {
+      return {
+        adultPrice: tourPackage?.adultPrice || 0,
+        childPrice: tourPackage?.childPrice || 0,
+        infantPrice: tourPackage?.infantPrice || 0,
+      };
+    }
+
+    try {
+      const date = new Date(dateString);
+      const month = (date.getMonth() + 1).toString(); // 1-12
+      const monthlyPrices = tourPackage.monthlyPrices?.[month];
+
+      if (monthlyPrices) {
+        return {
+          adultPrice: monthlyPrices.adultPrice ?? (tourPackage?.adultPrice ?? 0),
+          childPrice: monthlyPrices.childPrice ?? (tourPackage?.childPrice ?? 0),
+          infantPrice: monthlyPrices.infantPrice ?? (tourPackage?.infantPrice ?? 0),
+        };
+      }
+    } catch (e) {
+      console.warn('Error parsing date for monthly pricing:', e);
+    }
+
+    // Fallback to base prices
+    return {
+      adultPrice: tourPackage?.adultPrice || 0,
+      childPrice: tourPackage?.childPrice || 0,
+      infantPrice: tourPackage?.infantPrice || 0,
+    };
+  };
+
+  const prices = getPricesForDate(tourDate);
+  const adultPrice = prices.adultPrice;
+  const childPrice = prices.childPrice;
+  const infantPrice = prices.infantPrice;
 
   // Calculate total cost
   const calculateTotal = () => {
     let total = 0;
     total += adultCount * adultPrice;
-    total += youthCount * youthPrice;
-    total += childrenCount * childrenPrice;
-    
-    if (servicePerBooking) total += 30;
-    if (servicePerPerson) total += 20 * (adultCount + youthCount + childrenCount);
+    total += childCount * childPrice;
+    total += infantCount * infantPrice;
     
     return total;
   };
@@ -93,7 +123,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
     e.preventDefault();
 
     // Validasyon: En az 1 yetişkin gerekli
-    if (adultCount === 0 && youthCount === 0 && childrenCount === 0) {
+    if (adultCount === 0 && childCount === 0 && infantCount === 0) {
       toast.error("Lütfen en az 1 kişi seçin");
       return;
     }
@@ -112,7 +142,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
 
     // Sepete eklenecek item oluştur
     const cartItem = {
-      id: `${tour.id}-${tourPackage.id}-${tourDate}-${selectedTime}-${adultCount}-${youthCount}-${childrenCount}`,
+      id: `${tour.id}-${tourPackage.id}-${tourDate}-${selectedTime}-${adultCount}-${childCount}-${infantCount}`,
       title: `${tour.title} - ${tourPackage.name} (${tourDate} ${selectedTime})`,
       price: totalCost,
       thumb: (() => {
@@ -131,12 +161,8 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
       tourTime: selectedTime,
       participants: {
         adults: adultCount,
-        youth: youthCount,
-        children: childrenCount,
-      },
-      extras: {
-        servicePerBooking,
-        servicePerPerson,
+        children: childCount,
+        infants: infantCount,
       },
     } as any;
 
@@ -230,7 +256,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
           <div className="tg-tour-about-tickets-adult">
             <span>Adult</span>
             <p className="mb-0">
-              (14+ years) <span>${adultPrice}</span>
+              <span>${adultPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -255,9 +281,9 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
         </div>
         <div className="tg-tour-about-tickets mb-10">
           <div className="tg-tour-about-tickets-adult">
-            <span>Youth </span>
+            <span>Child </span>
             <p className="mb-0">
-              (13-17 years) <span>${youthPrice}</span>
+              <span>${childPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -274,17 +300,17 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
                 { value: "7", text: "7" },
               ]}
               defaultCurrent={0}
-              onChange={(option) => setYouthCount(parseInt(option.value))}
-              name="youth"
+              onChange={(option) => setChildCount(parseInt(option.value))}
+              name="child"
               placeholder=""
             />
           </div>
         </div>
         <div className="tg-tour-about-tickets mb-10">
           <div className="tg-tour-about-tickets-adult">
-            <span>Children </span>
+            <span>Infant </span>
             <p className="mb-0">
-              (0-12 years) <span>${childrenPrice}</span>
+              <span>${infantPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -301,8 +327,8 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
                 { value: "7", text: "7" },
               ]}
               defaultCurrent={0}
-              onChange={(option) => setChildrenCount(parseInt(option.value))}
-              name="children"
+              onChange={(option) => setInfantCount(parseInt(option.value))}
+              name="infant"
               placeholder=""
             />
           </div>
@@ -311,51 +337,21 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
       <div className="tg-tour-about-border-doted mb-15"></div>
       <div className="tg-tour-about-extra mb-10">
         <span className="tg-tour-about-sidebar-title mb-10 d-inline-block">
-          Add Extra:
+          Price Summary:
         </span>
         <div className="tg-filter-list">
           <ul>
-            <li>
-              <div className="checkbox d-flex">
-                <input 
-                  className="tg-checkbox" 
-                  type="checkbox" 
-                  id="amenities" 
-                  checked={servicePerBooking}
-                  onChange={(e) => setServicePerBooking(e.target.checked)}
-                />
-                <label htmlFor="amenities" className="tg-label">
-                  Service per booking
-                </label>
-              </div>
-              <span className="quantity">$30.00</span>
-            </li>
-            <li>
-              <div className="checkbox d-flex">
-                <input
-                  className="tg-checkbox"
-                  type="checkbox"
-                  id="amenities-2"
-                  checked={servicePerPerson}
-                  onChange={(e) => setServicePerPerson(e.target.checked)}
-                />
-                <label htmlFor="amenities-2" className="tg-label">
-                  Service per person
-                </label>
-              </div>
-              <span className="quantity">$20.00</span>
-            </li>
             <li>
               <span className="adult">Adult ({adultCount}x):</span>
               <span className="quantity">${(adultCount * adultPrice).toFixed(2)}</span>
             </li>
             <li>
-              <span className="adult">Youth ({youthCount}x):</span>
-              <span className="quantity">${(youthCount * youthPrice).toFixed(2)}</span>
+              <span className="adult">Child ({childCount}x):</span>
+              <span className="quantity">${(childCount * childPrice).toFixed(2)}</span>
             </li>
             <li>
-              <span className="adult">Children ({childrenCount}x):</span>
-              <span className="quantity">${(childrenCount * childrenPrice).toFixed(2)}</span>
+              <span className="adult">Infant ({infantCount}x):</span>
+              <span className="quantity">${(infantCount * infantPrice).toFixed(2)}</span>
             </li>
           </ul>
         </div>

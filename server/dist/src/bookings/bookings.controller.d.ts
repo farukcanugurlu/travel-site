@@ -6,17 +6,17 @@ export declare class BookingsController {
     private readonly bookingsService;
     constructor(bookingsService: BookingsService);
     create(createBookingDto: CreateBookingDto): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -48,17 +48,17 @@ export declare class BookingsController {
         packageId: string;
     }>;
     findAll(userId?: string, tourId?: string, status?: string): Promise<({
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -133,17 +133,17 @@ export declare class BookingsController {
     }>;
     getPDF(id: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     findOne(id: string): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -175,17 +175,17 @@ export declare class BookingsController {
         packageId: string;
     }>;
     updateStatus(id: string, status: string): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -217,17 +217,17 @@ export declare class BookingsController {
         packageId: string;
     }>;
     update(id: string, updateBookingDto: UpdateBookingDto): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;

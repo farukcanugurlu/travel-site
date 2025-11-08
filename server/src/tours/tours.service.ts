@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTourDto } from './dto/create-tour.dto';
 import { UpdateTourDto } from './dto/update-tour.dto';
@@ -177,10 +177,49 @@ export class ToursService {
     });
   }
 
-  async removePackage(id: string) {
-    return this.prisma.tourPackage.delete({
-      where: { id },
-    });
+  async removePackage(id: string, forceDelete: boolean = false) {
+    try {
+      // Check if package exists
+      const packageToDelete = await this.prisma.tourPackage.findUnique({
+        where: { id },
+        include: {
+          bookings: true,
+        },
+      });
+
+      if (!packageToDelete) {
+        throw new NotFoundException(`Package with ID ${id} not found`);
+      }
+
+      // Check if there are any bookings associated with this package
+      if (packageToDelete.bookings && packageToDelete.bookings.length > 0) {
+        if (!forceDelete) {
+          throw new BadRequestException(
+            `Cannot delete package "${packageToDelete.name}" because it has ${packageToDelete.bookings.length} associated booking(s). Please delete or reassign the bookings first, or use force delete.`
+          );
+        }
+        
+        // Force delete: Delete all associated bookings first
+        console.warn(`⚠️ Force deleting package "${packageToDelete.name}" and ${packageToDelete.bookings.length} associated booking(s)`);
+        await this.prisma.booking.deleteMany({
+          where: { packageId: id },
+        });
+        console.log(`✅ Deleted ${packageToDelete.bookings.length} booking(s) associated with package "${packageToDelete.name}"`);
+      }
+
+      // Delete the package
+      return await this.prisma.tourPackage.delete({
+        where: { id },
+      });
+    } catch (error) {
+      // If it's already a NestJS exception, re-throw it
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      // Otherwise, wrap it in a BadRequestException
+      console.error('Error deleting package:', error);
+      throw new BadRequestException(error?.message || 'Failed to delete package');
+    }
   }
 
   // Destinations

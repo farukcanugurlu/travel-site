@@ -58,13 +58,6 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                   return bPopular - aPopular;
                });
             break;
-         case 'price':
-            sortedProducts = sortedProducts.sort((a, b) => {
-               const priceA = getPrice(a);
-               const priceB = getPrice(b);
-               return priceA - priceB;
-            });
-            break;
          case 'rating':
             sortedProducts = sortedProducts.sort((a, b) => b.review - a.review);
             break;
@@ -133,7 +126,6 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                         options={[
                            { value: "", text: "Default sorting" },
                            { value: "popular", text: "Sort by Best Offers" },
-                           { value: "price", text: "Sort by price" },
                            { value: "rating", text: "Sort by rating" },
                         ]}
                         defaultCurrent={0}

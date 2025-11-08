@@ -9,22 +9,22 @@ export declare class BlogController {
     createPost(createBlogPostDto: CreateBlogPostDto): Promise<{
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -35,22 +35,22 @@ export declare class BlogController {
     }): Promise<({
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -58,22 +58,22 @@ export declare class BlogController {
     getRecentPosts(limit?: string): Promise<({
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -81,33 +81,33 @@ export declare class BlogController {
     findPostBySlug(slug: string): Promise<{
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
         comments: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             content: string;
-            email: string;
             approved: boolean;
+            email: string;
             website: string | null;
             postId: string;
         }[];
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -115,22 +115,22 @@ export declare class BlogController {
     findPostById(id: string): Promise<{
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -138,22 +138,22 @@ export declare class BlogController {
     updatePost(id: string, updateBlogPostDto: UpdateBlogPostDto): Promise<{
         category: {
             id: string;
-            name: string;
             slug: string;
+            description: string | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            name: string;
         };
     } & {
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
@@ -161,56 +161,56 @@ export declare class BlogController {
     removePost(id: string): Promise<{
         id: string;
         slug: string;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
-        tags: string[];
-        content: string;
         excerpt: string | null;
         published: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        tags: string[];
         featuredImage: string | null;
         author: string | null;
         categoryId: string;
     }>;
     createCategory(createBlogCategoryDto: CreateBlogCategoryDto): Promise<{
         id: string;
-        name: string;
         slug: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
+        name: string;
     }>;
     findAllCategories(): Promise<{
         id: string;
-        name: string;
         slug: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
+        name: string;
     }[]>;
     findCategoryById(id: string): Promise<{
         id: string;
-        name: string;
         slug: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
+        name: string;
     }>;
     updateCategory(id: string, updateData: Partial<CreateBlogCategoryDto>): Promise<{
         id: string;
-        name: string;
         slug: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
+        name: string;
     }>;
     removeCategory(id: string): Promise<{
         id: string;
-        name: string;
         slug: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
+        name: string;
     }>;
     getAllTags(): Promise<string[]>;
     createComment(createBlogCommentDto: CreateBlogCommentDto): Promise<{
@@ -220,23 +220,23 @@ export declare class BlogController {
         };
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         content: string;
-        email: string;
         approved: boolean;
+        email: string;
         website: string | null;
         postId: string;
     }>;
     getCommentsByPostId(postId: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         content: string;
-        email: string;
         approved: boolean;
+        email: string;
         website: string | null;
         postId: string;
     }[]>;

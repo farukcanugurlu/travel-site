@@ -11,14 +11,14 @@ export declare class FavoritesService {
     }>;
     findByUser(userId: string): Promise<({
         tour: {
-            destination: {
-                name: string;
-                country: string;
-            };
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+            destination: {
+                name: string;
+                country: string;
+            };
             packages: {
                 adultPrice: import("@prisma/client/runtime/library").Decimal;
             }[];
@@ -31,14 +31,14 @@ export declare class FavoritesService {
     })[]>;
     findOne(userId: string, tourId: string): Promise<{
         tour: {
-            destination: {
-                name: string;
-                country: string;
-            };
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+            destination: {
+                name: string;
+                country: string;
+            };
             packages: {
                 adultPrice: import("@prisma/client/runtime/library").Decimal;
             }[];

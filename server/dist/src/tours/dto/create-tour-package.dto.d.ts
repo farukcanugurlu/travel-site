@@ -6,4 +6,11 @@ export declare class CreateTourPackageDto {
     infantPrice: number;
     language: string;
     capacity?: number;
+    childMaxAge?: number;
+    infantMaxAge?: number;
+    monthlyPrices?: Record<string, {
+        adultPrice?: number;
+        childPrice?: number;
+        infantPrice?: number;
+    }>;
 }

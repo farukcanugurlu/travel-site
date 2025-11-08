@@ -57,12 +57,6 @@ const Sidebar = ({ sidebar, setSidebar }: SidebarProps) => {
           <Link aria-label="Instagram" to={instagram} onClick={() => setSidebar(false)}>
             <i className="fa-brands fa-instagram"></i>
           </Link>
-          <Link aria-label="Twitter" to={twitter} onClick={() => setSidebar(false)}>
-            <i className="fa-brands fa-twitter"></i>
-          </Link>
-          <Link aria-label="YouTube" to={youtube} onClick={() => setSidebar(false)}>
-            <i className="fa-brands fa-youtube"></i>
-          </Link>
         </div>
       </div>
 

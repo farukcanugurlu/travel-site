@@ -40,6 +40,7 @@ const TourForm: React.FC = () => {
   });
 
   const [packages, setPackages] = useState<TourPackage[]>([]);
+  const [originalPackageIds, setOriginalPackageIds] = useState<Set<string>>(new Set());
   const [destinations, setDestinations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +97,10 @@ const TourForm: React.FC = () => {
         availableTimes: Array.isArray((tour as any).availableTimes) ? (tour as any).availableTimes : [],
       });
 
-      setPackages(tour.packages || []);
+      const tourPackages = tour.packages || [];
+      setPackages(tourPackages);
+      // Store original package IDs to track deletions
+      setOriginalPackageIds(new Set(tourPackages.filter(p => p.id).map(p => p.id)));
     } catch (err) {
       setError('Failed to fetch tour data');
       console.error('Error fetching tour:', err);
@@ -149,6 +153,9 @@ const TourForm: React.FC = () => {
         infantPrice: 0,
         language: 'English',
         capacity: 10,
+        childMaxAge: undefined,
+        infantMaxAge: undefined,
+        monthlyPrices: undefined,
         tourId: '',
       },
     ]);
@@ -209,8 +216,69 @@ const TourForm: React.FC = () => {
         // Update tour without packages
         await toursApiService.updateTour(id, cleanTourData);
         
-        // TODO: Update packages separately if needed
-        // For now, packages are managed through the UI separately
+        // Find packages that were deleted (exist in original but not in current)
+        const currentPackageIds = new Set(packages.filter(p => p.id).map(p => p.id));
+        const deletedPackageIds = Array.from(originalPackageIds).filter(id => !currentPackageIds.has(id));
+        
+        // Delete removed packages from backend
+        for (const deletedId of deletedPackageIds) {
+          try {
+            console.log('Deleting package:', deletedId);
+            // First try without force delete
+            try {
+              await toursApiService.deleteTourPackage(deletedId, false);
+            } catch (error: any) {
+              // If error mentions bookings, try force delete
+              const errorMessage = error?.response?.data?.message || error?.message || '';
+              if (errorMessage.includes('associated booking')) {
+                // Ask user if they want to force delete (for now, we'll force delete automatically)
+                // In the future, you could show a confirmation dialog here
+                console.warn('Package has associated bookings, force deleting...');
+                await toursApiService.deleteTourPackage(deletedId, true);
+              } else {
+                throw error;
+              }
+            }
+          } catch (error: any) {
+            console.error('Error deleting package:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || `Failed to delete package: ${deletedId}`;
+            throw new Error(errorMessage);
+          }
+        }
+        
+        // Update packages separately
+        console.log('Updating packages:', packages);
+        for (const pkg of packages) {
+          try {
+            const packageData = {
+              name: pkg.name || 'Standard Package',
+              description: pkg.description || '',
+              adultPrice: pkg.adultPrice || 0,
+              childPrice: pkg.childPrice || 0,
+              infantPrice: pkg.infantPrice || 0,
+              language: pkg.language || 'English',
+              capacity: pkg.capacity || 10,
+              childMaxAge: pkg.childMaxAge !== undefined && pkg.childMaxAge !== null ? pkg.childMaxAge : undefined,
+              infantMaxAge: pkg.infantMaxAge !== undefined && pkg.infantMaxAge !== null ? pkg.infantMaxAge : undefined,
+              monthlyPrices: pkg.monthlyPrices && Object.keys(pkg.monthlyPrices).length > 0 ? pkg.monthlyPrices : undefined,
+            };
+            
+            console.log('Package data to update:', packageData);
+            
+            if (pkg.id) {
+              // Update existing package
+              console.log('Updating existing package:', pkg.id);
+              await toursApiService.updateTourPackage(pkg.id, packageData);
+            } else {
+              // Create new package
+              console.log('Creating new package for tour:', id);
+              await toursApiService.createTourPackage(id, packageData);
+            }
+          } catch (error) {
+            console.error('Error updating package:', error);
+            throw new Error(`Failed to update package: ${pkg.name || 'Unknown'}`);
+          }
+        }
       } else {
         // For create, include packages
         const tourData = {
@@ -228,6 +296,9 @@ const TourForm: React.FC = () => {
             infantPrice: pkg.infantPrice || 0,
             language: pkg.language || 'English',
             capacity: pkg.capacity || 10,
+            childMaxAge: pkg.childMaxAge || undefined,
+            infantMaxAge: pkg.infantMaxAge || undefined,
+            monthlyPrices: pkg.monthlyPrices || undefined,
           })),
         };
         console.log('Creating tour with data:', JSON.stringify(tourData, null, 2));
@@ -235,8 +306,9 @@ const TourForm: React.FC = () => {
       }
 
       navigate('/admin/tours');
-    } catch (err) {
-      setError('Failed to save tour');
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to save tour';
+      setError(errorMessage);
       console.error('Error saving tour:', err);
     } finally {
       setLoading(false);
@@ -496,6 +568,152 @@ const TourForm: React.FC = () => {
                     className="form-input"
                     min="1"
                   />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Child Max Age (years)</label>
+                  <input
+                    type="number"
+                    value={pkg.childMaxAge || ''}
+                    onChange={(e) => handlePackageChange(index, 'childMaxAge', e.target.value ? parseInt(e.target.value) : undefined)}
+                    className="form-input"
+                    min="0"
+                    max="18"
+                    placeholder="e.g., 5 or 6"
+                  />
+                  <small className="form-hint">Maximum age for child ticket (e.g., 5 or 6 years)</small>
+                </div>
+
+                <div className="form-group">
+                  <label>Infant Max Age (years)</label>
+                  <input
+                    type="number"
+                    value={pkg.infantMaxAge || ''}
+                    onChange={(e) => handlePackageChange(index, 'infantMaxAge', e.target.value ? parseInt(e.target.value) : undefined)}
+                    className="form-input"
+                    min="0"
+                    max="5"
+                    placeholder="e.g., 2 or 3"
+                  />
+                  <small className="form-hint">Maximum age for infant ticket (e.g., 2 or 3 years)</small>
+                </div>
+              </div>
+
+              {/* Monthly Pricing */}
+              <div className="form-section-monthly" style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid #e0e0e0' }}>
+                <h4 style={{ marginBottom: '15px', fontSize: '16px', fontWeight: 600 }}>Monthly Pricing (Optional)</h4>
+                <p className="form-hint" style={{ marginBottom: '20px', fontSize: '13px', color: '#666' }}>
+                  Set different prices for each month. If not set, base prices will be used.
+                </p>
+                <div className="monthly-prices-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                  {[
+                    { num: 1, name: 'January' },
+                    { num: 2, name: 'February' },
+                    { num: 3, name: 'March' },
+                    { num: 4, name: 'April' },
+                    { num: 5, name: 'May' },
+                    { num: 6, name: 'June' },
+                    { num: 7, name: 'July' },
+                    { num: 8, name: 'August' },
+                    { num: 9, name: 'September' },
+                    { num: 10, name: 'October' },
+                    { num: 11, name: 'November' },
+                    { num: 12, name: 'December' },
+                  ].map((month) => {
+                    const monthKey = month.num.toString();
+                    const monthlyPrice = pkg.monthlyPrices?.[monthKey] || {};
+                    
+                    return (
+                      <div key={month.num} className="monthly-price-item" style={{ border: '1px solid #e0e0e0', borderRadius: '8px', padding: '15px', background: '#f9f9f9' }}>
+                        <div className="monthly-price-header" style={{ marginBottom: '12px', fontWeight: 600, color: '#2c3e50' }}>
+                          {month.name}
+                        </div>
+                        <div className="monthly-price-inputs" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div className="monthly-price-input">
+                            <label style={{ display: 'block', fontSize: '12px', marginBottom: '4px', color: '#666' }}>Adult</label>
+                            <input
+                              type="number"
+                              value={monthlyPrice.adultPrice || ''}
+                              onChange={(e) => {
+                                const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                                const updatedMonthlyPrices = {
+                                  ...(pkg.monthlyPrices || {}),
+                                  [monthKey]: {
+                                    ...monthlyPrice,
+                                    adultPrice: value,
+                                  },
+                                };
+                                // Remove month entry if all prices are empty
+                                if (!value && !monthlyPrice.childPrice && !monthlyPrice.infantPrice) {
+                                  delete updatedMonthlyPrices[monthKey];
+                                }
+                                handlePackageChange(index, 'monthlyPrices', Object.keys(updatedMonthlyPrices).length > 0 ? updatedMonthlyPrices : undefined);
+                              }}
+                              className="form-input"
+                              min="0"
+                              step="0.01"
+                              placeholder="Base price"
+                              style={{ width: '100%', padding: '6px 10px', fontSize: '13px' }}
+                            />
+                          </div>
+                          <div className="monthly-price-input">
+                            <label style={{ display: 'block', fontSize: '12px', marginBottom: '4px', color: '#666' }}>Child</label>
+                            <input
+                              type="number"
+                              value={monthlyPrice.childPrice || ''}
+                              onChange={(e) => {
+                                const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                                const updatedMonthlyPrices = {
+                                  ...(pkg.monthlyPrices || {}),
+                                  [monthKey]: {
+                                    ...monthlyPrice,
+                                    childPrice: value,
+                                  },
+                                };
+                                if (!value && !monthlyPrice.adultPrice && !monthlyPrice.infantPrice) {
+                                  delete updatedMonthlyPrices[monthKey];
+                                }
+                                handlePackageChange(index, 'monthlyPrices', Object.keys(updatedMonthlyPrices).length > 0 ? updatedMonthlyPrices : undefined);
+                              }}
+                              className="form-input"
+                              min="0"
+                              step="0.01"
+                              placeholder="Base price"
+                              style={{ width: '100%', padding: '6px 10px', fontSize: '13px' }}
+                            />
+                          </div>
+                          <div className="monthly-price-input">
+                            <label style={{ display: 'block', fontSize: '12px', marginBottom: '4px', color: '#666' }}>Infant</label>
+                            <input
+                              type="number"
+                              value={monthlyPrice.infantPrice || ''}
+                              onChange={(e) => {
+                                const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                                const updatedMonthlyPrices = {
+                                  ...(pkg.monthlyPrices || {}),
+                                  [monthKey]: {
+                                    ...monthlyPrice,
+                                    infantPrice: value,
+                                  },
+                                };
+                                if (!value && !monthlyPrice.adultPrice && !monthlyPrice.childPrice) {
+                                  delete updatedMonthlyPrices[monthKey];
+                                }
+                                handlePackageChange(index, 'monthlyPrices', Object.keys(updatedMonthlyPrices).length > 0 ? updatedMonthlyPrices : undefined);
+                              }}
+                              className="form-input"
+                              min="0"
+                              step="0.01"
+                              placeholder="Base price"
+                              style={{ width: '100%', padding: '6px 10px', fontSize: '13px' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

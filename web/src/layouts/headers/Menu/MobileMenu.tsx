@@ -11,11 +11,78 @@ const MobileMenu = () => {
     setNavTitle((prev: any) => (prev === menu ? "" : menu));
   };
 
+  // Icon mapping for menu items
+  const getMenuIcon = (title: string) => {
+    switch (title.toLowerCase()) {
+      case 'home':
+        return 'fa-solid fa-house';
+      case 'tours':
+        return 'fa-solid fa-map-location-dot';
+      case 'contact':
+        return 'fa-solid fa-envelope';
+      default:
+        return 'fa-solid fa-circle';
+    }
+  };
+
   return (
-    <ul>
+    <ul style={{ 
+      listStyle: 'none', 
+      margin: 0, 
+      padding: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px'
+    }}>
       {menu_data.map((menu, i) => (
-        <li key={i} className="menu-item-has-children">
-          <Link to={menu.link}>{menu.title}</Link>
+        <li 
+          key={i} 
+          className="menu-item-has-children"
+          style={{
+            margin: 0,
+            padding: 0
+          }}
+        >
+          <Link 
+            to={menu.link}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '14px 16px',
+              borderRadius: '10px',
+              textDecoration: 'none',
+              color: '#333',
+              fontSize: '16px',
+              fontWeight: 500,
+              transition: 'all 0.3s ease',
+              background: 'transparent',
+              border: '1px solid transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f8f9ff';
+              e.currentTarget.style.color = '#560CE3';
+              e.currentTarget.style.borderColor = '#e8eaff';
+              e.currentTarget.style.transform = 'translateX(4px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#333';
+              e.currentTarget.style.borderColor = 'transparent';
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
+          >
+            <i 
+              className={getMenuIcon(menu.title)}
+              style={{
+                fontSize: '18px',
+                width: '24px',
+                textAlign: 'center',
+                color: '#560CE3'
+              }}
+            />
+            <span>{menu.title}</span>
+          </Link>
           {!!menu.has_dropdown && (
             <>
               <span
@@ -37,14 +104,6 @@ const MobileMenu = () => {
           )}
         </li>
       ))}
-
-      {/* --- Auth quick actions (mobil menü altı) --- */}
-      <li className="mt-10">
-        <Link to="/login">Login</Link>
-      </li>
-      <li>
-        <Link to="/register">Sign up</Link>
-      </li>
     </ul>
   );
 };

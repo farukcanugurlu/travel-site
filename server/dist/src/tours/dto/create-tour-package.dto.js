@@ -54,4 +54,25 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], CreateTourPackageDto.prototype, "capacity", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 5, description: 'Maximum age for child (e.g., 5 or 6)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateTourPackageDto.prototype, "childMaxAge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 2, description: 'Maximum age for infant (e.g., 2 or 3)' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateTourPackageDto.prototype, "infantMaxAge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        example: { "1": { "adultPrice": 150, "childPrice": 75, "infantPrice": 0 }, "2": { "adultPrice": 160, "childPrice": 80, "infantPrice": 0 } },
+        description: 'Monthly prices override base prices. Keys are month numbers (1-12)',
+        required: false
+    }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateTourPackageDto.prototype, "monthlyPrices", void 0);
 //# sourceMappingURL=create-tour-package.dto.js.map

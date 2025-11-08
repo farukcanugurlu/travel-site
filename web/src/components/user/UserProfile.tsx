@@ -343,9 +343,11 @@ const UserProfile: React.FC = () => {
         .user-profile {
           max-width: 1000px;
           margin: 0 auto;
-          padding: 100px 20px 0; /* below header; no extra bottom gap before footer */
+          padding: 100px 20px 80px; /* below header; extra bottom padding to prevent footer overlap */
           background: #f8f9fa; /* light contrast so white header is visible */
-          min-height: 100vh;
+          min-height: calc(100vh - 200px); /* Ensure content doesn't overlap with footer */
+          position: relative;
+          z-index: 1;
         }
 
         .profile-topbar {
@@ -816,7 +818,27 @@ const UserProfile: React.FC = () => {
           background: #218838;
         }
 
+        /* Prevent footer overlap on profile page */
+        .user-profile + footer {
+          position: relative;
+          z-index: 0;
+          margin-top: 0 !important;
+        }
+
+        .user-profile + footer .tg-footer-area.tg-footer-space {
+          margin-top: 0 !important;
+          padding-top: 60px !important;
+        }
+
         @media (max-width: 768px) {
+          .user-profile {
+            padding: 80px 15px 100px; /* More bottom padding on mobile */
+          }
+
+          .user-profile + footer .tg-footer-area.tg-footer-space {
+            padding-top: 40px !important;
+          }
+
           .profile-header {
             flex-direction: column;
             text-align: center;
@@ -862,6 +884,29 @@ const UserProfile: React.FC = () => {
           .favorite-actions {
             flex-direction: row;
             justify-content: center;
+          }
+        }
+
+        @media (max-width: 575.98px) {
+          .user-profile {
+            padding: 60px 10px 120px; /* Even more bottom padding on small screens */
+          }
+
+          .user-profile + footer .tg-footer-area.tg-footer-space {
+            padding-top: 30px !important;
+          }
+
+          /* Make footer more compact on mobile */
+          .user-profile + footer .tg-footer-widget {
+            margin-bottom: 20px !important;
+          }
+
+          .user-profile + footer .tg-footer-top {
+            margin-bottom: 20px !important;
+          }
+
+          .user-profile + footer .tg-footer-copyright {
+            padding: 20px 10px !important;
           }
         }
       `}</style>

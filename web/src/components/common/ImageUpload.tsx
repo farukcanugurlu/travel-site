@@ -1,5 +1,5 @@
 // src/components/common/ImageUpload.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import uploadApiService from '../../api/upload';
@@ -26,6 +26,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Update preview when currentImage prop changes
+  useEffect(() => {
+    if (currentImage) {
+      setPreview(currentImage);
+    }
+  }, [currentImage]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -59,11 +66,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     try {
       const result = await uploadApiService.uploadImage(file, folder);
       console.log('Upload result:', result);
+      
+      // Update preview with the uploaded image URL
+      setPreview(result.imageUrl);
+      
+      // Call the callback with the uploaded URL
       onImageUploaded(result.imageUrl, result.key);
       toast.success('Image uploaded successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      const errorMessage = error?.message || 'Failed to upload image';
+      toast.error(errorMessage);
       setPreview(null);
     } finally {
       setUploading(false);

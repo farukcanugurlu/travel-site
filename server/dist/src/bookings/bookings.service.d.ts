@@ -4,17 +4,17 @@ export declare class BookingsService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createBookingDto: CreateBookingDto): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -50,17 +50,17 @@ export declare class BookingsService {
         tourId?: string;
         status?: string;
     }): Promise<({
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -128,17 +128,17 @@ export declare class BookingsService {
         packageId: string;
     })[]>;
     findOne(id: string): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -170,17 +170,17 @@ export declare class BookingsService {
         packageId: string;
     }>;
     update(id: string, updateData: any): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;
@@ -233,17 +233,17 @@ export declare class BookingsService {
         packageId: string;
     }>;
     updateStatus(id: string, status: string): Promise<{
-        user: {
-            id: string;
-            email: string;
-            firstName: string;
-            lastName: string;
-        };
         tour: {
             id: string;
             slug: string;
             title: string;
             thumbnail: string;
+        };
+        user: {
+            id: string;
+            email: string;
+            firstName: string;
+            lastName: string;
         };
         package: {
             id: string;

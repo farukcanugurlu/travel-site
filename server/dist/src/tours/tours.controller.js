@@ -43,11 +43,11 @@ let ToursController = class ToursController {
     getDestinationsList() {
         return this.toursService.getDestinations();
     }
-    findOne(id) {
-        return this.toursService.findOne(id);
-    }
     findBySlug(slug) {
         return this.toursService.findBySlug(slug);
+    }
+    findOne(id) {
+        return this.toursService.findOne(id);
     }
     update(id, updateTourDto) {
         return this.toursService.update(id, updateTourDto);
@@ -61,8 +61,9 @@ let ToursController = class ToursController {
     updatePackage(id, updatePackageDto) {
         return this.toursService.updatePackage(id, updatePackageDto);
     }
-    removePackage(id) {
-        return this.toursService.removePackage(id);
+    removePackage(id, force) {
+        const forceDelete = force === 'true' || force === '1';
+        return this.toursService.removePackage(id, forceDelete);
     }
 };
 exports.ToursController = ToursController;
@@ -122,16 +123,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ToursController.prototype, "getDestinationsList", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get tour by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Tour retrieved successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Tour not found' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ToursController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Get)('slug/:slug'),
     (0, swagger_1.ApiOperation)({ summary: 'Get tour by slug' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Tour retrieved successfully' }),
@@ -141,6 +132,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ToursController.prototype, "findBySlug", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get tour by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Tour retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Tour not found' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ToursController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
@@ -195,8 +196,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete tour package' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Package deleted successfully' }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('force')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ToursController.prototype, "removePackage", null);
 exports.ToursController = ToursController = __decorate([

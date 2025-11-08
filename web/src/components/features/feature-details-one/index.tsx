@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import toursApiService, { type Tour } from "../../../api/tours";
 import reviewsApiService, { type Review } from "../../../api/reviews";
-import Breadcrumb from "./Breadcrumb"
 import FeatureDetailsArea from "./FeatureDetailsArea"
 import FeatureAboutArea from "./FeatureAboutArea"
 import HeaderThree from "../../../layouts/headers/HeaderThree"
 import FooterThree from "../../../layouts/footers/FooterThree"
+import Breadcrumb from "./Breadcrumb"
 
 interface FeatureDetailsOneProps {
   slug?: string;
@@ -116,10 +116,47 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
             padding-top: 64px !important;
           }
         }
+        
+        /* (TR) Header'ı absolute position yap ve breadcrumb'ın arkasında görünsün */
+        header.tg-header-height {
+          position: absolute !important;
+          top: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          z-index: 9999 !important;
+        }
+        .tg-header__area {
+          position: relative !important;
+          z-index: 9999 !important;
+          background: transparent !important;
+        }
+        .tg-header__area.header-sticky {
+          position: fixed !important;
+          z-index: 9999 !important;
+          background: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* (TR) Breadcrumb header'ın arkasında görünsün */
+        .tg-breadcrumb-spacing-3 {
+          position: relative;
+          z-index: 1;
+          margin-top: 0;
+          padding-top: 142px !important; /* Header yüksekliği için padding */
+        }
+        
+        .tg-tour-details-area {
+          position: relative;
+          z-index: 1;
+        }
+        main {
+          position: relative;
+          z-index: 1;
+        }
       `}</style>
+      <Breadcrumb tour={tour} />
       <HeaderThree />
       <main>
-        <Breadcrumb tour={tour} />
         <FeatureDetailsArea tour={tour} />
         <FeatureAboutArea tour={tour} reviews={reviews} onReviewSubmitted={handleReviewSubmitted} />
       </main>

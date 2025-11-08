@@ -136,8 +136,8 @@ const ContactArea = () => {
               </div>
               
               <p className="whatsapp-note mt-15" style={{ textAlign: 'center' }}>
-                Or call us directly: <Link to={`tel:${phone}`}>{phone}</Link>
-              </p>
+                  Or call us directly: <Link to={`tel:${phone}`}>{phone}</Link>
+                </p>
             </div>
           </div>
         </div>

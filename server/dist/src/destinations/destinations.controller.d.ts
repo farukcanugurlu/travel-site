@@ -10,16 +10,16 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        name: string;
         slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
         image: string | null;
-        featured: boolean;
         displayOrder: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     getStats(): Promise<{
         total: number;
@@ -33,16 +33,16 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        name: string;
         slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
         image: string | null;
-        featured: boolean;
         displayOrder: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         _count: {
@@ -50,16 +50,16 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        name: string;
         slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
         image: string | null;
-        featured: boolean;
         displayOrder: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     create(createDestinationDto: CreateDestinationDto): Promise<{
         _count: {
@@ -67,16 +67,16 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        name: string;
         slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
         image: string | null;
-        featured: boolean;
         displayOrder: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, updateDestinationDto: UpdateDestinationDto): Promise<{
         _count: {
@@ -84,16 +84,16 @@ export declare class DestinationsController {
         };
     } & {
         id: string;
-        name: string;
         slug: string;
+        featured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
         country: string;
         latitude: number | null;
         longitude: number | null;
         image: string | null;
-        featured: boolean;
         displayOrder: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         message: string;

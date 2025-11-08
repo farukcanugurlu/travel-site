@@ -6,6 +6,7 @@ import Sidebar from "./Menu/Sidebar";
 import UseSticky from "../../hooks/UseSticky";
 import authApiService from "../../api/auth";
 import settingsApi, { type SiteSettingsData } from "../../api/settings";
+import { normalizeImageUrl } from "../../utils/imageUtils";
 
 const HeaderThree = () => {
   const { sticky } = UseSticky();
@@ -92,6 +93,70 @@ const HeaderThree = () => {
         #header-sticky.header-sticky .auth-link:hover {
           background: #e9ecef;
         }
+        
+        /* Header transparan olduğunda (sticky olmadığında) tüm yazılar ve butonlar beyaz */
+        #header-sticky:not(.header-sticky) .tgmenu__main-menu ul > li > a,
+        #header-sticky:not(.header-sticky) .tgmenu__list li > a {
+          color: #fff !important;
+        }
+        #header-sticky:not(.header-sticky) .tgmenu__main-menu ul > li > a:hover,
+        #header-sticky:not(.header-sticky) .tgmenu__list li > a:hover {
+          color: rgba(255, 255, 255, 0.8) !important;
+        }
+        #header-sticky:not(.header-sticky) .tg-icon-btn {
+          background: rgba(255, 255, 255, 0.2) !important;
+          border-color: rgba(255, 255, 255, 0.3) !important;
+          color: #fff !important;
+        }
+        #header-sticky:not(.header-sticky) .tg-icon-btn:hover {
+          background: rgba(255, 255, 255, 0.3) !important;
+          color: #fff !important;
+        }
+        #header-sticky:not(.header-sticky) .tg-icon-btn i {
+          color: #fff !important;
+        }
+        
+        /* Sticky durumda normal renkler (desktop) */
+        #header-sticky.header-sticky .tgmenu__main-menu ul > li > a,
+        #header-sticky.header-sticky .tgmenu__list li > a {
+          color: #2c3e50 !important;
+        }
+        #header-sticky.header-sticky .tg-icon-btn {
+          background: #fff !important;
+          border-color: rgba(0,0,0,.08) !important;
+          color: #2c3e50 !important;
+        }
+        #header-sticky.header-sticky .tg-icon-btn i {
+          color: #2c3e50 !important;
+        }
+        
+        /* Mobilde sticky header'da yazılar beyaz olsun */
+        @media (max-width: 1199px) {
+          #header-sticky.header-sticky {
+            background: transparent !important;
+            box-shadow: none !important;
+          }
+          #header-sticky.header-sticky .tgmenu__main-menu ul > li > a,
+          #header-sticky.header-sticky .tgmenu__list li > a {
+            color: #fff !important;
+          }
+          #header-sticky.header-sticky .tg-icon-btn {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            color: #fff !important;
+          }
+          #header-sticky.header-sticky .tg-icon-btn i {
+            color: #fff !important;
+          }
+          #header-sticky.header-sticky .auth-link {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+          }
+          #header-sticky.header-sticky .auth-link:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+          }
+        }
       `}</style>
 
       <header className="tg-header-height">
@@ -108,10 +173,10 @@ const HeaderThree = () => {
                 <div className="tgmenu__wrap d-flex align-items-center">
                   <div className="logo">
                     <Link className="logo-1" to="/">
-                      <img src={settings?.logoUrl || "/assets/img/logo/logo-white.png"} alt="Lexor" />
+                      <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-white.png"} alt="Lexor" />
                     </Link>
                     <Link className="logo-2" to="/">
-                      <img src={settings?.logoUrl || "/assets/img/logo/logo-green.png"} alt="Lexor" />
+                      <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-green.png"} alt="Lexor" />
                     </Link>
                   </div>
 

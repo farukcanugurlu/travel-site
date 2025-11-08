@@ -35,8 +35,29 @@ async function bootstrap() {
             }
         }
     });
+    const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://www.lexorholiday.com',
+        'https://lexorholiday.com',
+        process.env.FRONTEND_URL,
+    ].filter(Boolean);
     app.enableCors({
-        origin: ['http://localhost:5173', 'http://localhost:3000'],
+        origin: (origin, callback) => {
+            if (!origin)
+                return callback(null, true);
+            if (allowedOrigins.includes(origin)) {
+                callback(null, true);
+            }
+            else {
+                if (process.env.NODE_ENV === 'production') {
+                    callback(new Error('Not allowed by CORS'));
+                }
+                else {
+                    callback(null, true);
+                }
+            }
+        },
         credentials: true,
         exposedHeaders: ['Content-Length', 'Content-Type'],
     });

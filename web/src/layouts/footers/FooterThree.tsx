@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import settingsApi, { type SiteSettingsData } from '../../api/settings';
+import { normalizeImageUrl } from '../../utils/imageUtils';
 
 const FooterThree = () => {
   const [settings, setSettings] = useState<SiteSettingsData | null>(null);
   useEffect(() => { settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); }, []);
-  const logo = settings?.logo || settings?.logoUrl || '/assets/img/logo/logo-white.png';
+  const logo = settings?.logo ? normalizeImageUrl(settings.logo) : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : '/assets/img/logo/logo-white.png');
   const companyDescription = settings?.companyDescription || 'Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world.';
   const address = settings?.officeAddress || 'Antalya';
   const phone = settings?.phone || settings?.phone1 || '+90 500 000 00 00';
@@ -17,6 +18,57 @@ const FooterThree = () => {
   return (
     <>
       <style>{`
+        /* (TR) Footer'ın normal flow'da olmasını sağla - content'in bittiği yerde başlasın */
+        footer,
+        footer.tg-footer-area,
+        footer > div,
+        footer > div.tg-footer-area {
+          position: relative !important;
+          width: 100% !important;
+          clear: both !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          top: auto !important;
+          bottom: auto !important;
+          left: auto !important;
+          right: auto !important;
+        }
+        
+        /* (TR) Footer'ın fixed veya absolute olmasını engelle - tüm olasılıkları kapsa */
+        * footer,
+        * .tg-footer-area,
+        * footer > * {
+          position: relative !important;
+        }
+        
+        /* (TR) Body ve html'in footer'ı etkilemesini engelle */
+        body {
+          min-height: auto !important;
+          height: auto !important;
+          position: relative !important;
+        }
+        
+        html {
+          height: auto !important;
+          position: relative !important;
+        }
+        
+        /* (TR) Main content'in alt boşluğunu artır ve footer'ın üstünde olduğundan emin ol */
+        main {
+          min-height: calc(100vh - 200px);
+          padding-bottom: 80px !important;
+          margin-bottom: 0 !important;
+          position: relative !important;
+          z-index: 1 !important;
+        }
+        
+        /* (TR) Footer'ın main'den sonra geldiğinden emin ol */
+        main + footer {
+          position: relative !important;
+          margin-top: 0 !important;
+          z-index: 0 !important;
+        }
+        
         /* (TR) Kolon aralıklarını iyice daralt – soldaki sütunu ortadakine yaklaştır */
         .tg-footer-top .row.tight-gap { margin-left: -2px; margin-right: -2px; }
         .tg-footer-top .row.tight-gap > [class^="col-"],
@@ -41,6 +93,40 @@ const FooterThree = () => {
 
         @media (max-width: 575.98px) {
           .tg-footer-widget .footer-intro { max-width: 100%; }
+          
+          /* Make footer more compact on mobile */
+          .tg-footer-area.tg-footer-space {
+            padding-top: 40px !important;
+            margin-top: 0 !important;
+          }
+          
+          .tg-footer-top {
+            margin-bottom: 20px !important;
+          }
+          
+          .tg-footer-widget {
+            margin-bottom: 20px !important;
+          }
+          
+          .tg-footer-logo {
+            margin-bottom: 15px !important;
+          }
+          
+          .tg-footer-widget-title {
+            font-size: 18px !important;
+            margin-bottom: 15px !important;
+          }
+          
+          .tg-footer-copyright {
+            padding: 20px 10px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .tg-footer-area.tg-footer-space {
+            padding-top: 50px !important;
+            margin-top: 0 !important;
+          }
         }
       `}</style>
 
@@ -73,12 +159,6 @@ const FooterThree = () => {
                       </Link>
                       <Link aria-label="Instagram" to={instagram || '#'}>
                         <i className="fa-brands fa-instagram"></i>
-                      </Link>
-                      <Link aria-label="Twitter" to={twitter || '#'}>
-                        <i className="fa-brands fa-twitter"></i>
-                      </Link>
-                      <Link aria-label="YouTube" to={youtube || '#'}>
-                        <i className="fa-brands fa-youtube"></i>
                       </Link>
                     </div>
                   </div>

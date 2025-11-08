@@ -112,6 +112,11 @@ model TourPackage {
   infantPrice Decimal  @db.Decimal(10, 2)
   language    String   // "English", "Russian", etc.
   capacity    Int?     // Optional capacity limit
+  // Age ranges
+  childMaxAge Int?     // Maximum age for child (e.g., 5 or 6)
+  infantMaxAge Int?   // Maximum age for infant (e.g., 2 or 3)
+  // Monthly pricing (JSON: { "1": { "adultPrice": 150, "childPrice": 75, "infantPrice": 0 }, ... })
+  monthlyPrices Json?  // Monthly prices override base prices
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

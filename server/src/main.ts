@@ -44,8 +44,30 @@ async function bootstrap() {
   });
 
   // Enable CORS for frontend
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://www.lexorholiday.com',
+    'https://lexorholiday.com',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean); // Remove undefined values
+
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        // In production, you might want to be more strict
+        if (process.env.NODE_ENV === 'production') {
+          callback(new Error('Not allowed by CORS'));
+        } else {
+          callback(null, true); // Allow in development
+        }
+      }
+    },
     credentials: true,
     exposedHeaders: ['Content-Length', 'Content-Type'],
   });

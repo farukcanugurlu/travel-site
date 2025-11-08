@@ -59,7 +59,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ tourId, rating = 5, onReviewSub
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ marginBottom: '60px' }}>
       <div className="row">
         <div className="col-lg-6 mb-15">
           <input
@@ -96,8 +96,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ tourId, rating = 5, onReviewSub
           {error && (
             <div style={{ color: 'red', marginBottom: 10 }}>{error}</div>
           )}
-          <button type="submit" disabled={submitting} className="tg-btn tg-btn-switch-animation">
-            {submitting ? 'Submitting...' : 'Submit Review'}
+          <button type="submit" disabled={submitting} className="tg-btn tg-btn-switch-animation" style={{ marginBottom: '40px' }}>
+            {submitting ? 'SUBMITTING...' : 'SUBMIT REVIEW'}
           </button>
         </div>
       </div>

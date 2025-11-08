@@ -20,11 +20,10 @@ const HomeThree = () => {
         <Banner />
         <BannerFormThree />
         <About />
+        <Location />
         <Listing />
         <Choose />
         <CtaThree />
-        <Location />
-
         <Testimonial />
         <Blog />
       </main>
