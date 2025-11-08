@@ -73,6 +73,10 @@ const RegisterForm: React.FC = () => {
     <div className="auth-container">
       <div className="auth-form">
         <div className="auth-header">
+          <Link to="/" className="back-to-home-btn">
+            <i className="fa-regular fa-arrow-left"></i>
+            Back to Home
+          </Link>
           <h2>Create Account</h2>
           <p>Join LEXOR Travel and start your journey</p>
         </div>
@@ -212,6 +216,32 @@ const RegisterForm: React.FC = () => {
         .auth-header {
           text-align: center;
           margin-bottom: 30px;
+        }
+
+        .back-to-home-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: #560CE3;
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 20px;
+          padding: 8px 16px;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+          background: transparent;
+          border: 1px solid transparent;
+        }
+
+        .back-to-home-btn:hover {
+          background: #f8f9ff;
+          border-color: #e8eaff;
+          color: #4a0ac8;
+        }
+
+        .back-to-home-btn i {
+          font-size: 12px;
         }
 
         .auth-header h2 {

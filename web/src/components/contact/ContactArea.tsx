@@ -157,6 +157,21 @@ const ContactArea = () => {
         .whatsapp-note a:hover {
           text-decoration: underline;
         }
+        
+        /* Mobil için harita ve Let's Connect arasına padding */
+        @media (max-width: 991px) {
+          .tg-contact-info-wrap {
+            margin-bottom: 0 !important;
+          }
+          .tg-contact-map {
+            margin-bottom: 0 !important;
+          }
+          .tg-contact-content-wrap {
+            margin-top: 30px !important;
+            margin-left: 0 !important;
+            padding-top: 0 !important;
+          }
+        }
       `}</style>
     </div>
   );
