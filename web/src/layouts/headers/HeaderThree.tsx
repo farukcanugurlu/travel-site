@@ -200,6 +200,26 @@ const HeaderThree = () => {
             line-height: 1 !important;
             font-size: 16px !important;
           }
+          
+          /* Mobilde desktop sidebar butonunu gizle */
+          .menu-tigger.d-none.d-xl-block {
+            display: none !important;
+          }
+          /* Mobilde sadece mobil butonu göster */
+          .mobile-nav-toggler.d-block.d-xl-none {
+            display: flex !important;
+          }
+        }
+        
+        /* Desktop'ta mobil butonu gizle */
+        @media (min-width: 1200px) {
+          .mobile-nav-toggler.d-block.d-xl-none {
+            display: none !important;
+          }
+          /* Desktop'ta sadece desktop butonu göster */
+          .menu-tigger.d-none.d-xl-block {
+            display: flex !important;
+          }
         }
       `}</style>
 
