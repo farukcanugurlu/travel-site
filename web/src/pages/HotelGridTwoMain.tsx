@@ -14,6 +14,35 @@ const HotelGridTwoMain = () => {
       <HeaderThree />
       <main className="lexor-tours-page">
         <style>{`
+          /* (TR) Mobilde header'ı transparan yap (tours sayfası için) */
+          @media (max-width: 1199px) {
+            header.tg-header-height {
+              position: absolute !important;
+              top: 0;
+              left: 0;
+              right: 0;
+              width: 100%;
+              z-index: 9999 !important;
+            }
+            .tg-header__area {
+              position: relative !important;
+              z-index: 9999 !important;
+              background: transparent !important;
+            }
+            .tg-header__area.header-sticky {
+              position: fixed !important;
+              z-index: 9999 !important;
+              background: transparent !important;
+            }
+            
+            /* (TR) Hero section header'ın arkasında görünsün */
+            .tg-hero-area {
+              position: relative;
+              z-index: 1;
+              margin-top: 0;
+            }
+          }
+          
           /* (TR) Sayfayı biraz daha uzat (altı aç) */
           main.lexor-tours-page {
             min-height: calc(100vh - 260px); /* önce -280'di */

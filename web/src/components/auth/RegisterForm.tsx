@@ -92,7 +92,6 @@ const RegisterForm: React.FC = () => {
                 id="firstName"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
-                placeholder="Enter your first name"
                 className="form-input"
                 required
               />
@@ -105,7 +104,6 @@ const RegisterForm: React.FC = () => {
                 id="lastName"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
-                placeholder="Enter your last name"
                 className="form-input"
                 required
               />
@@ -119,7 +117,6 @@ const RegisterForm: React.FC = () => {
               id="email"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="Enter your email"
               className="form-input"
               required
             />
@@ -133,7 +130,6 @@ const RegisterForm: React.FC = () => {
                 id="password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
-                placeholder="Create a password"
                 className="form-input"
                 required
                 minLength={6}
@@ -147,7 +143,6 @@ const RegisterForm: React.FC = () => {
                 id="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                placeholder="Confirm your password"
                 className="form-input"
                 required
               />

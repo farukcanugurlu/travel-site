@@ -235,7 +235,7 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
   return (
     <>
       {/* Mobile Overlay */}
-      {isMobileOpen && (
+      {isMobileOpen && onMobileClose && (
         <div
           className="d-lg-none"
           style={{
@@ -246,8 +246,15 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
             bottom: 0,
             background: 'rgba(0, 0, 0, 0.5)',
             zIndex: 9998,
+            cursor: 'pointer',
+            pointerEvents: 'auto',
           }}
-          onClick={onMobileClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onMobileClose) {
+              onMobileClose();
+            }
+          }}
         />
       )}
 
@@ -265,8 +272,53 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
           overflowY: isMobileOpen ? 'auto' : 'visible',
           maxHeight: isMobileOpen ? '100vh' : 'none',
           padding: isMobileOpen ? '20px' : '0',
+          pointerEvents: 'auto',
+        }}
+        onClick={(e) => {
+          // Sidebar içindeki tıklamalar overlay'e gitmesin
+          e.stopPropagation();
         }}
       >
+        {/* Mobile Close Button */}
+        {isMobileOpen && onMobileClose && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            marginBottom: '20px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #e0e0e0'
+          }}>
+            <button
+              onClick={onMobileClose}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                fontSize: '24px',
+                color: '#666',
+                cursor: 'pointer',
+                padding: '5px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f0f0f0';
+                e.currentTarget.style.color = '#333';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#666';
+              }}
+              aria-label="Close filters"
+            >
+              <i className="fa-regular fa-xmark" style={{ fontSize: '20px' }}></i>
+            </button>
+          </div>
+        )}
         <div
           className="tg-filter-sidebar mb-40"
           style={{ 
