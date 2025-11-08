@@ -56,6 +56,50 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
           {/* MOBILE MENU */}
           <div className="tgmobile__menu-outer" style={{ marginBottom: '24px' }}>
             <MobileMenu />
+            
+            {/* Blog Link */}
+            <Link
+              to="/blog"
+              onClick={() => setOffCanvas(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '14px 16px',
+                borderRadius: '10px',
+                textDecoration: 'none',
+                color: '#333',
+                fontSize: '16px',
+                fontWeight: 500,
+                transition: 'all 0.3s ease',
+                background: 'transparent',
+                border: '1px solid transparent',
+                marginTop: '8px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f8f9ff';
+                e.currentTarget.style.color = '#560CE3';
+                e.currentTarget.style.borderColor = '#e8eaff';
+                e.currentTarget.style.transform = 'translateX(4px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#333';
+                e.currentTarget.style.borderColor = 'transparent';
+                e.currentTarget.style.transform = 'translateX(0)';
+              }}
+            >
+              <i 
+                className="fa-regular fa-blog"
+                style={{
+                  fontSize: '18px',
+                  width: '24px',
+                  textAlign: 'center',
+                  color: '#560CE3'
+                }}
+              />
+              <span>Blog</span>
+            </Link>
           </div>
 
           {/* === USER ACTIONS: Profile & Cart (if authenticated) === */}
