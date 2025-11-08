@@ -157,6 +157,50 @@ const HeaderThree = () => {
             background: rgba(255, 255, 255, 0.2) !important;
           }
         }
+        
+        /* iPhone 12 ve benzeri cihazlar için sidebar icon düzeltmeleri */
+        @media only screen 
+          and (device-width: 390px) 
+          and (device-height: 844px) 
+          and (-webkit-device-pixel-ratio: 3) {
+          .tg-icon-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+          }
+          .tg-icon-btn i {
+            display: block !important;
+            margin: 0 auto !important;
+            vertical-align: middle !important;
+            line-height: 1 !important;
+            font-size: 16px !important;
+          }
+        }
+        
+        /* Genel mobil icon hizalama düzeltmeleri */
+        @media (max-width: 1199px) {
+          .tg-icon-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+          }
+          .tg-icon-btn i {
+            display: block !important;
+            margin: 0 auto !important;
+            vertical-align: middle !important;
+            line-height: 1 !important;
+            font-size: 16px !important;
+          }
+        }
       `}</style>
 
       <header className="tg-header-height">

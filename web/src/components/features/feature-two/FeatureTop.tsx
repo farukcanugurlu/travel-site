@@ -101,6 +101,69 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                font-size: 14px;
              }
            }
+           
+           /* iPhone 12 ve benzeri cihazlar için özel düzeltmeler */
+           @media only screen 
+             and (device-width: 390px) 
+             and (device-height: 844px) 
+             and (-webkit-device-pixel-ratio: 3) {
+             .tg-listing-box-view {
+               display: flex !important;
+               align-items: center !important;
+               justify-content: center !important;
+               gap: 8px !important;
+             }
+             .list-switch-item {
+               display: flex !important;
+               align-items: center !important;
+               justify-content: center !important;
+             }
+             .list-switch-item button {
+               display: flex !important;
+               align-items: center !important;
+               justify-content: center !important;
+               width: 40px !important;
+               height: 40px !important;
+               padding: 0 !important;
+               margin: 0 !important;
+             }
+             .list-switch-item button svg {
+               display: block !important;
+               margin: 0 auto !important;
+               vertical-align: middle !important;
+             }
+           }
+           
+           /* Genel mobil simge hizalama düzeltmeleri */
+           @media (max-width: 991px) {
+             .tg-listing-box-view {
+               display: flex !important;
+               align-items: center !important;
+               gap: 8px !important;
+             }
+             .list-switch-item {
+               display: flex !important;
+               align-items: center !important;
+               justify-content: center !important;
+               flex-shrink: 0 !important;
+             }
+             .list-switch-item button {
+               display: flex !important;
+               align-items: center !important;
+               justify-content: center !important;
+               width: 40px !important;
+               height: 40px !important;
+               padding: 0 !important;
+               margin: 0 !important;
+               line-height: 1 !important;
+             }
+             .list-switch-item button svg {
+               display: block !important;
+               margin: 0 auto !important;
+               vertical-align: middle !important;
+               flex-shrink: 0 !important;
+             }
+           }
          `}</style>
          <div className="row align-items-center">
             <div className="col-lg-5 col-md-12 mb-15 mb-lg-0">
