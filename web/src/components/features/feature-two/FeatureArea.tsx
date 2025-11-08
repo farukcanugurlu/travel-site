@@ -488,6 +488,37 @@ const FeatureArea = () => {
 
                 {/* PAGINATION */}
                 <div className="tg-pagenation-wrap text-center mt-50 mb-30">
+                  <style>{`
+                    @media (max-width: 767px) {
+                      .tg-pagenation-wrap nav ul {
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
+                        flex-wrap: nowrap !important;
+                        gap: 10px !important;
+                      }
+                      .tg-pagenation-wrap nav ul li {
+                        margin-right: 0 !important;
+                        margin-bottom: 0 !important;
+                      }
+                      .tg-pagenation-wrap nav ul li.previous {
+                        order: 1 !important;
+                        margin-right: 10px !important;
+                      }
+                      .tg-pagenation-wrap nav ul li.next {
+                        order: 2 !important;
+                        margin-left: 10px !important;
+                      }
+                      .tg-pagenation-wrap nav ul li:not(.previous):not(.next):not(.break-me) {
+                        display: none !important;
+                      }
+                      .tg-pagenation-wrap nav ul li a.p-btn {
+                        padding: 12px 20px !important;
+                        font-size: 13px !important;
+                        white-space: nowrap !important;
+                      }
+                    }
+                  `}</style>
                   <nav>
                     <ReactPaginate
                       breakLabel="..."

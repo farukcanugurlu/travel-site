@@ -12,9 +12,19 @@
                 display: flex;
                 align-items: center;
                 flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+                @media #{$sm,$xs} {
+                    justify-content: center;
+                    gap: 10px;
+                }
                 & li{
                     margin-bottom: 5px;
                     margin-right: 5px;
+                    @media #{$sm,$xs} {
+                        margin-right: 0;
+                        margin-bottom: 10px;
+                    }
                     & a{
                         font-weight: 500;
                         font-size: 14px;
@@ -42,35 +52,57 @@
                             padding: 15px 30px;
                             border-radius: 8px;
                             @media #{$sm,$xs} {
-                                margin-right: 5px;
-                                margin-left: 5px;
+                                padding: 12px 20px;
+                                font-size: 13px;
                             }
                         }
                     }
                     &.previous {
                         margin-right: 25px;
+                        @media #{$sm,$xs} {
+                            margin-right: 10px;
+                            order: 1;
+                        }
                         & a{
                             height: auto;
                             width: auto;
                             line-height: 1;
                             padding: 15px 30px;
                             border-radius: 8px;
+                            @media #{$sm,$xs} {
+                                padding: 12px 20px;
+                                font-size: 13px;
+                            }
                         }
                     }
                     &.next {
                         margin-left: 25px;
+                        @media #{$sm,$xs} {
+                            margin-left: 10px;
+                            order: 2;
+                        }
                         & a{
                             height: auto;
                             width: auto;
                             line-height: 1;
                             padding: 15px 30px;
                             border-radius: 8px;
+                            @media #{$sm,$xs} {
+                                padding: 12px 20px;
+                                font-size: 13px;
+                            }
                         }
                     }
                     &.selected{
                         & a{
                             color: var(--tg-common-white) !important;
                             background: var(--tg-theme-primary);
+                        }
+                    }
+                    // Sayfa numaraları mobilde gizle
+                    @media #{$sm,$xs} {
+                        &:not(.previous):not(.next):not(.break-me) {
+                            display: none;
                         }
                     }
                 }

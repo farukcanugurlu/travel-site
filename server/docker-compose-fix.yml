@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: travel-site-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - travel-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: travel-site-server
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://appuser:apppassword@postgres:5432/appdb
+      BACKEND_URL: https://www.lexorholiday.com/api  # Bu satırı ekleyin
+    depends_on:
+      - postgres
+    volumes:
+      - ./server/uploads:/app/uploads
+    ports:
+      - "3000:3000"
+    networks:
+      - travel-network
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: travel-site-web
+    restart: always
+    environment:
+      VITE_API_URL: https://www.lexorholiday.com/api
+    depends_on:
+      - server
+    expose:
+      - "80"
+    # ports dışarıya açmaya gerek yok, nginx iç ağ üzerinden ulaşacak
+    networks:
+      - travel-network
+
+  nginx:
+    image: nginx:latest
+    container_name: travel-site-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot-webroot:/var/www/certbot:rw
+      - ./certbot-etc:/etc/letsencrypt:ro
+    depends_on:
+      - web
+      - server
+    networks:
+      - travel-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: travel-site-certbot
+    volumes:
+      - ./certbot-etc:/etc/letsencrypt
+      - ./certbot-var:/var/lib/letsencrypt
+      - ./certbot-webroot:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew; done;'
+    networks:
+      - travel-network
+
+volumes:
+  postgres-data:
+  certbot-etc:
+  certbot-var:
+
+networks:
+  travel-network:
+    driver: bridge
+

@@ -49,14 +49,12 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
       let sortedProducts = [...filteredAllProduct];
 
       switch (item.value) {
-         case 'popular':
-            sortedProducts = sortedProducts
-               .filter(item => item.offer)
-               .sort((a, b) => {
-                  const aPopular = parseFloat(a.offer || "0");
-                  const bPopular = parseFloat(b.offer || "0");
-                  return bPopular - aPopular;
-               });
+         case 'price':
+            sortedProducts = sortedProducts.sort((a, b) => {
+               const aPrice = getPrice(a);
+               const bPrice = getPrice(b);
+               return aPrice - bPrice;
+            });
             break;
          case 'rating':
             sortedProducts = sortedProducts.sort((a, b) => b.review - a.review);
@@ -125,7 +123,7 @@ const FeatureTop = ({ startOffset, endOffset, totalItems, setProducts, allProduc
                         className="select"
                         options={[
                            { value: "", text: "Default sorting" },
-                           { value: "popular", text: "Sort by Best Offers" },
+                           { value: "price", text: "Sort by price" },
                            { value: "rating", text: "Sort by rating" },
                         ]}
                         defaultCurrent={0}

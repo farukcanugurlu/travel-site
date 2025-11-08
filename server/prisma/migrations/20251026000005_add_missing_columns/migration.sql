@@ -1,0 +1,26 @@
+-- Add missing columns to tours table
+ALTER TABLE "tours" 
+ADD COLUMN IF NOT EXISTS "included" JSONB,
+ADD COLUMN IF NOT EXISTS "excluded" JSONB,
+ADD COLUMN IF NOT EXISTS "highlights" JSONB,
+ADD COLUMN IF NOT EXISTS "itinerary" JSONB,
+ADD COLUMN IF NOT EXISTS "locationLatitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "locationLongitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "locationDescription" TEXT,
+ADD COLUMN IF NOT EXISTS "type" TEXT,
+ADD COLUMN IF NOT EXISTS "groupSize" TEXT,
+ADD COLUMN IF NOT EXISTS "languages" JSONB;
+
+-- Add missing columns to destinations table
+ALTER TABLE "destinations"
+ADD COLUMN IF NOT EXISTS "latitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "longitude" DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS "image" TEXT,
+ADD COLUMN IF NOT EXISTS "featured" BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS "displayOrder" INTEGER DEFAULT 0;
+
+-- Add missing columns to blog_posts table
+ALTER TABLE "blog_posts"
+ADD COLUMN IF NOT EXISTS "author" TEXT DEFAULT 'Admin',
+ADD COLUMN IF NOT EXISTS "tags" TEXT[] DEFAULT ARRAY[]::TEXT[];
+
