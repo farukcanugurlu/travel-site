@@ -48,12 +48,12 @@ const MobileMenu = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              padding: '14px 16px',
+              gap: '14px',
+              padding: '16px 18px',
               borderRadius: '10px',
               textDecoration: 'none',
               color: '#333',
-              fontSize: '16px',
+              fontSize: '17px',
               fontWeight: 500,
               transition: 'all 0.3s ease',
               background: 'transparent',
@@ -75,8 +75,8 @@ const MobileMenu = () => {
             <i 
               className={getMenuIcon(menu.title)}
               style={{
-                fontSize: '18px',
-                width: '24px',
+                fontSize: '20px',
+                width: '26px',
                 textAlign: 'center',
                 color: '#560CE3'
               }}

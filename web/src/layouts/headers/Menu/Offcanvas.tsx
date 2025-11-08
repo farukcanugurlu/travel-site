@@ -9,22 +9,11 @@ interface MobileSidebarProps {
 }
 
 const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
-  const [searchValue, setSearchValue] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     setIsAuthenticated(authApiService.isAuthenticated());
   }, [offCanvas]); // Update when sidebar opens/closes
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchValue("");
-    setOffCanvas(false);
-  };
 
   return (
     <div className={offCanvas ? "mobile-menu-visible" : ""}>
@@ -41,18 +30,6 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
             </Link>
           </div>
 
-          {/* SEARCH */}
-          <div className="tgmobile__search">
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                placeholder="Search here..."
-                value={searchValue}
-                onChange={handleSearchChange}
-              />
-            </form>
-          </div>
-
           {/* MOBILE MENU */}
           <div className="tgmobile__menu-outer" style={{ marginBottom: '24px' }}>
             <MobileMenu />
@@ -64,12 +41,12 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '14px 16px',
+                gap: '14px',
+                padding: '16px 18px',
                 borderRadius: '10px',
                 textDecoration: 'none',
                 color: '#333',
-                fontSize: '16px',
+                fontSize: '17px',
                 fontWeight: 500,
                 transition: 'all 0.3s ease',
                 background: 'transparent',
@@ -92,8 +69,8 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
               <i 
                 className="fa-regular fa-blog"
                 style={{
-                  fontSize: '18px',
-                  width: '24px',
+                  fontSize: '20px',
+                  width: '26px',
                   textAlign: 'center',
                   color: '#560CE3'
                 }}
@@ -118,12 +95,12 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '14px 16px',
+                  gap: '14px',
+                  padding: '16px 18px',
                   borderRadius: '10px',
                   textDecoration: 'none',
                   color: '#333',
-                  fontSize: '16px',
+                  fontSize: '17px',
                   fontWeight: 500,
                   transition: 'all 0.3s ease',
                   background: 'transparent',
@@ -145,8 +122,8 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
                 <i 
                   className="fa-regular fa-user"
                   style={{
-                    fontSize: '18px',
-                    width: '24px',
+                    fontSize: '20px',
+                    width: '26px',
                     textAlign: 'center',
                     color: '#560CE3'
                   }}
@@ -159,12 +136,12 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '14px 16px',
+                  gap: '14px',
+                  padding: '16px 18px',
                   borderRadius: '10px',
                   textDecoration: 'none',
                   color: '#333',
-                  fontSize: '16px',
+                  fontSize: '17px',
                   fontWeight: 500,
                   transition: 'all 0.3s ease',
                   background: 'transparent',
@@ -186,8 +163,8 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
                 <i 
                   className="fa-regular fa-cart-shopping"
                   style={{
-                    fontSize: '18px',
-                    width: '24px',
+                    fontSize: '20px',
+                    width: '26px',
                     textAlign: 'center',
                     color: '#560CE3'
                   }}
