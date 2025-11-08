@@ -17,6 +17,33 @@ interface FeatureAboutAreaProps {
 const FeatureAboutArea = ({ tour, reviews, onReviewSubmitted }: FeatureAboutAreaProps) => {
    return (
       <div className="tg-tour-about-area tg-tour-about-border pt-40 pb-70">
+         <style>{`
+           /* Mobilde Book This Tour'ı Customer Reviews'in üstüne al */
+           @media (max-width: 991px) {
+             /* Mobilde sağdaki sidebar'ı gizle */
+             .col-xl-3.col-lg-4 {
+               display: none !important;
+             }
+             
+             /* Mobilde içerik içindeki booking section'ı göster */
+             .mobile-booking-section {
+               display: block !important;
+             }
+             
+             /* Mobilde sidebar sticky olmasın */
+             .mobile-booking-section .tg-tour-about-sidebar.top-sticky {
+               position: relative !important;
+               top: auto !important;
+             }
+           }
+           
+           /* Desktop'ta mobil booking section'ı gizle */
+           @media (min-width: 992px) {
+             .mobile-booking-section {
+               display: none !important;
+             }
+           }
+         `}</style>
          <div className="container">
             <div className="row">
                <div className="col-xl-9 col-lg-8">
@@ -62,6 +89,12 @@ const FeatureAboutArea = ({ tour, reviews, onReviewSubmitted }: FeatureAboutArea
                            </div>
                         </div>
                         <div className="tg-tour-about-border mb-45"></div>
+                        
+                        {/* Mobilde Book This Tour'ı buraya ekle */}
+                        <div className="mobile-booking-section d-lg-none mb-40">
+                          <FeatureSidebar tour={tour} />
+                        </div>
+                        
                         <ReviewSection reviews={reviews} tourDescription={tour.description} />
                         <div className="tg-tour-about-border mb-35"></div>
                         <ReviewDetails reviews={reviews} />

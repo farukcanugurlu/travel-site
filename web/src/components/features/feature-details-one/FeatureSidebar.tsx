@@ -185,8 +185,25 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
             name="datetime-local"
             type="date"
             value={tourDate}
-            onChange={(e) => setTourDate(e.target.value)}
-            min={new Date().toISOString().split('T')[0]}
+            onChange={(e) => {
+              const selectedDate = e.target.value;
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const selected = new Date(selectedDate);
+              selected.setHours(0, 0, 0, 0);
+              
+              // Bugünden önceki tarihleri engelle
+              if (selected < today) {
+                return; // Tarihi değiştirme
+              }
+              
+              setTourDate(selectedDate);
+            }}
+            min={(() => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return today.toISOString().split('T')[0];
+            })()}
             placeholder="When (Date)"
             required
             style={{ 
