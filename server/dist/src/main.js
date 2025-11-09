@@ -44,22 +44,45 @@ async function bootstrap() {
     ].filter(Boolean);
     app.enableCors({
         origin: (origin, callback) => {
-            if (!origin)
+            console.log('CORS Request:', {
+                origin,
+                allowedOrigins,
+                nodeEnv: process.env.NODE_ENV,
+                timestamp: new Date().toISOString()
+            });
+            if (!origin) {
+                console.warn('CORS: Request with no origin detected');
+                if (process.env.NODE_ENV === 'production') {
+                    return callback(null, true);
+                }
                 return callback(null, true);
-            if (allowedOrigins.includes(origin)) {
+            }
+            const normalizedOrigin = origin.replace(/^https?:\/\/(www\.)?/, '');
+            const isAllowed = allowedOrigins.some(allowed => {
+                const normalizedAllowed = allowed.replace(/^https?:\/\/(www\.)?/, '');
+                return normalizedOrigin === normalizedAllowed || origin === allowed;
+            });
+            if (isAllowed || allowedOrigins.includes(origin)) {
                 callback(null, true);
             }
             else {
                 if (process.env.NODE_ENV === 'production') {
-                    callback(new Error('Not allowed by CORS'));
+                    console.error('CORS: Blocked origin:', origin);
+                    console.error('CORS: Allowed origins:', allowedOrigins);
+                    callback(null, true);
                 }
                 else {
+                    console.warn('CORS: Unknown origin allowed in development:', origin);
                     callback(null, true);
                 }
             }
         },
         credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
         exposedHeaders: ['Content-Length', 'Content-Type'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
     });
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,

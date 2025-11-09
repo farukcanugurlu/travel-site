@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { type Tour } from "../../../api/tours";
 import NiceSelect from "../../../ui/NiceSelect";
 import { addToCart } from "../../../redux/features/cartSlice";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 interface FeatureSidebarProps {
   tour: Tour;
@@ -145,15 +146,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
       id: `${tour.id}-${tourPackage.id}-${tourDate}-${selectedTime}-${adultCount}-${childCount}-${infantCount}`,
       title: `${tour.title} - ${tourPackage.name} (${tourDate} ${selectedTime})`,
       price: totalCost,
-      thumb: (() => {
-        const imgUrl = tour.images?.[0] || tour.thumbnail || '/assets/img/listing/listing-1.jpg';
-        if (!imgUrl) return '/assets/img/listing/listing-1.jpg';
-        if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) return imgUrl;
-        if (imgUrl.startsWith('/uploads/')) {
-          return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
-        }
-        return imgUrl;
-      })(),
+      thumb: normalizeImageUrl(tour.images?.[0] || tour.thumbnail || '/assets/img/listing/listing-1.jpg'),
       // Ekstra bilgiler
       tourId: tour.id,
       packageId: tourPackage.id,
