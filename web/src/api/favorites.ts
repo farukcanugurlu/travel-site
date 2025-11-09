@@ -36,8 +36,9 @@ class FavoritesApiService {
 
   async isFavorite(userId: string, tourId: string): Promise<boolean> {
     try {
-      await apiService.get<Favorite>(`/favorites/${userId}/${tourId}`);
-      return true;
+      const favorite = await apiService.get<Favorite>(`/favorites/${userId}/${tourId}`);
+      // Check if favorite exists (backend should return 404 if not found, but also check for null)
+      return favorite !== null && favorite !== undefined;
     } catch (error: any) {
       // Only return false if it's a 404 (not found) error
       // Other errors (network, 500, etc.) should be handled differently

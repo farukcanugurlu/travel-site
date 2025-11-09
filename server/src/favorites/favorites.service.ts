@@ -1,5 +1,5 @@
 // server/src/favorites/favorites.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 
@@ -77,7 +77,7 @@ export class FavoritesService {
   }
 
   async findOne(userId: string, tourId: string) {
-    return this.prisma.favorite.findFirst({
+    const favorite = await this.prisma.favorite.findFirst({
       where: {
         userId,
         tourId,
@@ -105,6 +105,14 @@ export class FavoritesService {
         },
       },
     });
+    
+    // If favorite not found, throw NotFoundException (404)
+    // This ensures frontend can properly detect when a tour is not in favorites
+    if (!favorite) {
+      throw new NotFoundException(`Favorite not found for user ${userId} and tour ${tourId}`);
+    }
+    
+    return favorite;
   }
 
   async remove(userId: string, tourId: string) {
