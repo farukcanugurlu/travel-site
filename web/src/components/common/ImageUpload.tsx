@@ -12,6 +12,7 @@ interface ImageUploadProps {
   maxSize?: number; // in MB
   className?: string;
   folder?: string;
+  hint?: string; // Optional hint text to display below the label
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -22,6 +23,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   maxSize = 5,
   className = '',
   folder = 'images',
+  hint,
 }) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
@@ -106,6 +108,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   return (
     <div className={`image-upload ${className}`}>
       <label className="upload-label">{label}</label>
+      {hint && <div className="upload-hint-text">{hint}</div>}
       
       <div
         className={`upload-area ${uploading ? 'uploading' : ''}`}
@@ -166,6 +169,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           color: #2c3e50;
           margin-bottom: 10px;
           font-size: 14px;
+        }
+
+        .upload-hint-text {
+          display: block;
+          color: #666;
+          font-size: 12px;
+          margin-bottom: 10px;
+          font-style: italic;
+          line-height: 1.4;
         }
 
         .upload-area {

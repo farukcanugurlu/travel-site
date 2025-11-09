@@ -49,12 +49,24 @@ const SiteSettings: React.FC = () => {
         <div>Loading...</div>
       ) : (
         <form onSubmit={update} className="settings-grid">
-          <ImageUpload
-            label="Logo"
-            folder="site"
-            currentImage={form.logo || ''}
-            onImageUploaded={(url) => set('logo', url)}
-          />
+          <div className="form-row">
+            <ImageUpload
+              label="Logo (Normal Header)"
+              folder="site"
+              currentImage={form.logo || ''}
+              onImageUploaded={(url) => set('logo', url)}
+              maxSize={2}
+              hint="Ideal boyut: 200x60px (genişlik x yükseklik). PNG formatı önerilir. Şeffaf arka plan desteklenir."
+            />
+            <ImageUpload
+              label="Logo (Sticky Header)"
+              folder="site"
+              currentImage={form.logoSticky || ''}
+              onImageUploaded={(url) => set('logoSticky', url)}
+              maxSize={2}
+              hint="Sticky header için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
+            />
+          </div>
           <div className="form-row">
             <ImageUpload
               label="Header Image"

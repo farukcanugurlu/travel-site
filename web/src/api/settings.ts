@@ -3,6 +3,7 @@ import apiService from './api';
 export interface SiteSettingsData {
   // Images
   logo?: string;
+  logoSticky?: string; // Logo for sticky header (if not set, uses logo)
   headerImage?: string;
   footerImage?: string;
   favicon?: string;

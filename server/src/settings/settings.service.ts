@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export interface SiteSettingsData {
   // Images (stored as uploaded URLs/paths)
   logo?: string;
+  logoSticky?: string; // Logo for sticky header (if not set, uses logo)
   headerImage?: string;
   footerImage?: string;
   favicon?: string;

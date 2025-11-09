@@ -240,7 +240,13 @@ const HeaderThree = () => {
                       <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-white.png"} alt="Lexor" />
                     </Link>
                     <Link className="logo-2" to="/">
-                      <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-green.png"} alt="Lexor" />
+                      <img src={
+                        settings?.logoSticky 
+                          ? normalizeImageUrl(settings.logoSticky) 
+                          : (settings?.logo 
+                            ? normalizeImageUrl(settings.logo) 
+                            : "/assets/img/logo/logo-green.png")
+                      } alt="Lexor" />
                     </Link>
                   </div>
 
