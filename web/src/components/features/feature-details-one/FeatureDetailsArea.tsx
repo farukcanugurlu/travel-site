@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import { type Tour } from "../../../api/tours";
 import favoritesApiService from "../../../api/favorites";
 import authApiService from "../../../api/auth";
-import FeatureList from "./FeatureList"
+import FeatureList from "./FeatureList";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 interface FeatureDetailsAreaProps {
   tour: Tour;
@@ -533,7 +534,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                      >
                         <img
                           className="w-100"
-                          src={(tour.images && tour.images[0]) || tour.thumbnail || "/assets/img/listing/listing-1.jpg"}
+                          src={normalizeImageUrl((tour.images && tour.images[0]) || tour.thumbnail || "/assets/img/listing/listing-1.jpg")}
                           alt={tour.title}
                           style={{ transition: 'transform 0.3s ease' }}
                           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
@@ -561,7 +562,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                             >
                               <img 
                                 className="w-100" 
-                                src={img} 
+                                src={normalizeImageUrl(img)} 
                                 alt={`${tour.title} ${idx + 2}`}
                                 style={{ transition: 'transform 0.3s ease' }}
                                 onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
@@ -595,6 +596,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                  >
                    <button
                      onClick={() => setSelectedImageIndex(null)}
+                     className="lightbox-close-btn"
                      style={{
                        position: 'absolute',
                        top: '20px',
@@ -631,9 +633,12 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                          );
                        }
                      }}
+                     className="lightbox-nav-btn lightbox-prev-btn"
                      style={{
                        position: 'absolute',
                        left: '20px',
+                       top: '50%',
+                       transform: 'translateY(-50%)',
                        background: 'rgba(255, 255, 255, 0.2)',
                        border: 'none',
                        color: 'white',
@@ -666,9 +671,12 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                          );
                        }
                      }}
+                     className="lightbox-nav-btn lightbox-next-btn"
                      style={{
                        position: 'absolute',
                        right: '20px',
+                       top: '50%',
+                       transform: 'translateY(-50%)',
                        background: 'rgba(255, 255, 255, 0.2)',
                        border: 'none',
                        color: 'white',
@@ -691,15 +699,15 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                    
                    <div
                      onClick={(e) => e.stopPropagation()}
+                     className="lightbox-image-container"
                      style={{
-                       maxWidth: '95vw',
-                       maxHeight: '95vh',
                        width: '100%',
                        height: '100%',
                        display: 'flex',
                        alignItems: 'center',
                        justifyContent: 'center',
-                       padding: '40px'
+                       padding: '80px 100px',
+                       boxSizing: 'border-box'
                      }}
                    >
                      {(() => {
@@ -710,11 +718,12 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                        
                        return (
                          <img
-                           src={currentImage}
+                           src={normalizeImageUrl(currentImage)}
                            alt={`${tour.title} - Image ${selectedImageIndex! + 1}`}
+                           className="lightbox-image"
                            style={{
                              maxWidth: '100%',
-                             maxHeight: '95vh',
+                             maxHeight: '100%',
                              width: 'auto',
                              height: 'auto',
                              objectFit: 'contain',
@@ -769,7 +778,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
          </div>
           {/* Video modal removed for cleaner dynamic gallery */}
           
-          {/* CSS to hide header on mobile when lightbox is open */}
+          {/* CSS to hide header on mobile when lightbox is open and improve lightbox styling */}
           <style>{`
             /* Hide header on mobile when lightbox is open */
             @media (max-width: 991px) {
@@ -780,6 +789,71 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                 opacity: 0 !important;
                 pointer-events: none !important;
               }
+            }
+
+            /* Lightbox Close Button - Mobilde sağa geç */
+            @media (max-width: 991px) {
+              .lightbox-close-btn {
+                top: 10px !important;
+                right: 10px !important;
+                width: 45px !important;
+                height: 45px !important;
+                font-size: 28px !important;
+              }
+            }
+
+            /* Lightbox Navigation Buttons - Kenarlara taşı, fotoğrafı kapatmasın */
+            .lightbox-nav-btn {
+              top: 50% !important;
+              transform: translateY(-50%) !important;
+            }
+
+            @media (max-width: 991px) {
+              .lightbox-prev-btn {
+                left: 10px !important;
+                width: 45px !important;
+                height: 45px !important;
+              }
+              .lightbox-next-btn {
+                right: 10px !important;
+                width: 45px !important;
+                height: 45px !important;
+              }
+            }
+
+            @media (min-width: 992px) {
+              .lightbox-prev-btn {
+                left: 30px !important;
+              }
+              .lightbox-next-btn {
+                right: 30px !important;
+              }
+            }
+
+            /* Lightbox Image Container - Orijinal boyutlarında göster */
+            .lightbox-image-container {
+              padding: 60px 120px !important;
+            }
+
+            @media (max-width: 991px) {
+              .lightbox-image-container {
+                padding: 50px 70px !important;
+              }
+            }
+
+            @media (max-width: 575px) {
+              .lightbox-image-container {
+                padding: 40px 60px !important;
+              }
+            }
+
+            /* Lightbox Image - Orijinal boyutlarında, sadece ekrana sığdır */
+            .lightbox-image {
+              max-width: 100% !important;
+              max-height: 100% !important;
+              width: auto !important;
+              height: auto !important;
+              object-fit: contain !important;
             }
           `}</style>
        </>

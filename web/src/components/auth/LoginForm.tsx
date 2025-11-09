@@ -55,22 +55,31 @@ const LoginForm: React.FC = () => {
       if (err instanceof Error) {
         // Check if it's a network error
         if ((err as any).isNetworkError) {
+          const apiUrl = (err as any).apiUrl || 'Unknown';
+          const origin = (err as any).origin || 'Unknown';
+          
           setError(
-            `Connection error: Unable to reach server.\n\n` +
-            `Please check:\n` +
-            `• Your internet connection\n` +
-            `• Backend server status\n` +
-            `• Try refreshing the page\n\n` +
-            `If the problem persists, contact support.`
+            `Connection Error\n\n` +
+            `Unable to reach server. This might be a configuration issue.\n\n` +
+            `Technical Details:\n` +
+            `• API URL: ${apiUrl}\n` +
+            `• Your Location: ${origin}\n\n` +
+            `Please try:\n` +
+            `1. Refreshing the page\n` +
+            `2. Checking your internet connection\n` +
+            `3. Opening browser console (F12) for more details\n\n` +
+            `If the problem persists, please contact support with this error message.`
           );
         } else if (err.message.includes('Failed to fetch')) {
           setError(
-            `Network error: Cannot connect to server.\n\n` +
+            `Network Error\n\n` +
+            `Cannot connect to server.\n\n` +
             `Possible causes:\n` +
             `• Backend server is down\n` +
             `• CORS configuration issue\n` +
-            `• Network firewall blocking request\n\n` +
-            `Please try again or contact support.`
+            `• Network firewall blocking request\n` +
+            `• API URL misconfiguration\n\n` +
+            `Please check browser console (F12) for more details.`
           );
         } else {
           setError(`Login failed: ${err.message}`);

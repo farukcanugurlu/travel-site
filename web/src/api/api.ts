@@ -1,5 +1,21 @@
 // src/api/api.ts
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// Production'da API URL'i otomatik olarak site domain'inden al
+const getApiBaseUrl = () => {
+  // Environment variable varsa onu kullan
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Production'da (https://www.lexorholiday.com) otomatik olarak /api ekle
+  if (typeof window !== 'undefined' && window.location.hostname.includes('lexorholiday.com')) {
+    return `${window.location.protocol}//${window.location.hostname}/api`;
+  }
+  
+  // Development için default
+  return 'http://localhost:3000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export interface ApiResponse<T> {
   data: T;
@@ -43,7 +59,14 @@ class ApiService {
     };
 
     try {
-      console.log('API Request:', { url, method: config.method || 'GET', endpoint });
+      console.log('API Request:', { 
+        url, 
+        method: config.method || 'GET', 
+        endpoint,
+        baseURL: this.baseURL,
+        fullURL: url,
+        origin: typeof window !== 'undefined' ? window.location.origin : 'unknown'
+      });
       
       const response = await fetch(url, config);
 
@@ -109,31 +132,52 @@ class ApiService {
     } catch (error) {
       // Enhanced error handling for network issues
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        console.error('Network error - possible causes:', {
-          url,
-          baseURL: this.baseURL,
+        const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'unknown';
+        const apiUrl = this.baseURL;
+        const fullUrl = url;
+        
+        console.error('Network error - detailed info:', {
+          url: fullUrl,
+          baseURL: apiUrl,
           endpoint,
+          currentOrigin,
           error: error.message,
+          errorName: error.name,
           possibleCauses: [
             'CORS issue - backend may not allow this origin',
             'Network connectivity problem',
             'Backend server is down or unreachable',
             'Firewall or proxy blocking the request',
             'SSL/HTTPS certificate issue',
-            'API URL misconfiguration'
-          ]
+            'API URL misconfiguration',
+            'Mixed content (HTTP/HTTPS) issue'
+          ],
+          troubleshooting: {
+            checkApiUrl: `API URL should be: ${apiUrl}`,
+            checkOrigin: `Current origin: ${currentOrigin}`,
+            checkCors: 'Backend should allow this origin in CORS settings',
+            checkNetwork: 'Check browser console Network tab for more details'
+          }
         });
         
-        // Provide more helpful error message
+        // Provide more helpful error message with debugging info
         const networkError = new Error(
-          `Network error: Unable to reach server. Please check:\n` +
-          `1. Your internet connection\n` +
-          `2. Backend server is running\n` +
-          `3. API URL: ${this.baseURL}\n` +
-          `4. CORS settings on backend`
+          `Connection error: Unable to reach server.\n\n` +
+          `Debugging Information:\n` +
+          `• API URL: ${apiUrl}\n` +
+          `• Request URL: ${fullUrl}\n` +
+          `• Your Origin: ${currentOrigin}\n\n` +
+          `Possible Solutions:\n` +
+          `1. Check your internet connection\n` +
+          `2. Verify backend server is running\n` +
+          `3. Check browser console (F12) for more details\n` +
+          `4. Try refreshing the page\n` +
+          `5. Contact support with this error message`
         );
         (networkError as any).isNetworkError = true;
         (networkError as any).url = url;
+        (networkError as any).apiUrl = apiUrl;
+        (networkError as any).origin = currentOrigin;
         throw networkError;
       }
       
