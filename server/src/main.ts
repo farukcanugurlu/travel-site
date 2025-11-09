@@ -44,6 +44,8 @@ async function bootstrap() {
   });
 
   // Enable CORS for frontend
+  // IMPORTANT: Only set CORS headers here, NOT in Nginx/proxy
+  // Multiple CORS headers cause "multiple values" error
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
@@ -74,8 +76,15 @@ async function bootstrap() {
         return callback(null, true);
       }
       
+      // Normalize origin (www and non-www are both allowed)
+      const normalizedOrigin = origin.replace(/^https?:\/\/(www\.)?/, '');
+      const isAllowed = allowedOrigins.some(allowed => {
+        const normalizedAllowed = allowed.replace(/^https?:\/\/(www\.)?/, '');
+        return normalizedOrigin === normalizedAllowed || origin === allowed;
+      });
+      
       // Check if origin is in allowed list
-      if (allowedOrigins.includes(origin)) {
+      if (isAllowed || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         // In production, log blocked origins for debugging
@@ -95,6 +104,9 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     exposedHeaders: ['Content-Length', 'Content-Type'],
+    // Prevent duplicate headers - ensure only one Access-Control-Allow-Origin
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Global validation pipe

@@ -1,14 +1,17 @@
 // src/api/api.ts
 // Production'da API URL'i otomatik olarak site domain'inden al
+// ÖNEMLİ: Her zaman mevcut domain'i kullan (www veya non-www)
 const getApiBaseUrl = () => {
-  // Environment variable varsa onu kullan
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  // Browser'da çalışıyorsak, her zaman mevcut domain'i kullan
+  // Bu sayede www ve non-www arasında CORS sorunu olmaz
+  if (typeof window !== 'undefined' && window.location.hostname.includes('lexorholiday.com')) {
+    // Mevcut domain'i kullan (www veya non-www fark etmez)
+    return `${window.location.protocol}//${window.location.hostname}/api`;
   }
   
-  // Production'da (https://www.lexorholiday.com) otomatik olarak /api ekle
-  if (typeof window !== 'undefined' && window.location.hostname.includes('lexorholiday.com')) {
-    return `${window.location.protocol}//${window.location.hostname}/api`;
+  // Environment variable varsa onu kullan (sadece development için)
+  if (import.meta.env.VITE_API_URL && import.meta.env.DEV) {
+    return import.meta.env.VITE_API_URL;
   }
   
   // Development için default
