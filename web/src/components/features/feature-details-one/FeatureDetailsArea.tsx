@@ -548,14 +548,28 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                           }
                         }}
                      >
-                        <img
-                          className="w-100"
-                          src={normalizeImageUrl((tour.images && tour.images[0]) || tour.thumbnail || "/assets/img/listing/listing-1.jpg")}
-                          alt={tour.title}
-                          style={{ transition: 'transform 0.3s ease' }}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        />
+                        {((tour.images && tour.images[0]) || tour.thumbnail) ? (
+                          <img
+                            className="w-100"
+                            src={normalizeImageUrl((tour.images && tour.images[0]) || tour.thumbnail)}
+                            alt={tour.title}
+                            style={{ transition: 'transform 0.3s ease' }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                          />
+                        ) : (
+                          <div className="w-100" style={{ 
+                            height: '400px', 
+                            backgroundColor: '#f5f5f5', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#999',
+                            fontSize: '16px'
+                          }}>
+                            No image available
+                          </div>
+                        )}
                      </div>
                   </div>
                   <div className="col-lg-5">
@@ -730,7 +744,20 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                        const allImages = tour.images && tour.images.length > 0 
                          ? tour.images 
                          : (tour.thumbnail ? [tour.thumbnail] : []);
-                       const currentImage = allImages[selectedImageIndex] || tour.thumbnail || "/assets/img/listing/listing-1.jpg";
+                       const currentImage = allImages[selectedImageIndex] || tour.thumbnail;
+                       
+                       if (!currentImage) {
+                         return (
+                           <div style={{
+                             color: 'white',
+                             fontSize: '18px',
+                             textAlign: 'center',
+                             padding: '40px'
+                           }}>
+                             No image available
+                           </div>
+                         );
+                       }
                        
                        return (
                          <img

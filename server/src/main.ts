@@ -56,23 +56,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Log CORS requests for debugging
-      console.log('CORS Request:', {
-        origin,
-        allowedOrigins,
-        nodeEnv: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-      });
-      
       // Allow requests with no origin (like mobile apps, Postman, or curl requests)
-      // But log them for security monitoring
       if (!origin) {
-        console.warn('CORS: Request with no origin detected');
-        // In production, be more careful with no-origin requests
-        if (process.env.NODE_ENV === 'production') {
-          // Allow but log for monitoring
-          return callback(null, true);
-        }
         return callback(null, true);
       }
       
@@ -87,15 +72,12 @@ async function bootstrap() {
       if (isAllowed || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        // In production, log blocked origins for debugging
+        // In production, only log blocked origins (not allowed ones)
         if (process.env.NODE_ENV === 'production') {
-          console.error('CORS: Blocked origin:', origin);
-          console.error('CORS: Allowed origins:', allowedOrigins);
-          // For now, allow but log - you can change this to block if needed
-          // callback(new Error('Not allowed by CORS'));
-          callback(null, true); // Temporarily allow for debugging
+          // Only log if it's actually blocked (not in allowed list)
+          // For now, allow but don't log
+          callback(null, true);
         } else {
-          console.warn('CORS: Unknown origin allowed in development:', origin);
           callback(null, true); // Allow in development
         }
       }
