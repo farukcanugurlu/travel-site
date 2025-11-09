@@ -1,6 +1,6 @@
 // src/components/auth/LoginForm.tsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import authApiService from '../../api/auth';
 
 const LoginForm: React.FC = () => {
@@ -11,6 +11,16 @@ const LoginForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Show message from location state (e.g., session expired)
+  useEffect(() => {
+    if (location.state?.message) {
+      setError(location.state.message);
+      // Clear location state to prevent showing message again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
