@@ -18,6 +18,22 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
    const [showShareMenu, setShowShareMenu] = useState(false);
    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
+   // Debug: API'den gelen tour verisini kontrol et
+   useEffect(() => {
+     if (tour) {
+       console.log('FeatureDetailsArea - Tour data:', {
+         id: tour.id,
+         title: tour.title,
+         thumbnail: tour.thumbnail,
+         images: tour.images,
+         imagesLength: tour.images?.length,
+         firstImage: tour.images?.[0],
+         normalizedThumbnail: normalizeImageUrl(tour.thumbnail),
+         normalizedFirstImage: normalizeImageUrl(tour.images?.[0]),
+       });
+     }
+   }, [tour]);
+
    // Check wishlist status when component mounts or tour changes
    useEffect(() => {
      const checkWishlistStatus = async () => {
@@ -778,17 +794,19 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
          </div>
           {/* Video modal removed for cleaner dynamic gallery */}
           
-          {/* CSS to hide header on mobile when lightbox is open and improve lightbox styling */}
+          {/* CSS to hide header when lightbox is open and improve lightbox styling */}
           <style>{`
-            /* Hide header on mobile when lightbox is open */
-            @media (max-width: 991px) {
-              body.lightbox-open header,
-              body.lightbox-open #header-sticky {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
-              }
+            /* Hide header on ALL devices when lightbox is open */
+            body.lightbox-open header,
+            body.lightbox-open #header-sticky,
+            body.lightbox-open .tg-header__area,
+            body.lightbox-open .tg-header-height,
+            body.lightbox-open .header-sticky {
+              display: none !important;
+              visibility: hidden !important;
+              opacity: 0 !important;
+              pointer-events: none !important;
+              z-index: -1 !important;
             }
 
             /* Lightbox Close Button - Mobilde sağa geç */
