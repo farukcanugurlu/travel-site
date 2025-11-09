@@ -116,7 +116,7 @@ export class ToursService {
   }
 
   async findBySlug(slug: string) {
-    return this.prisma.tour.findUnique({
+    const tour = await this.prisma.tour.findUnique({
       where: { slug },
       include: {
         destination: true,
@@ -127,6 +127,23 @@ export class ToursService {
         },
       },
     });
+    
+    // Debug: API'den dönen veriyi logla
+    if (tour) {
+      console.log('ToursService - findBySlug response:', {
+        id: tour.id,
+        title: tour.title,
+        slug: tour.slug,
+        thumbnail: tour.thumbnail,
+        images: tour.images,
+        imagesLength: Array.isArray(tour.images) ? tour.images.length : 'not array',
+        imagesType: typeof tour.images,
+      });
+    } else {
+      console.log('ToursService - findBySlug: Tour not found for slug:', slug);
+    }
+    
+    return tour;
   }
 
   async update(id: string, updateTourDto: UpdateTourDto) {
