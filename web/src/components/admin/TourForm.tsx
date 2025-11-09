@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toursApiService from '../../api/tours';
 import { destinationsApiService } from '../../api/destinations';
 import ImageUpload from '../common/ImageUpload';
+import MultipleImageUpload from '../common/MultipleImageUpload';
 import type { TourPackage } from '../../api/tours';
 
 const TourForm: React.FC = () => {
@@ -1044,9 +1045,29 @@ const TourForm: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label>Gallery Images</label>
-            <p className="form-hint">Upload multiple images for the tour gallery</p>
-            {/* TODO: Add multiple image upload */}
+            <MultipleImageUpload
+              onImagesChange={(imageUrls) => {
+                setFormData(prev => ({
+                  ...prev,
+                  images: imageUrls
+                }));
+                // If thumbnail is empty, set first image as thumbnail
+                if (!prev.thumbnail && imageUrls.length > 0) {
+                  setFormData(prev => ({
+                    ...prev,
+                    thumbnail: imageUrls[0]
+                  }));
+                }
+              }}
+              currentImages={formData.images}
+              label="Gallery Images"
+              folder="tours"
+              maxSize={5}
+              maxFiles={20}
+            />
+            <p className="form-hint" style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+              Upload multiple images for the tour gallery. The first image will be used as thumbnail if no thumbnail is set.
+            </p>
           </div>
         </div>
 
