@@ -56,12 +56,12 @@ const BannerFormThree = () => {
           border-radius: 24px 24px 0 0;
         }
         
-        .tg-booking-form-tabs {
-          margin-bottom: 24px;
-          padding-bottom: 24px;
-          border-bottom: 2px solid #f0f0f5;
-          position: relative;
-        }
+         .tg-booking-form-tabs {
+           margin-bottom: 16px;
+           padding-bottom: 16px;
+           border-bottom: 2px solid #f0f0f5;
+           position: relative;
+         }
         
         .tg-booking-form-tabs::after {
           content: "";
@@ -75,39 +75,39 @@ const BannerFormThree = () => {
           border-radius: 2px;
         }
         
-        .tg-booking-form-tabs .nav-link {
-          background: transparent;
-          border: none;
-          padding: 16px 24px;
-          border-radius: 16px;
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          font-weight: 700;
-          font-size: 18px;
-          color: #2c3e50;
-          letter-spacing: -0.3px;
-          transition: all 0.3s ease;
-          position: relative;
-        }
+         .tg-booking-form-tabs .nav-link {
+           background: transparent;
+           border: none;
+           padding: 12px 20px;
+           border-radius: 16px;
+           display: inline-flex;
+           align-items: center;
+           gap: 10px;
+           font-weight: 700;
+           font-size: 17px;
+           color: #2c3e50;
+           letter-spacing: -0.3px;
+           transition: all 0.3s ease;
+           position: relative;
+         }
         
         .tg-booking-form-tabs .nav-link:hover {
           background: #f8f9ff;
           transform: translateY(-2px);
         }
         
-        .tg-booking-form-tabs .nav-link .icon {
-          width: 48px;
-          height: 48px;
-          border-radius: 16px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #7f0af5 0%, #560CE3 100%);
-          color: #fff;
-          box-shadow: 0 8px 20px rgba(127, 10, 245, 0.3);
-          transition: all 0.3s ease;
-        }
+         .tg-booking-form-tabs .nav-link .icon {
+           width: 42px;
+           height: 42px;
+           border-radius: 14px;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           background: linear-gradient(135deg, #7f0af5 0%, #560CE3 100%);
+           color: #fff;
+           box-shadow: 0 8px 20px rgba(127, 10, 245, 0.3);
+           transition: all 0.3s ease;
+         }
         
         .tg-booking-form-tabs .nav-link:hover .icon {
           transform: translateY(-2px);
@@ -118,30 +118,30 @@ const BannerFormThree = () => {
           display: none;
         }
         
-        @media (min-width: 992px) {
-          .tg-booking-form-tabs .nav-link {
-            font-size: 20px;
-            padding: 18px 28px;
-          }
-          .tg-booking-form-tabs .nav-link .icon {
-            width: 52px;
-            height: 52px;
-          }
-        }
+         @media (min-width: 992px) {
+           .tg-booking-form-tabs .nav-link {
+             font-size: 19px;
+             padding: 14px 24px;
+           }
+           .tg-booking-form-tabs .nav-link .icon {
+             width: 46px;
+             height: 46px;
+           }
+         }
       `}</style>
       
       <div className="container">
         <div className="row">
           <div className="col-lg-12">
             {/* Kartı daraltıp ortaladık */}
-            <div
-              className="tg-booking-form-wrap"
-              style={{
-                maxWidth: 980,
-                margin: "0 auto",
-                padding: "32px 24px",
-              }}
-            >
+               <div
+                 className="tg-booking-form-wrap"
+                 style={{
+                   maxWidth: 980,
+                   margin: "0 auto",
+                   padding: "24px 20px",
+                 }}
+               >
               {/* Sekmeler (tek sekme) */}
               <div className="tg-booking-form-tabs">
                 <div
