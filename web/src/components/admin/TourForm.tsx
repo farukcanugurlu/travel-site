@@ -1079,17 +1079,17 @@ const TourForm: React.FC = () => {
           <div className="form-group">
             <MultipleImageUpload
               onImagesChange={(imageUrls) => {
-                setFormData(prev => ({
-                  ...prev,
-                  images: imageUrls
-                }));
-                // If thumbnail is empty, set first image as thumbnail
-                if (!prev.thumbnail && imageUrls.length > 0) {
-                  setFormData(prev => ({
+                setFormData(prev => {
+                  const newData = {
                     ...prev,
-                    thumbnail: imageUrls[0]
-                  }));
-                }
+                    images: imageUrls
+                  };
+                  // If thumbnail is empty, set first image as thumbnail
+                  if (!prev.thumbnail && imageUrls.length > 0) {
+                    newData.thumbnail = imageUrls[0];
+                  }
+                  return newData;
+                });
               }}
               currentImages={formData.images}
               label="Gallery Images"

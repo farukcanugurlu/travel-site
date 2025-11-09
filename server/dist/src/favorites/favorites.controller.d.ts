@@ -6,14 +6,14 @@ export declare class FavoritesController {
     create(createFavoriteDto: CreateFavoriteDto): Promise<{
         id: string;
         createdAt: Date;
-        tourId: string;
         userId: string;
+        tourId: string;
     }>;
     findByUser(userId: string): Promise<({
         tour: {
             id: string;
-            slug: string;
             title: string;
+            slug: string;
             thumbnail: string;
             destination: {
                 name: string;
@@ -26,14 +26,14 @@ export declare class FavoritesController {
     } & {
         id: string;
         createdAt: Date;
-        tourId: string;
         userId: string;
+        tourId: string;
     })[]>;
     findOne(userId: string, tourId: string): Promise<{
         tour: {
             id: string;
-            slug: string;
             title: string;
+            slug: string;
             thumbnail: string;
             destination: {
                 name: string;
@@ -46,8 +46,8 @@ export declare class FavoritesController {
     } & {
         id: string;
         createdAt: Date;
-        tourId: string;
         userId: string;
+        tourId: string;
     }>;
     remove(userId: string, tourId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     getUserFavoriteCount(userId: string): Promise<number>;

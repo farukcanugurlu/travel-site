@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toursApiService from '../../api/tours';
 import type { Tour } from '../../api/tours';
+import { normalizeImageUrl } from '../../utils/imageUtils';
 
 const ToursAdmin: React.FC = () => {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -174,17 +175,61 @@ const ToursAdmin: React.FC = () => {
             {tours.map((tour) => (
               <div key={tour.id} className="table-row">
                 <div className="col-image">
-                  <img 
-                    src={(() => {
-                      const imgUrl = tour.thumbnail || '/assets/img/listing/listing-1.jpg';
-                      if (imgUrl.startsWith('/uploads/')) {
-                        return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
+                  {(() => {
+                    // Get image: thumbnail first, then first image from images array, then placeholder
+                    let imageUrl: string | null = null;
+                    
+                    if (tour.thumbnail) {
+                      imageUrl = tour.thumbnail;
+                    } else if (tour.images && Array.isArray(tour.images) && tour.images.length > 0) {
+                      // Get first valid uploaded image (skip stock photos)
+                      const firstValidImage = tour.images.find(img => 
+                        img && 
+                        !img.includes('/assets/img/listing/') && 
+                        !img.includes('listing-') && 
+                        !img.includes('default-tour') &&
+                        (img.startsWith('/uploads/') || img.includes('/uploads/') || img.startsWith('http'))
+                      );
+                      if (firstValidImage) {
+                        imageUrl = firstValidImage;
                       }
-                      return imgUrl;
-                    })()} 
-                    alt={tour.title}
-                    className="tour-thumbnail"
-                  />
+                    }
+                    
+                    if (imageUrl) {
+                      return (
+                        <img 
+                          src={normalizeImageUrl(imageUrl)} 
+                          alt={tour.title}
+                          className="tour-thumbnail"
+                          onError={(e) => {
+                            // Fallback to placeholder if image fails to load
+                            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="60" height="60"%3E%3Crect fill="%23f0f0f0" width="60" height="60"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
+                          }}
+                        />
+                      );
+                    } else {
+                      // Placeholder
+                      return (
+                        <div 
+                          className="tour-thumbnail-placeholder"
+                          style={{
+                            width: '60px',
+                            height: '60px',
+                            backgroundColor: '#f0f0f0',
+                            borderRadius: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#999',
+                            fontSize: '12px',
+                            fontWeight: 500
+                          }}
+                        >
+                          No Image
+                        </div>
+                      );
+                    }
+                  })()}
                 </div>
                 
                 <div className="col-title">

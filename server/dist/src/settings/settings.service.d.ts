@@ -44,6 +44,10 @@ export interface SiteSettingsData {
     ogImage?: string;
     twitterHandle?: string;
     defaultMetaDescription?: string;
+    toursHeroImage?: string;
+    cartHeroImage?: string;
+    contactHeroImage?: string;
+    blogHeroImage?: string;
 }
 export declare class SettingsService {
     private prisma;

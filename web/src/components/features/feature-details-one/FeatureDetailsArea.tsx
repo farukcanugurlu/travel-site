@@ -20,32 +20,71 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
 
    // Filter out stock photos - only show uploaded images
    const getValidImages = () => {
-     const validImages: string[] = [];
-     
-     // Add thumbnail if it's a valid uploaded image
-     if (tour.thumbnail) {
-       const thumb = tour.thumbnail;
-       // Check if it's an uploaded image (starts with /uploads/ or is a full URL with /uploads/)
-       if (thumb.startsWith('/uploads/') || thumb.includes('/uploads/') || thumb.startsWith('http')) {
-         validImages.push(thumb);
+     // Helper: Extract ONLY the filename from any URL format (most reliable)
+     const getFileName = (url: string): string => {
+       if (!url) return '';
+       try {
+         // Normalize first to get consistent format
+         const normalized = normalizeImageUrl(url);
+         // Remove query params and fragments
+         let path = normalized.split('?')[0].split('#')[0];
+         // Remove domain (http://... or https://...)
+         path = path.replace(/^https?:\/\/[^\/]+/, '');
+         // Extract filename (last part after /)
+         const filename = path.split('/').pop() || '';
+         // Remove any additional path segments and get just the filename
+         return filename.toLowerCase().trim();
+       } catch (e) {
+         return '';
        }
-     }
+     };
      
-     // Filter images array - only include uploaded images
-     if (tour.images && Array.isArray(tour.images)) {
+     const validImages: string[] = [];
+     const seenFileNames = new Set<string>();
+     
+     // PRIORITY: Use images array first (if it has valid images)
+     let hasValidImagesInArray = false;
+     if (tour.images && Array.isArray(tour.images) && tour.images.length > 0) {
        tour.images.forEach((img) => {
-         // Skip stock photos (listing-*.jpg, default-tour.jpg, etc.)
+         // Skip stock photos
          if (img && !img.includes('/assets/img/listing/') && !img.includes('listing-') && !img.includes('default-tour')) {
-           // Only include uploaded images or full URLs
+           // Only include uploaded images
            if (img.startsWith('/uploads/') || img.includes('/uploads/') || img.startsWith('http')) {
-             // Avoid duplicates
-             if (!validImages.includes(img)) {
+             const fileName = getFileName(img);
+             if (fileName && !seenFileNames.has(fileName)) {
                validImages.push(img);
+               seenFileNames.add(fileName);
+               hasValidImagesInArray = true;
              }
            }
          }
        });
      }
+     
+     // Only add thumbnail if images array is empty or has no valid images
+     // This prevents duplicate when thumbnail and images[0] are the same photo with different filenames
+     if (!hasValidImagesInArray && tour.thumbnail) {
+       const thumb = tour.thumbnail;
+       if (thumb.startsWith('/uploads/') || thumb.includes('/uploads/') || thumb.startsWith('http')) {
+         const thumbFileName = getFileName(thumb);
+         if (thumbFileName && !seenFileNames.has(thumbFileName)) {
+           validImages.push(thumb);
+           seenFileNames.add(thumbFileName);
+         }
+       }
+     }
+     
+     // Debug log
+     console.log('FeatureDetailsArea - getValidImages:', {
+       thumbnail: tour.thumbnail,
+       images: tour.images,
+       hasValidImagesInArray,
+       thumbnailFileName: tour.thumbnail ? getFileName(tour.thumbnail) : null,
+       firstImageFileName: tour.images?.[0] ? getFileName(tour.images[0]) : null,
+       validImagesCount: validImages.length,
+       validImages,
+       seenFileNames: Array.from(seenFileNames)
+     });
      
      return validImages;
    };

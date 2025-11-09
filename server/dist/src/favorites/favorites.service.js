@@ -81,7 +81,7 @@ let FavoritesService = class FavoritesService {
         });
     }
     async findOne(userId, tourId) {
-        return this.prisma.favorite.findFirst({
+        const favorite = await this.prisma.favorite.findFirst({
             where: {
                 userId,
                 tourId,
@@ -109,6 +109,10 @@ let FavoritesService = class FavoritesService {
                 },
             },
         });
+        if (!favorite) {
+            throw new common_1.NotFoundException(`Favorite not found for user ${userId} and tour ${tourId}`);
+        }
+        return favorite;
     }
     async remove(userId, tourId) {
         return this.prisma.favorite.deleteMany({
