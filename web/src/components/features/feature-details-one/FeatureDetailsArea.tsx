@@ -18,6 +18,40 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
    const [showShareMenu, setShowShareMenu] = useState(false);
    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
+   // Filter out stock photos - only show uploaded images
+   const getValidImages = () => {
+     const validImages: string[] = [];
+     
+     // Add thumbnail if it's a valid uploaded image
+     if (tour.thumbnail) {
+       const thumb = tour.thumbnail;
+       // Check if it's an uploaded image (starts with /uploads/ or is a full URL with /uploads/)
+       if (thumb.startsWith('/uploads/') || thumb.includes('/uploads/') || thumb.startsWith('http')) {
+         validImages.push(thumb);
+       }
+     }
+     
+     // Filter images array - only include uploaded images
+     if (tour.images && Array.isArray(tour.images)) {
+       tour.images.forEach((img) => {
+         // Skip stock photos (listing-*.jpg, default-tour.jpg, etc.)
+         if (img && !img.includes('/assets/img/listing/') && !img.includes('listing-') && !img.includes('default-tour')) {
+           // Only include uploaded images or full URLs
+           if (img.startsWith('/uploads/') || img.includes('/uploads/') || img.startsWith('http')) {
+             // Avoid duplicates
+             if (!validImages.includes(img)) {
+               validImages.push(img);
+             }
+           }
+         }
+       });
+     }
+     
+     return validImages;
+   };
+
+   const validImages = getValidImages();
+
    // Debug: API'den gelen tour verisini kontrol et
    useEffect(() => {
      if (tour) {
@@ -34,7 +68,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      }
    }, [tour]);
 
-   // Check wishlist status when component mounts, tour changes, or user changes
+   // Check wishlist status when component mounts or tour changes
    useEffect(() => {
      const checkWishlistStatus = async () => {
        // Reset state first
@@ -59,19 +93,6 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      };
 
      checkWishlistStatus();
-     
-     // Also check when localStorage changes (user login/logout)
-     const handleStorageChange = (e: StorageEvent) => {
-       if (e.key === 'user' || e.key === 'authToken') {
-         checkWishlistStatus();
-       }
-     };
-     
-     window.addEventListener('storage', handleStorageChange);
-     
-     return () => {
-       window.removeEventListener('storage', handleStorageChange);
-     };
    }, [tour?.id]);
 
    // Close share menu when clicking outside
@@ -127,7 +148,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
        document.body.style.overflow = '';
        document.body.classList.remove('lightbox-open');
      };
-   }, [selectedImageIndex, tour.images, tour.thumbnail]);
+   }, [selectedImageIndex, validImages]);
 
    const handleWishlistToggle = async () => {
      if (isLoading) return;
@@ -154,14 +175,29 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
        if (previousState) {
          // Remove from favorites
          await favoritesApiService.removeFromFavorites(currentUser.id, tour.id);
-         setIsInWishlist(false); // Directly set to false after successful removal
+         // Directly set to false after successful removal
+         setIsInWishlist(false);
+         console.log('Wishlist removed - state set to false, previousState:', previousState);
          toast.success('Removed from wishlist');
        } else {
          // Add to favorites
          await favoritesApiService.addToFavorites(currentUser.id, tour.id);
-         setIsInWishlist(true); // Directly set to true after successful addition
+         // Directly set to true after successful addition
+         setIsInWishlist(true);
+         console.log('Wishlist added - state set to true, previousState:', previousState);
          toast.success('Added to wishlist');
        }
+       
+       // Force a re-check after a short delay to ensure state is correct
+       setTimeout(async () => {
+         try {
+           const verified = await favoritesApiService.isFavorite(currentUser.id, tour.id);
+           console.log('Wishlist verification after toggle:', verified);
+           setIsInWishlist(verified);
+         } catch (error) {
+           console.error('Error verifying wishlist status after toggle:', error);
+         }
+       }, 500);
      } catch (error) {
        console.error('Failed to toggle wishlist:', error);
        // Rollback to previous state on error
@@ -560,18 +596,15 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                         className="tg-tour-details-video-thumb mb-15"
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
-                          const allImages = tour.images && tour.images.length > 0 
-                            ? tour.images 
-                            : (tour.thumbnail ? [tour.thumbnail] : []);
-                          if (allImages.length > 0) {
+                          if (validImages.length > 0) {
                             setSelectedImageIndex(0);
                           }
                         }}
                      >
-                        {((tour.images && tour.images[0]) || tour.thumbnail) ? (
+                        {validImages.length > 0 ? (
                           <img
                             className="w-100"
-                            src={normalizeImageUrl((tour.images && tour.images[0]) || tour.thumbnail)}
+                            src={normalizeImageUrl(validImages[0])}
                             alt={tour.title}
                             style={{ transition: 'transform 0.3s ease' }}
                             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
@@ -594,7 +627,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                   </div>
                   <div className="col-lg-5">
                     <div className="row gx-15">
-                      {(tour.images || []).slice(1, 5).map((img, idx) => {
+                      {validImages.slice(1, 5).map((img, idx) => {
                         const imageIndex = idx + 1; // +1 because first image is in the main column
                         return (
                         <div key={idx} className="col-lg-6 col-md-6">
@@ -602,10 +635,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                               className="tg-tour-details-video-thumb mb-15"
                               style={{ cursor: 'pointer' }}
                               onClick={() => {
-                                const allImages = tour.images && tour.images.length > 0 
-                                  ? tour.images 
-                                  : (tour.thumbnail ? [tour.thumbnail] : []);
-                                if (allImages.length > imageIndex) {
+                                if (validImages.length > imageIndex) {
                                   setSelectedImageIndex(imageIndex);
                                 }
                               }}
@@ -712,12 +742,9 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                    <button
                      onClick={(e) => {
                        e.stopPropagation();
-                       const allImages = tour.images && tour.images.length > 0 
-                         ? tour.images 
-                         : (tour.thumbnail ? [tour.thumbnail] : []);
-                       if (allImages.length > 0) {
+                       if (validImages.length > 0) {
                          setSelectedImageIndex(
-                           selectedImageIndex < allImages.length - 1 ? selectedImageIndex + 1 : 0
+                           selectedImageIndex !== null && selectedImageIndex < validImages.length - 1 ? selectedImageIndex + 1 : 0
                          );
                        }
                      }}
@@ -761,10 +788,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                      }}
                    >
                      {(() => {
-                       const allImages = tour.images && tour.images.length > 0 
-                         ? tour.images 
-                         : (tour.thumbnail ? [tour.thumbnail] : []);
-                       const currentImage = allImages[selectedImageIndex] || tour.thumbnail;
+                       const currentImage = validImages[selectedImageIndex!] || validImages[0];
                        
                        if (!currentImage) {
                          return (
@@ -817,7 +841,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                            fontSize: '14px'
                          }}
                        >
-                         {selectedImageIndex! + 1} / {allImages.length}
+                         {selectedImageIndex! + 1} / {validImages.length}
                        </div>
                      );
                    })()}
