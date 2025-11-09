@@ -4,9 +4,16 @@ import settingsApi, { type SiteSettingsData } from '../../api/settings';
 import { normalizeImageUrl } from '../../utils/imageUtils';
 
 const FooterThree = () => {
-  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  useEffect(() => { settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); }, []);
-  const logo = settings?.logo ? normalizeImageUrl(settings.logo) : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : '/assets/img/logo/logo-white.png');
+  // İlk render'da cache'den oku (stock logo flash'ını önlemek için)
+  const [settings, setSettings] = useState<SiteSettingsData | null>(() => {
+    return settingsApi.getCachedSettingsSync();
+  });
+  
+  useEffect(() => { 
+    // Cache'den okuduktan sonra API'den güncel veriyi çek
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); 
+  }, []);
+  const logo = settings?.logo ? normalizeImageUrl(settings.logo) : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : null);
   const companyDescription = settings?.companyDescription || 'Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world.';
   const address = settings?.officeAddress || 'Antalya';
   const phone = settings?.phone || settings?.phone1 || '+90 500 000 00 00';
@@ -141,11 +148,13 @@ const FooterThree = () => {
                 {/* Left: logo + text + socials */}
                 <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 footer-left-holder">
                   <div className="tg-footer-widget mb-40">
-                    <div className="tg-footer-logo mb-20">
-                      <Link to="/">
-                        <img src={logo} alt="Lexor" />
-                      </Link>
-                    </div>
+                    {logo && (
+                      <div className="tg-footer-logo mb-20">
+                        <Link to="/">
+                          <img src={logo} alt="Lexor" />
+                        </Link>
+                      </div>
+                    )}
 
                     {companyDescription && (
                       <p className="mb-20 footer-intro">

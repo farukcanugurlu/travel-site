@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from "react";
 import location_data from "../../../data/LocationData";
 import toursApiService from "../../../api/tours";
 import { destinationsApiService } from "../../../api/destinations";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 import type { Tour } from "../../../api/tours";
 import type { Destination } from "../../../api/destinations";
 
@@ -40,7 +41,12 @@ const WANTED: readonly string[] = [
 
 const Location = () => {
   const [tours, setTours] = useState<Tour[]>([]);
-  const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>([]);
+  // İlk render'da cache'den oku (stock foto flash'ını önlemek için)
+  const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>(() => {
+    // Destinations için cache yok, bu yüzden boş başlat
+    // API'den geldiğinde güncellenecek
+    return [];
+  });
 
   useEffect(() => {
     fetchData();
@@ -94,36 +100,24 @@ const Location = () => {
   const cards = useMemo(() => {
     // Always prioritize API data if available
     if (featuredDestinations && featuredDestinations.length > 0) {
-      const mappedCards = featuredDestinations.map(dest => {
-        const tourCount = dest._count?.tours || tourCountByDest.get(canonical(dest.name)) || 0;
-        const imageUrl = dest.image 
-          ? (dest.image.startsWith('http') ? dest.image : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${dest.image}`)
-          : `/assets/img/destination/${dest.slug}.jpg`;
-        
-        return {
-          id: dest.id,
-          title: dest.name,
-          thumb: imageUrl,
-          total: tourCount.toString(),
-        };
-      });
+      const mappedCards = featuredDestinations
+        .filter(dest => dest.image) // Sadece image'i olan destinasyonları göster
+        .map(dest => {
+          const tourCount = dest._count?.tours || tourCountByDest.get(canonical(dest.name)) || 0;
+          const imageUrl = normalizeImageUrl(dest.image);
+          
+          return {
+            id: dest.id,
+            title: dest.name,
+            thumb: imageUrl,
+            total: tourCount.toString(),
+          };
+        });
       return mappedCards;
     }
 
-    // Fallback to old method only if no featured destinations from API
-    const locList: LocItem[] = (location_data as unknown as LocItem[]).filter(
-      (i) => i.page === "home_3"
-    );
-  const wantedNorm = WANTED.map(canonical);
-  const picked: LocItem[] = locList
-    .filter((i) => wantedNorm.includes(canonical(i.title)))
-    .sort(
-      (a, b) =>
-        wantedNorm.indexOf(canonical(a.title)) -
-        wantedNorm.indexOf(canonical(b.title))
-    )
-    .slice(0, 8);
-    return picked.length ? picked : locList.slice(0, 8);
+    // API'den data gelmediyse boş döndür (stock fotoğraf gösterme)
+    return [];
   }, [featuredDestinations, tourCountByDest]);
 
   return (
@@ -168,11 +162,11 @@ const Location = () => {
             const destKey = canonical(item.title);
             const count = typeof item.total === 'string' ? parseInt(item.total) : (tourCountByDest.get(destKey) ?? 0);
             const destParam = encodeURIComponent(item.title);
-            const imageUrl = item.thumb?.startsWith('http') 
-              ? item.thumb 
-              : (item.thumb?.startsWith('/uploads/') 
-                ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${item.thumb}`
-                : item.thumb || '/assets/img/destination/des.jpg');
+            // Sadece API'den gelen image'leri kullan, stock fotoğraf yok
+            const imageUrl = item.thumb ? normalizeImageUrl(item.thumb) : null;
+
+            // Eğer image yoksa bu card'ı render etme
+            if (!imageUrl) return null;
 
             return (
               <div
@@ -192,10 +186,6 @@ const Location = () => {
                           className="w-100"
                           src={imageUrl}
                           alt={item.title}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/assets/img/destination/des.jpg';
-                          }}
                         />
                       </Link>
                     </div>

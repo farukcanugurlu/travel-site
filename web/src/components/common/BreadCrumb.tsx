@@ -9,8 +9,29 @@ interface DataType {
   pageType?: 'tours' | 'cart' | 'contact' | 'blog' | 'default';
 }
 const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
-  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  const [heroImage, setHeroImage] = useState<string>('/assets/img/breadcrumb/tours-hero.jpg');
+  // İlk render'da cache'den oku
+  const cachedSettings = settingsApi.getCachedSettingsSync();
+  const [settings, setSettings] = useState<SiteSettingsData | null>(cachedSettings);
+  
+  // Hero image'i cache'den veya default'tan başlat
+  const getInitialHeroImage = () => {
+    if (!cachedSettings) return '/assets/img/breadcrumb/tours-hero.jpg';
+    
+    switch (pageType) {
+      case 'tours':
+        return cachedSettings?.toursHeroImage || '/assets/img/breadcrumb/tours-hero.jpg';
+      case 'cart':
+        return cachedSettings?.cartHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+      case 'contact':
+        return cachedSettings?.contactHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+      case 'blog':
+        return cachedSettings?.blogHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+      default:
+        return '/assets/img/breadcrumb/breadcrumb.jpg';
+    }
+  };
+  
+  const [heroImage, setHeroImage] = useState<string>(getInitialHeroImage());
 
   useEffect(() => {
     const loadSettings = async () => {

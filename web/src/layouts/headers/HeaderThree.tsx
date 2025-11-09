@@ -12,8 +12,15 @@ const HeaderThree = () => {
   const { sticky } = UseSticky();
   const [offCanvas, setOffCanvas] = useState<boolean>(false);
   const [sidebar, setSidebar] = useState<boolean>(false);
-  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  useEffect(() => { settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); }, []);
+  // İlk render'da cache'den oku (stock logo flash'ını önlemek için)
+  const [settings, setSettings] = useState<SiteSettingsData | null>(() => {
+    return settingsApi.getCachedSettingsSync();
+  });
+  
+  useEffect(() => { 
+    // Cache'den okuduktan sonra API'den güncel veriyi çek
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); 
+  }, []);
   
   const currentUser = authApiService.getCurrentUser();
 
@@ -236,18 +243,20 @@ const HeaderThree = () => {
               <div className="col-lg-7 col-5">
                 <div className="tgmenu__wrap d-flex align-items-center">
                   <div className="logo">
-                    <Link className="logo-1" to="/">
-                      <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-white.png"} alt="Lexor" />
-                    </Link>
-                    <Link className="logo-2" to="/">
-                      <img src={
-                        settings?.logoSticky 
-                          ? normalizeImageUrl(settings.logoSticky) 
-                          : (settings?.logo 
-                            ? normalizeImageUrl(settings.logo) 
-                            : "/assets/img/logo/logo-green.png")
-                      } alt="Lexor" />
-                    </Link>
+                    {settings?.logo && (
+                      <>
+                        <Link className="logo-1" to="/">
+                          <img src={normalizeImageUrl(settings.logo)} alt="Lexor" />
+                        </Link>
+                        <Link className="logo-2" to="/">
+                          <img src={
+                            settings?.logoSticky 
+                              ? normalizeImageUrl(settings.logoSticky) 
+                              : normalizeImageUrl(settings.logo)
+                          } alt="Lexor" />
+                        </Link>
+                      </>
+                    )}
                   </div>
 
                   <nav className="tgmenu__nav tgmenu-1-space ml-180">
