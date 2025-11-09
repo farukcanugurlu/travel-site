@@ -1025,23 +1025,55 @@ const TourForm: React.FC = () => {
             <label>Thumbnail Image</label>
             <ImageUpload
               onImageUploaded={(url, key) => {
-                console.log('Image uploaded, setting thumbnail and images:', url);
+                console.log('Image uploaded, setting thumbnail:', url);
                 // Set thumbnail
                 setFormData(prev => ({
                   ...prev,
                   thumbnail: url
                 }));
-                // Add to images array if empty
+                // Add to images array if not already included
                 setFormData(prev => ({
                   ...prev,
-                  images: prev.images.length > 0 ? prev.images : [url]
+                  images: prev.images.includes(url) ? prev.images : [url, ...prev.images]
                 }));
               }}
               currentImage={formData.thumbnail || (formData.images && formData.images[0])}
-              label="Upload Thumbnail"
+              label="Upload Thumbnail (or select from gallery below)"
               folder="tours"
               maxSize={5}
             />
+            {formData.images.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Or select from gallery:</p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {formData.images.map((img, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          thumbnail: img
+                        }));
+                      }}
+                      style={{
+                        padding: '4px 8px',
+                        border: formData.thumbnail === img ? '2px solid #7f0af5' : '1px solid #ddd',
+                        borderRadius: '4px',
+                        background: formData.thumbnail === img ? '#f0e6ff' : '#fff',
+                        cursor: 'pointer',
+                        fontSize: '11px',
+                        color: formData.thumbnail === img ? '#7f0af5' : '#666',
+                        fontWeight: formData.thumbnail === img ? 600 : 400
+                      }}
+                    >
+                      {index === 0 ? 'First' : `Image ${index + 1}`}
+                      {formData.thumbnail === img && ' ✓'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="form-group">
