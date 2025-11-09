@@ -44,17 +44,7 @@ async function bootstrap() {
     ].filter(Boolean);
     app.enableCors({
         origin: (origin, callback) => {
-            console.log('CORS Request:', {
-                origin,
-                allowedOrigins,
-                nodeEnv: process.env.NODE_ENV,
-                timestamp: new Date().toISOString()
-            });
             if (!origin) {
-                console.warn('CORS: Request with no origin detected');
-                if (process.env.NODE_ENV === 'production') {
-                    return callback(null, true);
-                }
                 return callback(null, true);
             }
             const normalizedOrigin = origin.replace(/^https?:\/\/(www\.)?/, '');
@@ -67,12 +57,9 @@ async function bootstrap() {
             }
             else {
                 if (process.env.NODE_ENV === 'production') {
-                    console.error('CORS: Blocked origin:', origin);
-                    console.error('CORS: Allowed origins:', allowedOrigins);
                     callback(null, true);
                 }
                 else {
-                    console.warn('CORS: Unknown origin allowed in development:', origin);
                     callback(null, true);
                 }
             }

@@ -38,7 +38,14 @@ class FavoritesApiService {
     try {
       await apiService.get<Favorite>(`/favorites/${userId}/${tourId}`);
       return true;
-    } catch {
+    } catch (error: any) {
+      // Only return false if it's a 404 (not found) error
+      // Other errors (network, 500, etc.) should be handled differently
+      if (error?.status === 404) {
+        return false;
+      }
+      // For other errors, log and return false (assume not favorite)
+      console.error('Error checking favorite status:', error);
       return false;
     }
   }

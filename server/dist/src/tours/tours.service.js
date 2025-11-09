@@ -100,7 +100,7 @@ let ToursService = class ToursService {
         });
     }
     async findBySlug(slug) {
-        return this.prisma.tour.findUnique({
+        const tour = await this.prisma.tour.findUnique({
             where: { slug },
             include: {
                 destination: true,
@@ -111,6 +111,21 @@ let ToursService = class ToursService {
                 },
             },
         });
+        if (tour) {
+            console.log('ToursService - findBySlug response:', {
+                id: tour.id,
+                title: tour.title,
+                slug: tour.slug,
+                thumbnail: tour.thumbnail,
+                images: tour.images,
+                imagesLength: Array.isArray(tour.images) ? tour.images.length : 'not array',
+                imagesType: typeof tour.images,
+            });
+        }
+        else {
+            console.log('ToursService - findBySlug: Tour not found for slug:', slug);
+        }
+        return tour;
     }
     async update(id, updateTourDto) {
         const data = { ...updateTourDto };

@@ -34,17 +34,18 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      }
    }, [tour]);
 
-   // Check wishlist status when component mounts or tour changes
+   // Check wishlist status when component mounts, tour changes, or user changes
    useEffect(() => {
      const checkWishlistStatus = async () => {
+       // Reset state first
+       setIsInWishlist(false);
+       
        if (!authApiService.isAuthenticated()) {
-         setIsInWishlist(false);
          return;
        }
 
        const currentUser = authApiService.getCurrentUser();
        if (!currentUser || !tour?.id) {
-         setIsInWishlist(false);
          return;
        }
 
@@ -58,6 +59,19 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      };
 
      checkWishlistStatus();
+     
+     // Also check when localStorage changes (user login/logout)
+     const handleStorageChange = (e: StorageEvent) => {
+       if (e.key === 'user' || e.key === 'authToken') {
+         checkWishlistStatus();
+       }
+     };
+     
+     window.addEventListener('storage', handleStorageChange);
+     
+     return () => {
+       window.removeEventListener('storage', handleStorageChange);
+     };
    }, [tour?.id]);
 
    // Close share menu when clicking outside
@@ -129,24 +143,30 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      }
      
      setIsLoading(true);
+     const previousState = isInWishlist; // Store previous state for rollback
+     
      try {
        const currentUser = authApiService.getCurrentUser();
        if (!currentUser) {
          throw new Error('User not found');
        }
        
-       if (isInWishlist) {
+       if (previousState) {
+         // Remove from favorites
          await favoritesApiService.removeFromFavorites(currentUser.id, tour.id);
-         setIsInWishlist(false);
+         setIsInWishlist(false); // Directly set to false after successful removal
          toast.success('Removed from wishlist');
        } else {
+         // Add to favorites
          await favoritesApiService.addToFavorites(currentUser.id, tour.id);
-         setIsInWishlist(true);
+         setIsInWishlist(true); // Directly set to true after successful addition
          toast.success('Added to wishlist');
        }
      } catch (error) {
        console.error('Failed to toggle wishlist:', error);
-       toast.error('Failed to update wishlist');
+       // Rollback to previous state on error
+       setIsInWishlist(previousState);
+       toast.error('Failed to update wishlist. Please try again.');
      } finally {
        setIsLoading(false);
      }
