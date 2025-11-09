@@ -43,7 +43,28 @@ const LoginForm: React.FC = () => {
       console.error('Error details:', err);
       
       if (err instanceof Error) {
-        setError(`Login failed: ${err.message}`);
+        // Check if it's a network error
+        if ((err as any).isNetworkError) {
+          setError(
+            `Connection error: Unable to reach server.\n\n` +
+            `Please check:\n` +
+            `• Your internet connection\n` +
+            `• Backend server status\n` +
+            `• Try refreshing the page\n\n` +
+            `If the problem persists, contact support.`
+          );
+        } else if (err.message.includes('Failed to fetch')) {
+          setError(
+            `Network error: Cannot connect to server.\n\n` +
+            `Possible causes:\n` +
+            `• Backend server is down\n` +
+            `• CORS configuration issue\n` +
+            `• Network firewall blocking request\n\n` +
+            `Please try again or contact support.`
+          );
+        } else {
+          setError(`Login failed: ${err.message}`);
+        }
       } else {
         setError('Invalid email or password');
       }

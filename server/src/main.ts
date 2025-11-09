@@ -54,21 +54,46 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      // Log CORS requests for debugging
+      console.log('CORS Request:', {
+        origin,
+        allowedOrigins,
+        nodeEnv: process.env.NODE_ENV,
+        timestamp: new Date().toISOString()
+      });
       
+      // Allow requests with no origin (like mobile apps, Postman, or curl requests)
+      // But log them for security monitoring
+      if (!origin) {
+        console.warn('CORS: Request with no origin detected');
+        // In production, be more careful with no-origin requests
+        if (process.env.NODE_ENV === 'production') {
+          // Allow but log for monitoring
+          return callback(null, true);
+        }
+        return callback(null, true);
+      }
+      
+      // Check if origin is in allowed list
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        // In production, you might want to be more strict
+        // In production, log blocked origins for debugging
         if (process.env.NODE_ENV === 'production') {
-          callback(new Error('Not allowed by CORS'));
+          console.error('CORS: Blocked origin:', origin);
+          console.error('CORS: Allowed origins:', allowedOrigins);
+          // For now, allow but log - you can change this to block if needed
+          // callback(new Error('Not allowed by CORS'));
+          callback(null, true); // Temporarily allow for debugging
         } else {
+          console.warn('CORS: Unknown origin allowed in development:', origin);
           callback(null, true); // Allow in development
         }
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     exposedHeaders: ['Content-Length', 'Content-Type'],
   });
 

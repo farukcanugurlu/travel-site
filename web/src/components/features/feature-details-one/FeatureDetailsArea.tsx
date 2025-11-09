@@ -88,11 +88,13 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      if (selectedImageIndex !== null) {
        document.addEventListener('keydown', handleKeyDown);
        document.body.style.overflow = 'hidden'; // Prevent body scroll
+       document.body.classList.add('lightbox-open'); // Add class to hide header on mobile
      }
 
      return () => {
        document.removeEventListener('keydown', handleKeyDown);
        document.body.style.overflow = '';
+       document.body.classList.remove('lightbox-open');
      };
    }, [selectedImageIndex, tour.images, tour.thumbnail]);
 
@@ -766,6 +768,20 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
             </div>
          </div>
           {/* Video modal removed for cleaner dynamic gallery */}
+          
+          {/* CSS to hide header on mobile when lightbox is open */}
+          <style>{`
+            /* Hide header on mobile when lightbox is open */
+            @media (max-width: 991px) {
+              body.lightbox-open header,
+              body.lightbox-open #header-sticky {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+              }
+            }
+          `}</style>
        </>
     )
 }

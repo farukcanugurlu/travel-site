@@ -43,6 +43,8 @@ class ApiService {
     };
 
     try {
+      console.log('API Request:', { url, method: config.method || 'GET', endpoint });
+      
       const response = await fetch(url, config);
 
       // Get content type first
@@ -105,7 +107,42 @@ class ApiService {
       // Return parsed data
       return responseData as T;
     } catch (error) {
-      console.error('API request failed:', error);
+      // Enhanced error handling for network issues
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('Network error - possible causes:', {
+          url,
+          baseURL: this.baseURL,
+          endpoint,
+          error: error.message,
+          possibleCauses: [
+            'CORS issue - backend may not allow this origin',
+            'Network connectivity problem',
+            'Backend server is down or unreachable',
+            'Firewall or proxy blocking the request',
+            'SSL/HTTPS certificate issue',
+            'API URL misconfiguration'
+          ]
+        });
+        
+        // Provide more helpful error message
+        const networkError = new Error(
+          `Network error: Unable to reach server. Please check:\n` +
+          `1. Your internet connection\n` +
+          `2. Backend server is running\n` +
+          `3. API URL: ${this.baseURL}\n` +
+          `4. CORS settings on backend`
+        );
+        (networkError as any).isNetworkError = true;
+        (networkError as any).url = url;
+        throw networkError;
+      }
+      
+      console.error('API request failed:', {
+        url,
+        endpoint,
+        error,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
       throw error;
     }
   }
