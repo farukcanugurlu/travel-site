@@ -33,7 +33,7 @@ const Contact = () => {
           }
         `}</style>
 
-        <BreadCrumb title="Contact With Us" sub_title="Contact" />
+        <BreadCrumb title="Contact With Us" sub_title="Contact" pageType="contact" />
         <ContactArea />
 
         {/* (TR) Footer'ı aşağı iten görünmez boşluk */}

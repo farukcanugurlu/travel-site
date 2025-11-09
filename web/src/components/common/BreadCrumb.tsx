@@ -1,14 +1,54 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import settingsApi, { type SiteSettingsData } from "../../api/settings";
+import { normalizeImageUrl } from "../../utils/imageUtils";
 
 interface DataType {
   sub_title: string;
   title: string;
+  pageType?: 'tours' | 'cart' | 'contact' | 'blog' | 'default';
 }
-const BreadCrumb = ({ sub_title, title }: DataType) => {
+const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+  const [heroImage, setHeroImage] = useState<string>('/assets/img/breadcrumb/tours-hero.jpg');
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const data = await settingsApi.getSettings();
+        setSettings(data);
+        
+        // Set hero image based on page type
+        let imageUrl = '/assets/img/breadcrumb/tours-hero.jpg'; // default
+        switch (pageType) {
+          case 'tours':
+            imageUrl = data?.toursHeroImage || '/assets/img/breadcrumb/tours-hero.jpg';
+            break;
+          case 'cart':
+            imageUrl = data?.cartHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+            break;
+          case 'contact':
+            imageUrl = data?.contactHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+            break;
+          case 'blog':
+            imageUrl = data?.blogHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+            break;
+          default:
+            imageUrl = '/assets/img/breadcrumb/breadcrumb.jpg';
+        }
+        setHeroImage(imageUrl);
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        // Keep default image
+      }
+    };
+    loadSettings();
+  }, [pageType]);
+
   return (
     <div
       className="tg-breadcrumb-area tg-breadcrumb-spacing-5 fix p-relative z-index-1 include-bg"
-      style={{ backgroundImage: `url(/assets/img/breadcrumb/tours-hero.jpg)` }}
+      style={{ backgroundImage: `url(${normalizeImageUrl(heroImage)})` }}
     >
       <div className="tg-hero-top-shadow"></div>
       <div className="tg-breadcrumb-shadow"></div>

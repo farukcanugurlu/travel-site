@@ -185,6 +185,42 @@ const SiteSettings: React.FC = () => {
             />
           </div>
 
+          {/* Page Hero Images */}
+          <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Page Hero Images</h3>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#666' }}>Upload hero/banner images for different pages</p>
+          </div>
+
+          <div className="form-row">
+            <ImageUpload
+              label="Tours Page Hero Image"
+              folder="site"
+              currentImage={form.toursHeroImage || ''}
+              onImageUploaded={(url) => set('toursHeroImage', url)}
+            />
+            <ImageUpload
+              label="Cart Page Hero Image"
+              folder="site"
+              currentImage={form.cartHeroImage || ''}
+              onImageUploaded={(url) => set('cartHeroImage', url)}
+            />
+          </div>
+
+          <div className="form-row">
+            <ImageUpload
+              label="Contact Page Hero Image"
+              folder="site"
+              currentImage={form.contactHeroImage || ''}
+              onImageUploaded={(url) => set('contactHeroImage', url)}
+            />
+            <ImageUpload
+              label="Blog Page Hero Image"
+              folder="site"
+              currentImage={form.blogHeroImage || ''}
+              onImageUploaded={(url) => set('blogHeroImage', url)}
+            />
+          </div>
+
           {error && <div className="error">{error}</div>}
           {success && <div className="success">Saved</div>}
           <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Saving...' : 'Save Settings'}</button>

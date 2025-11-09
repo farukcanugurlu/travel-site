@@ -173,17 +173,31 @@ export default function BannerFormTwo() {
         }
         
         .tg-booking-form-title {
-          font-weight: 600;
+          font-weight: 700;
           color: #2c3e50;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
+          font-size: 15px;
+          letter-spacing: -0.2px;
         }
         
         .input {
-          font-size: 15px;
+          font-size: 16px;
           color: #2c3e50;
+          font-weight: 500;
         }
         .input::placeholder {
           color: #adb5bd;
+          font-weight: 400;
+        }
+        
+        .tg-booking-add-input-date {
+          transition: all 0.3s ease;
+        }
+        
+        .tg-booking-add-input-date:focus-within {
+          border-color: #7f0af5 !important;
+          box-shadow: 0 0 0 4px rgba(127, 10, 245, 0.1) !important;
+          transform: translateY(-1px);
         }
       `}</style>
 

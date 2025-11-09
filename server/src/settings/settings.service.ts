@@ -59,6 +59,12 @@ export interface SiteSettingsData {
   ogImage?: string;
   twitterHandle?: string;
   defaultMetaDescription?: string;
+
+  // Page Hero Images
+  toursHeroImage?: string;
+  cartHeroImage?: string;
+  contactHeroImage?: string;
+  blogHeroImage?: string;
 }
 
 @Injectable()

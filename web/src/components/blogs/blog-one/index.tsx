@@ -33,7 +33,7 @@ const BlogOne = () => {
           }
         `}</style>
 
-        <BreadCrumb title="Blogs" sub_title="Blog" />
+        <BreadCrumb title="Blog" sub_title="Blog" pageType="blog" />
         <BlogArea />
 
         {/* (TR) Footer'ı aşağı iten görünmez boşluk */}

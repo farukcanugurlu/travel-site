@@ -1,13 +1,30 @@
 // src/pages/HotelGridTwoMain.tsx
+import { useEffect, useState } from "react";
 import Wrapper from "../layouts/Wrapper";
 import SEO from "../components/SEO";
 import HeaderThree from "../layouts/headers/HeaderThree";
 import FooterThree from "../layouts/footers/FooterThree";
+import settingsApi, { type SiteSettingsData } from "../api/settings";
+import { normalizeImageUrl } from "../utils/imageUtils";
 
 import FeatureArea from "../components/features/feature-two/FeatureArea";
 import BannerFormTwo from "../components/common/banner-form/BannerFormTwo";
 
 const HotelGridTwoMain = () => {
+  const [heroImage, setHeroImage] = useState<string>('/assets/img/breadcrumb/breadcrumb.jpg');
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const data = await settingsApi.getSettings();
+        const imageUrl = data?.toursHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+        setHeroImage(imageUrl);
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
   return (
     <Wrapper>
       <SEO pageTitle="Tours" />
@@ -59,25 +76,67 @@ const HotelGridTwoMain = () => {
           }
           .tg-hero-inner{ position:relative; z-index:2; }
           .lexor-booking-card{
-            background:#fff; border-radius:20px;
-            box-shadow:0 20px 50px rgba(0,0,0,.10);
-            padding:26px 22px;
+            background:#fff; border-radius:24px;
+            box-shadow:0 24px 60px rgba(0,0,0,.12);
+            padding:32px 24px;
+            position:relative;
+            overflow:hidden;
           }
-          @media(min-width:992px){ .lexor-booking-card{ padding:28px; } }
+          @media(min-width:992px){ .lexor-booking-card{ padding:40px 32px; } }
+          
+          /* Gradient overlay for modern look */
+          .lexor-booking-card::before{
+            content:"";
+            position:absolute;
+            top:0; left:0; right:0;
+            height:4px;
+            background:linear-gradient(90deg, #7f0af5 0%, #560CE3 50%, #3498db 100%);
+            border-radius:24px 24px 0 0;
+          }
+          
           .lexor-booking-tab{
             display:flex; align-items:center; justify-content:center;
-            gap:10px; text-align:center;
-            border-bottom:1px solid #eee;
-            padding:10px 4px 18px; margin-bottom:18px;
+            gap:12px; text-align:center;
+            padding:0 0 24px; margin-bottom:24px;
+            border-bottom:2px solid #f0f0f5;
+            position:relative;
           }
+          
+          .lexor-booking-tab::after{
+            content:"";
+            position:absolute;
+            bottom:-2px;
+            left:50%;
+            transform:translateX(-50%);
+            width:60px;
+            height:2px;
+            background:linear-gradient(90deg, #7f0af5, #560CE3);
+            border-radius:2px;
+          }
+          
           .lexor-booking-tab .plane{
-            width:34px;height:34px;border-radius:50%;
+            width:48px;height:48px;border-radius:16px;
             display:inline-flex;align-items:center;justify-content:center;
-            background:#6f2cff; color:#fff; font-size:14px;
-            flex:0 0 34px;
+            background:linear-gradient(135deg, #7f0af5 0%, #560CE3 100%);
+            color:#fff; font-size:20px;
+            flex:0 0 48px;
+            box-shadow:0 8px 20px rgba(127, 10, 245, 0.3);
+            transition:all 0.3s ease;
           }
+          
+          .lexor-booking-tab:hover .plane{
+            transform:translateY(-2px);
+            box-shadow:0 12px 28px rgba(127, 10, 245, 0.4);
+          }
+          
           .lexor-booking-tab .text{
-            font-weight:700; color:#111; font-size:16px;
+            font-weight:700; color:#2c3e50; font-size:18px;
+            letter-spacing:-0.3px;
+          }
+          
+          @media(min-width:992px){
+            .lexor-booking-tab .text{ font-size:20px; }
+            .lexor-booking-tab .plane{ width:52px; height:52px; font-size:22px; }
           }
         `}</style>
 
@@ -86,7 +145,7 @@ const HotelGridTwoMain = () => {
           <div
             className="tg-hero-bg"
             style={{
-              backgroundImage: "url(/assets/img/breadcrumb/breadcrumb.jpg)",
+              backgroundImage: `url(${normalizeImageUrl(heroImage)})`,
             }}
             aria-hidden="true"
           />
