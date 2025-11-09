@@ -118,21 +118,17 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
      const handleKeyDown = (event: KeyboardEvent) => {
        if (selectedImageIndex === null) return;
        
-       const allImages = tour.images && tour.images.length > 0 
-         ? tour.images 
-         : (tour.thumbnail ? [tour.thumbnail] : []);
-       
        if (event.key === 'Escape') {
          setSelectedImageIndex(null);
        } else if (event.key === 'ArrowLeft') {
          setSelectedImageIndex((prev) => {
            if (prev === null) return null;
-           return prev > 0 ? prev - 1 : allImages.length - 1;
+           return prev > 0 ? prev - 1 : validImages.length - 1;
          });
        } else if (event.key === 'ArrowRight') {
          setSelectedImageIndex((prev) => {
            if (prev === null) return null;
-           return prev < allImages.length - 1 ? prev + 1 : 0;
+           return prev < validImages.length - 1 ? prev + 1 : 0;
          });
        }
      };
@@ -704,12 +700,9 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                    <button
                      onClick={(e) => {
                        e.stopPropagation();
-                       const allImages = tour.images && tour.images.length > 0 
-                         ? tour.images 
-                         : (tour.thumbnail ? [tour.thumbnail] : []);
-                       if (allImages.length > 0) {
+                       if (validImages.length > 0) {
                          setSelectedImageIndex(
-                           selectedImageIndex > 0 ? selectedImageIndex - 1 : allImages.length - 1
+                           selectedImageIndex !== null && selectedImageIndex > 0 ? selectedImageIndex - 1 : validImages.length - 1
                          );
                        }
                      }}
