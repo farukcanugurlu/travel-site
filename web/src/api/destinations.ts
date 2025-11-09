@@ -1,6 +1,10 @@
 // web/src/api/destinations.ts
 import apiService from './api';
 
+const DESTINATIONS_CACHE_KEY = 'featured_destinations_cache';
+const DESTINATIONS_CACHE_TIMESTAMP_KEY = 'featured_destinations_cache_timestamp';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika
+
 export interface Destination {
   id: string;
   name: string;
@@ -76,12 +80,68 @@ class DestinationsApiService {
     return apiService.get<any>('/destinations/stats');
   }
 
+  // Cache'den featured destinations'i oku
+  private getCachedFeaturedDestinations(): Destination[] | null {
+    if (typeof window === 'undefined') return null;
+    
+    try {
+      const cached = localStorage.getItem(DESTINATIONS_CACHE_KEY);
+      const timestamp = localStorage.getItem(DESTINATIONS_CACHE_TIMESTAMP_KEY);
+      
+      if (cached && timestamp) {
+        const cacheTime = parseInt(timestamp, 10);
+        const now = Date.now();
+        
+        // Cache hala geçerli mi? (5 dakika)
+        if (now - cacheTime < CACHE_DURATION) {
+          return JSON.parse(cached);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading destinations cache:', e);
+    }
+    
+    return null;
+  }
+
+  // Featured destinations'i cache'e kaydet
+  private setCachedFeaturedDestinations(data: Destination[]): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.setItem(DESTINATIONS_CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(DESTINATIONS_CACHE_TIMESTAMP_KEY, Date.now().toString());
+    } catch (e) {
+      console.error('Error saving destinations cache:', e);
+    }
+  }
+
+  // İlk render için cache'den oku (senkron)
+  getCachedFeaturedDestinationsSync(): Destination[] | null {
+    return this.getCachedFeaturedDestinations();
+  }
+
   async getFeaturedDestinations(limit: number = 8): Promise<Destination[]> {
     try {
+      // Önce cache'den oku
+      const cached = this.getCachedFeaturedDestinations();
+      
+      // API'den güncel veriyi çek
       const result = await apiService.get<Destination[]>(`/destinations/featured?limit=${limit}`);
-      return result || [];
+      const destinations = result || [];
+      
+      // Cache'i güncelle
+      this.setCachedFeaturedDestinations(destinations);
+      
+      return destinations;
     } catch (error) {
       console.error('Error fetching featured destinations:', error);
+      // API hatası varsa cache'den döndür
+      const cached = this.getCachedFeaturedDestinations();
+      if (cached) {
+        console.warn('Destinations API error, using cache:', error);
+        return cached;
+      }
       return [];
     }
   }
