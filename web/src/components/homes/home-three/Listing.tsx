@@ -8,6 +8,7 @@ import { type Tour } from "../../../api/tours";
 import toursApiService from "../../../api/tours";
 import favoritesApiService from "../../../api/favorites";
 import authApiService from "../../../api/auth";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 const Listing = () => {
   const iso = useRef<Isotope | null>(null);
@@ -165,6 +166,37 @@ const Listing = () => {
     };
   }, []);
 
+
+  // Filter out stock photos - only show uploaded images
+  const getValidImage = (tour: Tour): string | null => {
+    // First check thumbnail
+    if (tour.thumbnail) {
+      const thumb = tour.thumbnail;
+      // Check if it's an uploaded image (starts with /uploads/ or is a full URL with /uploads/)
+      if (thumb.startsWith('/uploads/') || thumb.includes('/uploads/') || thumb.startsWith('http')) {
+        // Skip stock photos
+        if (!thumb.includes('/assets/img/listing/') && !thumb.includes('listing-') && !thumb.includes('default-tour')) {
+          return thumb;
+        }
+      }
+    }
+    
+    // Then check images array - only include uploaded images
+    if (tour.images && Array.isArray(tour.images)) {
+      for (const img of tour.images) {
+        // Skip stock photos
+        if (img && !img.includes('/assets/img/listing/') && !img.includes('listing-') && !img.includes('default-tour')) {
+          // Only include uploaded images or full URLs
+          if (img.startsWith('/uploads/') || img.includes('/uploads/') || img.startsWith('http')) {
+            return img;
+          }
+        }
+      }
+    }
+    
+    // No valid image found
+    return null;
+  };
 
   // Sadece home_3 grid verisi
   const gridItems = useMemo(
@@ -330,22 +362,33 @@ const Listing = () => {
                 <div className="tg-listing-card-item mb-30">
                   <div className="tg-listing-card-thumb fix mb-15 p-relative">
                     <Link to={`/tour/${item.slug}`}>
-                      <img
-                        className="tg-card-border w-100"
-                        src={(() => {
-                          const imgUrl = item.images?.[0] || item.thumbnail || '/assets/img/listing/default-tour.jpg';
-                          // If it's already a full URL, return as is
-                          if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) {
-                            return imgUrl;
-                          }
-                          // If it starts with /uploads/, prepend backend URL
-                          if (imgUrl.startsWith('/uploads/')) {
-                            return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
-                          }
-                          return imgUrl;
-                        })()}
-                        alt={item.title}
-                      />
+                      {(() => {
+                        const validImage = getValidImage(item);
+                        if (validImage) {
+                          return (
+                            <img
+                              className="tg-card-border w-100"
+                              src={normalizeImageUrl(validImage)}
+                              alt={item.title}
+                            />
+                          );
+                        } else {
+                          return (
+                            <div className="tg-card-border w-100" style={{
+                              height: '200px',
+                              backgroundColor: '#f5f5f5',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#999',
+                              fontSize: '14px',
+                              borderRadius: '16px 16px 0 0'
+                            }}>
+                              No image available
+                            </div>
+                          );
+                        }
+                      })()}
                       {item.featured && (
                         <span className="tg-listing-item-price-discount shape-3">
                           <svg
