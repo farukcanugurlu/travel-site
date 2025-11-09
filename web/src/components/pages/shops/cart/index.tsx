@@ -14,7 +14,7 @@ const Cart = () => {
          `}</style>
          <HeaderThree />
          <main>
-            <BreadCrumb title="Cart Page" sub_title="Cart" />
+            <BreadCrumb title="Cart" sub_title="Cart" />
             <CartArea />
          </main>
          <FooterThree />

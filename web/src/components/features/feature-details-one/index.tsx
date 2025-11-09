@@ -40,6 +40,16 @@ const FeatureDetailsOne = ({ slug: propSlug }: FeatureDetailsOneProps) => {
       
       const tourData = await toursApiService.getTourBySlug(slug);
       
+      // Debug: API'den gelen veriyi kontrol et
+      console.log('FeatureDetailsOne - API Response:', {
+        slug,
+        tourData,
+        thumbnail: tourData?.thumbnail,
+        images: tourData?.images,
+        imagesLength: tourData?.images?.length,
+        firstImage: tourData?.images?.[0],
+      });
+      
       if (!tourData || !tourData.id) {
         throw new Error('Tour not found');
       }
