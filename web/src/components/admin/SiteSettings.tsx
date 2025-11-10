@@ -191,6 +191,49 @@ const SiteSettings: React.FC = () => {
             />
           </div>
 
+          {/* Homepage Settings */}
+          <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Homepage Settings</h3>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#666' }}>Customize homepage content</p>
+          </div>
+
+          <div className="form-group">
+            <label>Popular Tour Subtitle</label>
+            <input 
+              value={form.popularTourSubtitle || ''} 
+              onChange={e => set('popularTourSubtitle', e.target.value)} 
+              placeholder="Most Popular Tour"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Popular Tour Title</label>
+            <input 
+              value={form.popularTourTitle || ''} 
+              onChange={e => set('popularTourTitle', e.target.value)} 
+              placeholder="Let's Discover The World With Our Excellent Eyes"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Popular Tour Description</label>
+            <textarea 
+              value={form.popularTourDescription || ''} 
+              onChange={e => set('popularTourDescription', e.target.value)}
+              rows={4}
+              placeholder="Whether you're looking for a romantic getaway, family-friendly solo journey to explore the world..."
+            />
+          </div>
+
+          <ImageUpload
+            label="About Section Logo (Anasayfa About Bölümü Logo)"
+            folder="site"
+            currentImage={form.aboutLogo || ''}
+            onImageUploaded={(url) => set('aboutLogo', url)}
+            maxSize={2}
+            hint="Anasayfadaki About bölümünde görünen logo. Ideal boyut: 200x200px. PNG formatı önerilir."
+          />
+
           {/* Page Hero Images */}
           <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>Page Hero Images</h3>

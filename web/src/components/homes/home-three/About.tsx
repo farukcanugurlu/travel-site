@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import Button from "../../common/Button"
 import { useEffect, useState } from "react";
 import settingsApi, { type SiteSettingsData } from "../../../api/settings";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 const About = () => {
   const [settings, setSettings] = useState<SiteSettingsData | null>(null);
@@ -13,11 +14,11 @@ const About = () => {
   const popularTourSubtitle = settings?.popularTourSubtitle || "Most Popular Tour";
   const popularTourTitle = settings?.popularTourTitle || "Let's Discover The World With Our Excellent Eyes";
   const popularTourDescription = settings?.popularTourDescription || "Whether you're looking for a romantic getaway, family-friendly solo journey to explore the world, a travel agency can provide tailored itinerary that exceeds your expectations.";
-  const aboutLogo = settings?.aboutLogo || "/assets/img/about/logo.png";
-  const aboutLeftImage1 = settings?.aboutLeftImage1 || "/assets/img/about/about.jpg";
-  const aboutLeftImage2 = settings?.aboutLeftImage2 || "/assets/img/about/about-2.jpg";
-  const aboutRightImage1 = settings?.aboutRightImage1 || "/assets/img/about/about-3.jpg";
-  const aboutRightImage2 = settings?.aboutRightImage2 || "/assets/img/about/about-4.jpg";
+  const aboutLogo = settings?.aboutLogo ? normalizeImageUrl(settings.aboutLogo) : "/assets/img/about/logo.png";
+  const aboutLeftImage1 = settings?.aboutLeftImage1 ? normalizeImageUrl(settings.aboutLeftImage1) : "/assets/img/about/about.jpg";
+  const aboutLeftImage2 = settings?.aboutLeftImage2 ? normalizeImageUrl(settings.aboutLeftImage2) : "/assets/img/about/about-2.jpg";
+  const aboutRightImage1 = settings?.aboutRightImage1 ? normalizeImageUrl(settings.aboutRightImage1) : "/assets/img/about/about-3.jpg";
+  const aboutRightImage2 = settings?.aboutRightImage2 ? normalizeImageUrl(settings.aboutRightImage2) : "/assets/img/about/about-4.jpg";
 
   return (
     <div className="tg-about-area pb-100">
