@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "../../common/Button";
 import settingsApi, { type SiteSettingsData } from "../../../api/settings";
 import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 const AboutArea = () => {
    const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+   const leftThumbRef = useRef<HTMLDivElement>(null);
+   const rightThumbRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
       const loadSettings = async () => {
@@ -18,6 +20,27 @@ const AboutArea = () => {
       };
       loadSettings();
    }, []);
+
+   useEffect(() => {
+      const setRightHeight = () => {
+         if (leftThumbRef.current && rightThumbRef.current) {
+            // Get the actual content height (excluding bottom margin of last image)
+            const leftHeight = leftThumbRef.current.offsetHeight;
+            // Subtract the bottom margin (mb-20 = 20px) from the last image
+            const adjustedHeight = leftHeight - 20;
+            rightThumbRef.current.style.height = `${adjustedHeight}px`;
+         }
+      };
+
+      // Set height after images load
+      const timer = setTimeout(setRightHeight, 100);
+      window.addEventListener('resize', setRightHeight);
+
+      return () => {
+         clearTimeout(timer);
+         window.removeEventListener('resize', setRightHeight);
+      };
+   }, [settings]);
 
    const subtitle = settings?.aboutPageSubtitle || "Explore the world with us";
    const title = settings?.aboutPageTitle || "The perfect vacation come true with our Travel Agency";
@@ -37,18 +60,28 @@ const AboutArea = () => {
                      <img className="tg-about-details-map p-absolute" src="/assets/img/about/details/shape-2.png" alt="map" />
                      <div className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6">
-                           <div className="tg-about-details-thumb p-relative z-index-9">
-                              <img className="main-thumb tg-round-15 w-100 mb-20" src={image1} alt="thumb" />
-                              <img className="main-thumb tg-round-15 w-100 mb-20" src={image3} alt="thumb" />
+                           <div className="tg-about-details-thumb p-relative z-index-9" ref={leftThumbRef}>
+                               <img className="main-thumb tg-round-15 w-100 mb-20" src={image1} alt="thumb" onLoad={() => {
+                                  if (leftThumbRef.current && rightThumbRef.current) {
+                                     const leftHeight = leftThumbRef.current.offsetHeight;
+                                     // Subtract the bottom margin (mb-20 = 20px) from the last image
+                                     const adjustedHeight = leftHeight - 20;
+                                     rightThumbRef.current.style.height = `${adjustedHeight}px`;
+                                  }
+                               }} />
+                               <img className="main-thumb tg-round-15 w-100 mb-20" src={image3} alt="thumb" onLoad={() => {
+                                  if (leftThumbRef.current && rightThumbRef.current) {
+                                     const leftHeight = leftThumbRef.current.offsetHeight;
+                                     // Subtract the bottom margin (mb-20 = 20px) from the last image
+                                     const adjustedHeight = leftHeight - 20;
+                                     rightThumbRef.current.style.height = `${adjustedHeight}px`;
+                                  }
+                               }} />
                            </div>
                         </div>
                         <div className="col-lg-6 col-md-6 col-sm-6">
-                           <div className="tg-about-details-thumb-2 p-relative">
-                              <div className="tg-chose-3-rounded p-relative mb-30">
-                                 <img className="rotate-infinite-2" src="/assets/img/chose/chose-3/circle-text.png" alt="" />
-                                 <img className="tg-chose-3-star" src="/assets/img/chose/chose-3/star.png" alt="" />
-                              </div>
-                              <img className="w-100 tg-round-15" src={image2} alt="chose" />
+                           <div className="tg-about-details-thumb-2 p-relative" ref={rightThumbRef}>
+                              <img className="w-100 tg-round-15" style={{ height: '100%', objectFit: 'cover' }} src={image2} alt="chose" />
                            </div>
                         </div>
                      </div>

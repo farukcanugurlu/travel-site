@@ -83,21 +83,23 @@ const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
           <div className="col-12">
             <div className="tg-breadcrumb-content text-center">
               <h2 className="tg-breadcrumb-title mb-5 fs-40">{title}</h2>
-              <div className="tg-breadcrumb-list-4">
-                <ul>
-                  <li>
-                    <Link to="/">Home</Link>
-                  </li>
-                  <li>
-                    <i className="fa-sharp fa-solid fa-angle-right"></i>
-                  </li>
-                  <li>Pages</li>
-                  <li>
-                    <i className="fa-sharp fa-solid fa-angle-right"></i>
-                  </li>
-                  <li>{sub_title}</li>
-                </ul>
-              </div>
+              {pageType !== 'about' && (
+                <div className="tg-breadcrumb-list-4">
+                  <ul>
+                    <li>
+                      <Link to="/">Home</Link>
+                    </li>
+                    <li>
+                      <i className="fa-sharp fa-solid fa-angle-right"></i>
+                    </li>
+                    <li>Pages</li>
+                    <li>
+                      <i className="fa-sharp fa-solid fa-angle-right"></i>
+                    </li>
+                    <li>{sub_title}</li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

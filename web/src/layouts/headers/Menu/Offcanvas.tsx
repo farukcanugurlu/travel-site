@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
 import { useState, useEffect } from "react";
 import authApiService from "../../../api/auth";
+import settingsApi, { type SiteSettingsData } from "../../../api/settings";
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 interface MobileSidebarProps {
   offCanvas: boolean;
@@ -10,10 +12,22 @@ interface MobileSidebarProps {
 
 const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
 
   useEffect(() => {
     setIsAuthenticated(authApiService.isAuthenticated());
   }, [offCanvas]); // Update when sidebar opens/closes
+
+  useEffect(() => {
+    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null));
+  }, []);
+
+  // Sidebar logo: önce sidebarLogo, yoksa logo, yoksa default
+  const sidebarLogo = settings?.sidebarLogo 
+    ? normalizeImageUrl(settings.sidebarLogo) 
+    : (settings?.logo 
+      ? normalizeImageUrl(settings.logo) 
+      : "/assets/img/logo/logo-green.png");
 
   return (
     <div className={offCanvas ? "mobile-menu-visible" : ""}>
@@ -26,7 +40,7 @@ const Offcanvas = ({ offCanvas, setOffCanvas }: MobileSidebarProps) => {
           {/* LOGO */}
           <div className="nav-logo">
             <Link to="/" onClick={() => setOffCanvas(false)}>
-              <img src="/assets/img/logo/logo-green.png" alt="logo" />
+              <img src={sidebarLogo} alt="logo" />
             </Link>
           </div>
 

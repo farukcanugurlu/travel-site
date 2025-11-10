@@ -6,6 +6,7 @@ export interface SiteSettingsData {
   logo?: string;
   logoSticky?: string; // Logo for sticky header (if not set, uses logo)
   footerLogo?: string; // Logo for footer (if not set, uses logo)
+  sidebarLogo?: string; // Logo for sidebar (if not set, uses logo)
   favicon?: string;
 
   // Company info
@@ -47,6 +48,8 @@ export interface SiteSettingsData {
   chooseFeature1Description?: string;
   chooseFeature2Title?: string;
   chooseFeature2Description?: string;
+  chooseFeature3Title?: string;
+  chooseFeature3Description?: string;
   chooseButtonText?: string;
   chooseImage1?: string;
   chooseImage2?: string;

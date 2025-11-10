@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import settingsApi, { type SiteSettingsData } from '../../../api/settings';
+import { normalizeImageUrl } from '../../../utils/imageUtils';
 
 interface SidebarProps {
   sidebar: boolean;
@@ -17,6 +18,12 @@ const Sidebar = ({ sidebar, setSidebar }: SidebarProps) => {
   const instagram = settings?.instagram || '/';
   const twitter = settings?.twitter || '/';
   const youtube = settings?.youtube || '/';
+  // Sidebar logo: önce sidebarLogo, yoksa logo, yoksa default
+  const sidebarLogo = settings?.sidebarLogo 
+    ? normalizeImageUrl(settings.sidebarLogo) 
+    : (settings?.logo 
+      ? normalizeImageUrl(settings.logo) 
+      : "/assets/img/logo/logo-green.png");
   return (
     <>
       <div className={`offCanvas__info ${sidebar ? "active" : ""}`}>
@@ -29,7 +36,7 @@ const Sidebar = ({ sidebar, setSidebar }: SidebarProps) => {
         {/* LOGO */}
         <div className="offCanvas__logo mb-30">
           <Link to="/" onClick={() => setSidebar(false)}>
-            <img src="/assets/img/logo/logo-green.png" alt="Logo" />
+            <img src={sidebarLogo} alt="Logo" />
           </Link>
         </div>
 

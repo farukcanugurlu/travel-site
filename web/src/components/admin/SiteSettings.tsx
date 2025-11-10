@@ -76,6 +76,14 @@ const SiteSettings: React.FC = () => {
             hint="Footer için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
           />
           <ImageUpload
+            label="Logo (Sidebar)"
+            folder="site"
+            currentImage={form.sidebarLogo || ''}
+            onImageUploaded={(url) => set('sidebarLogo', url)}
+            maxSize={2}
+            hint="Sidebar (mobil menü) için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
+          />
+          <ImageUpload
             label="Favicon"
             folder="site"
             currentImage={form.favicon || ''}
@@ -347,6 +355,109 @@ const SiteSettings: React.FC = () => {
             currentImage={form.aboutPageImage3 || ''}
             onImageUploaded={(url) => set('aboutPageImage3', url)}
           />
+
+          {/* What We Do Section (Choose Section) */}
+          <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>What We Do Section</h3>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#666' }}>Customize the "What we do" section on About page</p>
+          </div>
+
+          <div className="form-group">
+            <label>What We Do Subtitle</label>
+            <input 
+              value={form.chooseSubtitle || ''} 
+              onChange={e => set('chooseSubtitle', e.target.value)} 
+              placeholder="What we do"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>What We Do Title</label>
+            <input 
+              value={form.chooseTitle || ''} 
+              onChange={e => set('chooseTitle', e.target.value)} 
+              placeholder="We Arrange the Best Tour Ever Possible"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>What We Do Description</label>
+            <textarea 
+              value={form.chooseDescription || ''} 
+              onChange={e => set('chooseDescription', e.target.value)}
+              rows={3}
+              placeholder="when an unknown printer took a galley of type and scrambled make type specimen bookhas survived not only five."
+            />
+          </div>
+
+          <div className="form-section-header" style={{ marginTop: '20px', marginBottom: '15px' }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Feature 1</h4>
+          </div>
+
+          <div className="form-group">
+            <label>Feature 1 Title</label>
+            <input 
+              value={form.chooseFeature1Title || ''} 
+              onChange={e => set('chooseFeature1Title', e.target.value)} 
+              placeholder="Ultimate flexibility"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Feature 1 Description</label>
+            <textarea 
+              value={form.chooseFeature1Description || ''} 
+              onChange={e => set('chooseFeature1Description', e.target.value)}
+              rows={2}
+              placeholder="when an unknown printer took galleof type and scrambled make type peci bookhas survived five."
+            />
+          </div>
+
+          <div className="form-section-header" style={{ marginTop: '20px', marginBottom: '15px' }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Feature 2</h4>
+          </div>
+
+          <div className="form-group">
+            <label>Feature 2 Title</label>
+            <input 
+              value={form.chooseFeature2Title || ''} 
+              onChange={e => set('chooseFeature2Title', e.target.value)} 
+              placeholder="Memorable experiences"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Feature 2 Description</label>
+            <textarea 
+              value={form.chooseFeature2Description || ''} 
+              onChange={e => set('chooseFeature2Description', e.target.value)}
+              rows={2}
+              placeholder="when an unknown printer took galleof type and scrambled make type peci bookhas survived five."
+            />
+          </div>
+
+          <div className="form-section-header" style={{ marginTop: '20px', marginBottom: '15px' }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Feature 3</h4>
+          </div>
+
+          <div className="form-group">
+            <label>Feature 3 Title</label>
+            <input 
+              value={form.chooseFeature3Title || ''} 
+              onChange={e => set('chooseFeature3Title', e.target.value)} 
+              placeholder="Award winning support"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Feature 3 Description</label>
+            <textarea 
+              value={form.chooseFeature3Description || ''} 
+              onChange={e => set('chooseFeature3Description', e.target.value)}
+              rows={2}
+              placeholder="when an unknown printer took galleof type and scrambled make type peci bookhas survived five."
+            />
+          </div>
 
           {error && <div className="error">{error}</div>}
           {success && <div className="success">Saved</div>}
