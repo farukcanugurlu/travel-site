@@ -29,8 +29,8 @@ const BlogDetailsMain = () => {
     }
 
     const description = blog.excerpt || blog.content?.substring(0, 160) || `Read ${blog.title} on Lexor Holiday blog`;
-    const image = blog.image || blog.thumbnail || "/assets/img/logo/lexorlogo.png";
-    const blogImage = image.startsWith('http') ? image : `https://www.lexorholiday.com${image}`;
+    const image = blog.featuredImage || "/assets/img/logo/lexorlogo.png";
+    const blogImage = image.startsWith('http') ? image : `https://lexorholiday.com${image}`;
     
     // Generate structured data for blog post
     const structuredData = {
@@ -39,20 +39,20 @@ const BlogDetailsMain = () => {
       "headline": blog.title,
       "description": description,
       "image": blogImage,
-      "url": `https://www.lexorholiday.com/blog-details/${blog.slug}`,
+      "url": `https://lexorholiday.com/blog-details/${blog.slug}`,
       "datePublished": blog.createdAt || new Date().toISOString(),
       "dateModified": blog.updatedAt || blog.createdAt || new Date().toISOString(),
       "author": {
         "@type": "Organization",
         "name": "Lexor Holiday",
-        "url": "https://www.lexorholiday.com"
+        "url": "https://lexorholiday.com"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Lexor Holiday",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://www.lexorholiday.com/assets/img/logo/lexorlogo.png"
+          "url": "https://lexorholiday.com/assets/img/logo/lexorlogo.png"
         }
       },
       ...(blog.tags && blog.tags.length > 0 && {
@@ -74,7 +74,7 @@ const BlogDetailsMain = () => {
   return (
     <Wrapper>
       <SEO {...getSEOProps()} />
-      <BlogDetails slug={slug} />
+      <BlogDetails />
     </Wrapper>
   );
 };

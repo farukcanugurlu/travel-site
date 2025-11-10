@@ -102,6 +102,14 @@ export default function BannerFormTwo() {
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <style>{`
+        /* Üst container'lar - dropdown'un dışarı taşmasına izin ver */
+        .tg-booking-form-wrap,
+        .tg-booking-form-item,
+        .tab-content,
+        .tab-pane {
+          overflow: visible !important;
+        }
+        
         .lexor-form .tg-booking-add-input-field,
         .lexor-form .tg-booking-add-input-date { 
           background: #fff; 
@@ -115,15 +123,50 @@ export default function BannerFormTwo() {
         }
         .tg-booking-title-value{ color:#6b6b6b; font-size:14px; }
 
+        /* Parent container - dropdown'un dışarı taşmasına izin ver */
+        .lexor-form .tg-booking-form-parent {
+          position: relative !important;
+          overflow: visible !important;
+          z-index: 1 !important;
+        }
+        .lexor-form .tg-booking-form-parent-inner.tg-hero-location {
+          position: relative !important;
+          overflow: visible !important;
+          z-index: 1 !important;
+        }
+        .lexor-form .tg-booking-add-input-date {
+          position: relative !important;
+          overflow: visible !important;
+        }
+        .lexor-form .tg-booking-form-parent-inner {
+          overflow: visible !important;
+        }
+
         /* dropdown */
         .lexor-loc-dropdown{
-          border: 2px solid #e9ecef;
-          border-radius: 12px; 
-          background: #fff;
-          box-shadow: 0 12px 32px rgba(0,0,0,.12);
-          margin-top: 8px;
+          border: 2px solid #e9ecef !important;
+          border-radius: 12px !important; 
+          background: #fff !important;
+          box-shadow: 0 12px 32px rgba(0,0,0,.12) !important;
+          margin-top: 8px !important;
+          position: absolute !important;
+          top: calc(100% + 8px) !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 10000 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          padding: 0 !important;
+          min-width: 0 !important;
+          max-height: none !important;
         }
-        .lexor-loc-dropdown, .lexor-loc-dropdown * { 
+        .lexor-loc-dropdown * { 
           position: static !important; 
           float: none !important; 
           box-sizing: border-box; 
@@ -210,12 +253,16 @@ export default function BannerFormTwo() {
             alignItems: "start",
             columnGap: 16,
             rowGap: 12,
+            position: "relative",
+            overflow: "visible",
+            zIndex: 1,
           }}
         >
           {/* Location (tek alan) */}
           <div
             className="tg-booking-form-parent-inner tg-hero-location p-relative"
             ref={wrapRef}
+            style={{ position: 'relative', zIndex: 1 }}
           >
             <span className="tg-booking-form-title" style={LABEL}>
               Search Destination
@@ -224,7 +271,14 @@ export default function BannerFormTwo() {
             <div
               className="tg-booking-add-input-date p-relative"
               style={WRAP}
-              onClick={() => setOpen((p) => !p)}
+              onClick={(e) => {
+                // Input'a tıklanmışsa hiçbir şey yapma (input kendi onClick'ini handle ediyor)
+                if ((e.target as HTMLElement).tagName === 'INPUT') {
+                  return;
+                }
+                // Input dışına (icon veya boş alana) tıklanmışsa toggle yap
+                setOpen((p) => !p);
+              }}
             >
               <input
                 className="input"
@@ -238,6 +292,13 @@ export default function BannerFormTwo() {
                 }}
                 onKeyDown={onKeyDown}
                 onFocus={() => setOpen(true)}
+                onClick={(e) => {
+                  // Input'a tıklayınca sadece aç, parent'ın onClick'ini tetikleme
+                  e.stopPropagation();
+                  if (!open) {
+                    setOpen(true);
+                  }
+                }}
               />
               <span style={ICON_RIGHT} aria-hidden="true" title="Location">
                 <svg
@@ -264,21 +325,14 @@ export default function BannerFormTwo() {
                   />
                 </svg>
               </span>
+            </div>
 
-              {/* Öneri listesi */}
-              {open && (
-                <div
-                  className="lexor-loc-dropdown"
-                  style={{
-                    display: "block",
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    left: 0,
-                    right: 0,
-                    zIndex: 9999,
-                  }}
-                  onClick={stop}
-                >
+            {/* Öneri listesi - parent container'ın dışına taşındı */}
+            {open && (
+              <div
+                className="lexor-loc-dropdown"
+                onClick={stop}
+              >
                   <div className="lexor-loc-list">
                     {SUGGESTIONS.filter(s => 
                       !location || s.toLowerCase().includes(location.toLowerCase())
@@ -326,7 +380,6 @@ export default function BannerFormTwo() {
                   </div>
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>

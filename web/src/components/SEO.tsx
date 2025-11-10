@@ -13,7 +13,7 @@ interface SEOProps {
   structuredData?: object;
 }
 
-const defaultSiteUrl = 'https://www.lexorholiday.com';
+const defaultSiteUrl = 'https://lexorholiday.com';
 const defaultImage = '/assets/img/logo/lexorlogo.png';
 const defaultDescription = 'Lexor Holiday - Premium travel agency offering curated tours and unforgettable experiences in Turkey and around the world. Discover amazing destinations with expert guides.';
 const defaultKeywords = 'lexor holiday, travel agency, turkey tours, antalya tours, cappadocia tours, travel booking, holiday packages, luxury travel';
@@ -51,10 +51,6 @@ const SEO = ({
         
         {/* Canonical URL */}
         <link rel="canonical" href={url} />
-        
-        {/* Favicon */}
-        <link rel="icon" type="image/png" href="/assets/img/logo/lexorlogo.png" />
-        <link rel="apple-touch-icon" href="/assets/img/logo/lexorlogo.png" />
         
         {/* Open Graph Tags */}
         <meta property="og:type" content={pageType} />

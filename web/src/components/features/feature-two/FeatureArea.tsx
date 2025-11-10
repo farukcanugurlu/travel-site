@@ -16,13 +16,6 @@ const FeatureArea = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isInitialMount = useRef(true);
 
-  // Debug: API'den gelen verileri konsola yazdır
-  useEffect(() => {
-    console.log('FeatureArea - API Data:', { tours, loading, error });
-    console.log('Tours count:', tours?.length);
-    console.log('Tours data:', tours);
-  }, [tours, loading, error]);
-
   // API'den gelen turları kullan
   const shopItems = useMemo(
     () => Array.isArray(tours) ? tours : [],

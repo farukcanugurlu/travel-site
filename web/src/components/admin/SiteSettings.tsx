@@ -67,20 +67,14 @@ const SiteSettings: React.FC = () => {
               hint="Sticky header için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
             />
           </div>
-          <div className="form-row">
-            <ImageUpload
-              label="Header Image"
-              folder="site"
-              currentImage={form.headerImage || ''}
-              onImageUploaded={(url) => set('headerImage', url)}
-            />
-            <ImageUpload
-              label="Footer Image"
-              folder="site"
-              currentImage={form.footerImage || ''}
-              onImageUploaded={(url) => set('footerImage', url)}
-            />
-          </div>
+          <ImageUpload
+            label="Logo (Footer)"
+            folder="site"
+            currentImage={form.footerLogo || ''}
+            onImageUploaded={(url) => set('footerLogo', url)}
+            maxSize={2}
+            hint="Footer için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
+          />
           <ImageUpload
             label="Favicon"
             folder="site"
@@ -177,7 +171,7 @@ const SiteSettings: React.FC = () => {
             <input 
               value={form.siteUrl || ''} 
               onChange={e => set('siteUrl', e.target.value)} 
-              placeholder="https://www.lexorholiday.com"
+              placeholder="https://lexorholiday.com"
             />
           </div>
           
@@ -232,6 +226,84 @@ const SiteSettings: React.FC = () => {
               onImageUploaded={(url) => set('blogHeroImage', url)}
             />
           </div>
+
+          <div className="form-row">
+            <ImageUpload
+              label="About Page Hero Image"
+              folder="site"
+              currentImage={form.aboutHeroImage || ''}
+              onImageUploaded={(url) => set('aboutHeroImage', url)}
+            />
+          </div>
+
+          {/* About Page Settings */}
+          <div className="form-section-header" style={{ marginTop: '30px', marginBottom: '20px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>About Page Settings</h3>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: '#666' }}>Customize the About page content</p>
+          </div>
+
+          <div className="form-group">
+            <label>About Page Subtitle</label>
+            <input 
+              value={form.aboutPageSubtitle || ''} 
+              onChange={e => set('aboutPageSubtitle', e.target.value)} 
+              placeholder="Explore the world with us"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>About Page Title</label>
+            <input 
+              value={form.aboutPageTitle || ''} 
+              onChange={e => set('aboutPageTitle', e.target.value)} 
+              placeholder="The perfect vacation come true with our Travel Agency"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>About Page Description</label>
+            <textarea 
+              value={form.aboutPageDescription || ''} 
+              onChange={e => set('aboutPageDescription', e.target.value)}
+              rows={4}
+              placeholder="when an unknown printer took a galley of type and scrambled it to make a type specimen book..."
+            />
+          </div>
+
+          <div className="form-group">
+            <label>About Page Button Text</label>
+            <input 
+              value={form.aboutPageButtonText || ''} 
+              onChange={e => set('aboutPageButtonText', e.target.value)} 
+              placeholder="Book Your Room"
+            />
+          </div>
+
+          <div className="form-section-header" style={{ marginTop: '20px', marginBottom: '15px' }}>
+            <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>About Page Images</h4>
+          </div>
+
+          <div className="form-row">
+            <ImageUpload
+              label="About Page Image 1"
+              folder="site"
+              currentImage={form.aboutPageImage1 || ''}
+              onImageUploaded={(url) => set('aboutPageImage1', url)}
+            />
+            <ImageUpload
+              label="About Page Image 2"
+              folder="site"
+              currentImage={form.aboutPageImage2 || ''}
+              onImageUploaded={(url) => set('aboutPageImage2', url)}
+            />
+          </div>
+
+          <ImageUpload
+            label="About Page Image 3"
+            folder="site"
+            currentImage={form.aboutPageImage3 || ''}
+            onImageUploaded={(url) => set('aboutPageImage3', url)}
+          />
 
           {error && <div className="error">{error}</div>}
           {success && <div className="success">Saved</div>}

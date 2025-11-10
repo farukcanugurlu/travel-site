@@ -41,7 +41,6 @@ const Listing = () => {
     const checkFavorites = async () => {
       const currentUser = authApiService.getCurrentUser();
       if (!currentUser || !currentUser.id) {
-        console.log('No authenticated user found, skipping favorites check');
         return;
       }
 

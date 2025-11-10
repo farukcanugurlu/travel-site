@@ -110,16 +110,6 @@ export interface Destination {
 
 // Transform backend response to frontend format
 const transformTour = (tour: any): Tour => {
-  // Debug: API'den gelen ham veriyi logla
-  console.log('transformTour - Raw API response:', {
-    id: tour?.id,
-    title: tour?.title,
-    thumbnail: tour?.thumbnail,
-    images: tour?.images,
-    imagesType: typeof tour?.images,
-    imagesIsArray: Array.isArray(tour?.images),
-  });
-  
   // Calculate average rating from reviews if available
   let rating = tour.rating;
   if (tour.reviews && Array.isArray(tour.reviews) && tour.reviews.length > 0) {

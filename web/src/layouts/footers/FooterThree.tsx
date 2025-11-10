@@ -13,7 +13,12 @@ const FooterThree = () => {
     // Cache'den okuduktan sonra API'den güncel veriyi çek
     settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); 
   }, []);
-  const logo = settings?.logo ? normalizeImageUrl(settings.logo) : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : null);
+  // Footer logo: önce footerLogo, yoksa logo, yoksa logoUrl
+  const footerLogo = settings?.footerLogo 
+    ? normalizeImageUrl(settings.footerLogo) 
+    : (settings?.logo 
+      ? normalizeImageUrl(settings.logo) 
+      : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : null));
   const companyDescription = settings?.companyDescription || 'Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world.';
   const address = settings?.officeAddress || 'Antalya';
   const phone = settings?.phone || settings?.phone1 || '+90 500 000 00 00';
@@ -148,10 +153,10 @@ const FooterThree = () => {
                 {/* Left: logo + text + socials */}
                 <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 footer-left-holder">
                   <div className="tg-footer-widget mb-40">
-                    {logo && (
+                    {footerLogo && (
                       <div className="tg-footer-logo mb-20">
                         <Link to="/">
-                          <img src={logo} alt="Lexor" />
+                          <img src={footerLogo} alt="Lexor" />
                         </Link>
                       </div>
                     )}

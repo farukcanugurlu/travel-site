@@ -30,7 +30,7 @@ const TourDetailsOneMain = () => {
 
     const description = tour.excerpt || tour.description?.substring(0, 160) || `Join us for ${tour.title} - an unforgettable experience with Lexor Holiday`;
     const image = tour.thumbnail || tour.images?.[0] || "/assets/img/logo/lexorlogo.png";
-    const tourImage = image.startsWith('http') ? image : `https://www.lexorholiday.com${image}`;
+    const tourImage = image.startsWith('http') ? image : `https://lexorholiday.com${image}`;
     
     // Generate structured data for tour
     const structuredData = {
@@ -39,11 +39,11 @@ const TourDetailsOneMain = () => {
       "name": tour.title,
       "description": tour.description || tour.excerpt || "",
       "image": tourImage,
-      "url": `https://www.lexorholiday.com/tour/${tour.slug}`,
+      "url": `https://lexorholiday.com/tour/${tour.slug}`,
       "provider": {
         "@type": "TravelAgency",
         "name": "Lexor Holiday",
-        "url": "https://www.lexorholiday.com"
+        "url": "https://lexorholiday.com"
       },
       "destination": tour.destination?.name || "",
       "duration": tour.duration || "",

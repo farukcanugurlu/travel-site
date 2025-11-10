@@ -243,20 +243,18 @@ const HeaderThree = () => {
               <div className="col-lg-7 col-5">
                 <div className="tgmenu__wrap d-flex align-items-center">
                   <div className="logo">
-                    {settings?.logo && (
-                      <>
-                        <Link className="logo-1" to="/">
-                          <img src={normalizeImageUrl(settings.logo)} alt="Lexor" />
-                        </Link>
-                        <Link className="logo-2" to="/">
-                          <img src={
-                            settings?.logoSticky 
-                              ? normalizeImageUrl(settings.logoSticky) 
-                              : normalizeImageUrl(settings.logo)
-                          } alt="Lexor" />
-                        </Link>
-                      </>
-                    )}
+                    <Link className="logo-1" to="/">
+                      <img src={settings?.logo ? normalizeImageUrl(settings.logo) : "/assets/img/logo/logo-white.png"} alt="Lexor" />
+                    </Link>
+                    <Link className="logo-2" to="/">
+                      <img src={
+                        settings?.logoSticky 
+                          ? normalizeImageUrl(settings.logoSticky) 
+                          : (settings?.logo 
+                            ? normalizeImageUrl(settings.logo) 
+                            : "/assets/img/logo/logo-green.png")
+                      } alt="Lexor" />
+                    </Link>
                   </div>
 
                   <nav className="tgmenu__nav tgmenu-1-space ml-180">

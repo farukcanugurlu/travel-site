@@ -112,7 +112,6 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
       const pr = getPrice(p);
       if (typeof pr === "number" && pr > max) max = pr;
     }
-    console.log('Max price calculated:', max, 'from', baseProducts.length, 'tours');
     return max;
   }, [baseProducts, getPrice]);
 
@@ -166,14 +165,6 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
     const hasPriceFilter = maxPrice > 0 && maxP < maxPrice;
     const hasAnyFilter = hasDestinationFilter || hasLanguageFilter || hasPriceFilter;
 
-    console.log('=== FILTER DEBUG ===');
-    console.log('selectedDestinations:', selectedDestinationsArray);
-    console.log('priceValue:', priceValue, 'minP:', minP, 'maxP:', maxP);
-    console.log('maxPrice:', maxPrice);
-    console.log('hasPriceFilter:', hasPriceFilter, '(maxP < maxPrice:', maxP < maxPrice, ')');
-    console.log('hasAnyFilter:', hasAnyFilter);
-    console.log('baseProducts count:', baseProducts.length);
-
     if (hasDestinationFilter) {
       filtered = filtered.filter((p: any) => {
         const destName = typeof p?.destination === 'object' 
@@ -186,7 +177,6 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
           destNameStr === selected.toLowerCase()
         );
       });
-      console.log('After destination filter:', filtered.length);
     }
 
     if (languageSelected) {
@@ -198,29 +188,19 @@ const FeatureSidebar = ({ setProducts, allProducts = [], isMobileOpen = false, o
     }
 
     if (hasPriceFilter) {
-      console.log('Applying price filter:', { minP, maxP });
-      const beforeCount = filtered.length;
-      const priceDetails: any[] = [];
       filtered = filtered.filter((p: any) => {
         const pr = getPrice(p);
         // Eğer fiyat yoksa ve fiyat filtresi aktifse, bu turu filtrele
         if (pr == null) {
-          priceDetails.push({ title: p.title || p.id, price: null, inRange: false });
           return false;
         }
         // Fiyat aralığında mı kontrol et
-        const inRange = pr >= minP && pr <= maxP;
-        priceDetails.push({ title: p.title || p.id, price: pr, inRange });
-        return inRange;
+        return pr >= minP && pr <= maxP;
       });
-      console.log('Price filter result:', { beforeCount, afterCount: filtered.length });
-      console.log('Tour prices:', priceDetails);
     }
 
     // Eğer filtre aktifse ve sonuç boşsa, boş liste döndür
     // Eğer filtre yoksa, baseProducts'u göster
-    console.log('Final result:', { hasAnyFilter, filteredCount: filtered.length, baseProductsCount: baseProducts.length });
-    console.log('=== END FILTER DEBUG ===');
     setProducts(hasAnyFilter ? filtered : baseProducts);
   }, [
     baseProducts,

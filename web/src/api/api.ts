@@ -62,15 +62,6 @@ class ApiService {
     };
 
     try {
-      console.log('API Request:', { 
-        url, 
-        method: config.method || 'GET', 
-        endpoint,
-        baseURL: this.baseURL,
-        fullURL: url,
-        origin: typeof window !== 'undefined' ? window.location.origin : 'unknown'
-      });
-      
       const response = await fetch(url, config);
 
       // Get content type first

@@ -1,6 +1,7 @@
 import { PrismaService } from '../prisma/prisma.service';
 export interface SiteSettingsData {
     logo?: string;
+    logoSticky?: string;
     headerImage?: string;
     footerImage?: string;
     favicon?: string;
@@ -48,6 +49,14 @@ export interface SiteSettingsData {
     cartHeroImage?: string;
     contactHeroImage?: string;
     blogHeroImage?: string;
+    aboutHeroImage?: string;
+    aboutPageSubtitle?: string;
+    aboutPageTitle?: string;
+    aboutPageDescription?: string;
+    aboutPageButtonText?: string;
+    aboutPageImage1?: string;
+    aboutPageImage2?: string;
+    aboutPageImage3?: string;
 }
 export declare class SettingsService {
     private prisma;

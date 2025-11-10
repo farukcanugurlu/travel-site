@@ -44,7 +44,6 @@ const Testimonial = () => {
     try {
       setLoading(true);
       const fetchedReviews = await reviewsApiService.getReviews({ approved: true });
-      console.log('Fetched reviews:', fetchedReviews);
       // Take only 6 reviews for the homepage
       setReviews(fetchedReviews.slice(0, 6));
     } catch (error) {

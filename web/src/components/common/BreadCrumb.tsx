@@ -6,7 +6,7 @@ import { normalizeImageUrl } from "../../utils/imageUtils";
 interface DataType {
   sub_title: string;
   title: string;
-  pageType?: 'tours' | 'cart' | 'contact' | 'blog' | 'default';
+  pageType?: 'tours' | 'cart' | 'contact' | 'blog' | 'about' | 'default';
 }
 const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
   // İlk render'da cache'den oku
@@ -26,6 +26,8 @@ const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
         return cachedSettings?.contactHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
       case 'blog':
         return cachedSettings?.blogHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+      case 'about':
+        return cachedSettings?.aboutHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
       default:
         return '/assets/img/breadcrumb/breadcrumb.jpg';
     }
@@ -53,6 +55,9 @@ const BreadCrumb = ({ sub_title, title, pageType = 'default' }: DataType) => {
             break;
           case 'blog':
             imageUrl = data?.blogHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
+            break;
+          case 'about':
+            imageUrl = data?.aboutHeroImage || '/assets/img/breadcrumb/breadcrumb.jpg';
             break;
           default:
             imageUrl = '/assets/img/breadcrumb/breadcrumb.jpg';

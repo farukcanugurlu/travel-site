@@ -5,8 +5,7 @@ export interface SiteSettingsData {
   // Images (stored as uploaded URLs/paths)
   logo?: string;
   logoSticky?: string; // Logo for sticky header (if not set, uses logo)
-  headerImage?: string;
-  footerImage?: string;
+  footerLogo?: string; // Logo for footer (if not set, uses logo)
   favicon?: string;
 
   // Company info
@@ -66,6 +65,16 @@ export interface SiteSettingsData {
   cartHeroImage?: string;
   contactHeroImage?: string;
   blogHeroImage?: string;
+  aboutHeroImage?: string;
+
+  // About Page Settings
+  aboutPageSubtitle?: string;
+  aboutPageTitle?: string;
+  aboutPageDescription?: string;
+  aboutPageButtonText?: string;
+  aboutPageImage1?: string;
+  aboutPageImage2?: string;
+  aboutPageImage3?: string;
 }
 
 @Injectable()

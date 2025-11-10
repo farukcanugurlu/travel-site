@@ -12,6 +12,7 @@ import { AdminModule } from './admin/admin.module';
 import { UsersModule } from './users/users.module';
 import { DestinationsModule } from './destinations/destinations.module';
 import { SettingsModule } from './settings/settings.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SettingsModule } from './settings/settings.module';
     UsersModule,
     DestinationsModule,
     SettingsModule,
+    SitemapModule,
   ],
 })
 export class AppModule {}

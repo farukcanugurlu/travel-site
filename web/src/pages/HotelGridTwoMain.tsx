@@ -80,7 +80,7 @@ const HotelGridTwoMain = () => {
             box-shadow:0 24px 60px rgba(0,0,0,.12);
             padding:32px 24px;
             position:relative;
-            overflow:hidden;
+            overflow:visible !important;
           }
           @media(min-width:992px){ .lexor-booking-card{ padding:40px 32px; } }
           

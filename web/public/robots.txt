@@ -1,5 +1,5 @@
 # Robots.txt for Lexor Holiday
-# https://www.lexorholiday.com
+# https://lexorholiday.com
 
 User-agent: *
 Allow: /
@@ -26,5 +26,5 @@ Allow: /about
 Allow: /contact
 
 # Sitemap
-Sitemap: https://www.lexorholiday.com/sitemap.xml
+Sitemap: https://lexorholiday.com/sitemap.xml
 

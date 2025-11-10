@@ -41,7 +41,7 @@ const BannerFormThree = () => {
           border-radius: 24px;
           box-shadow: 0 24px 60px rgba(0,0,0,.12);
           position: relative;
-          overflow: hidden;
+          overflow: visible !important;
         }
         
         /* Gradient overlay for modern look */

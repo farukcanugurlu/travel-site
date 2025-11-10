@@ -43,9 +43,7 @@ const Location = () => {
   const [tours, setTours] = useState<Tour[]>([]);
   // İlk render'da cache'den oku (stock foto flash'ını önlemek için)
   const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>(() => {
-    // Destinations için cache yok, bu yüzden boş başlat
-    // API'den geldiğinde güncellenecek
-    return [];
+    return destinationsApiService.getCachedFeaturedDestinationsSync() || [];
   });
 
   useEffect(() => {
