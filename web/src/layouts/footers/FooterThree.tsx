@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import settingsApi, { type SiteSettingsData } from '../../api/settings';
 import { normalizeImageUrl } from '../../utils/imageUtils';
 
@@ -13,20 +13,16 @@ const FooterThree = () => {
     // Cache'den okuduktan sonra API'den güncel veriyi çek
     settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); 
   }, []);
-  // Footer logo: önce footerLogo, yoksa logo, yoksa logoUrl
+  // Footer logo: önce footerLogo, yoksa logo
   const footerLogo = settings?.footerLogo 
     ? normalizeImageUrl(settings.footerLogo) 
-    : (settings?.logo 
-      ? normalizeImageUrl(settings.logo) 
-      : (settings?.logoUrl ? normalizeImageUrl(settings.logoUrl) : null));
+    : (settings?.logo ? normalizeImageUrl(settings.logo) : null);
   const companyDescription = settings?.companyDescription || 'Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world.';
   const address = settings?.officeAddress || 'Antalya';
-  const phone = settings?.phone || settings?.phone1 || '+90 500 000 00 00';
+  const phone = settings?.phone || '+90 500 000 00 00';
   const mapsLink = settings?.mapEmbedUrl || 'https://www.google.com/maps';
   const facebook = settings?.facebook || '#';
   const instagram = settings?.instagram || '#';
-  const twitter = settings?.twitter || '#';
-  const youtube = settings?.youtube || '#';
   return (
     <>
       <style>{`
@@ -107,7 +103,7 @@ const FooterThree = () => {
           max-width: 260px !important; /* Yazıyla aynı genişlik */
           width: 100%;
           padding-left: 0 !important;
-          margin-left: -65px !important; /* Logoyu çok daha sola kaydır */
+          margin-left: -50px !important; /* Logoyu çok daha sola kaydır */
           margin-right: 0;
           margin-bottom: 20px;
         }
