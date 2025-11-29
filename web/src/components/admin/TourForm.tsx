@@ -183,28 +183,56 @@ const TourForm: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Prepare tour data with new fields
+      // Helper function to clean strings (trim and return null if empty)
+      const cleanString = (str: string | undefined | null): string | null => {
+        if (!str || typeof str !== 'string') return null;
+        const trimmed = str.trim();
+        return trimmed.length > 0 ? trimmed : null;
+      };
+
+      // Helper function to clean arrays (remove empty strings and return null if empty)
+      const cleanArray = (arr: string[] | undefined | null): string[] | null => {
+        if (!arr || !Array.isArray(arr)) return null;
+        const cleaned = arr.filter(item => item && typeof item === 'string' && item.trim().length > 0);
+        return cleaned.length > 0 ? cleaned : null;
+      };
+
+      // Helper function to clean itinerary array
+      const cleanItinerary = (arr: Array<{ day: string; title: string; description: string }> | undefined | null): Array<{ day: string; title: string; description: string }> | null => {
+        if (!arr || !Array.isArray(arr)) return null;
+        const cleaned = arr.filter(item => {
+          const hasDay = item.day && typeof item.day === 'string' && item.day.trim().length > 0;
+          const hasTitle = item.title && typeof item.title === 'string' && item.title.trim().length > 0;
+          const hasDescription = item.description && typeof item.description === 'string' && item.description.trim().length > 0;
+          return hasDay || hasTitle || hasDescription;
+        });
+        return cleaned.length > 0 ? cleaned : null;
+      };
+
+      // Prepare tour data with new fields - clean empty values
       const cleanTourData: any = {
-        title: formData.title,
-        slug: formData.slug,
-        description: formData.description,
-        excerpt: formData.excerpt,
-        duration: formData.duration,
-        thumbnail: formData.thumbnail,
-        images: formData.images,
+        title: formData.title.trim(),
+        slug: formData.slug.trim(),
+        description: cleanString(formData.description),
+        excerpt: cleanString(formData.excerpt),
+        duration: cleanString(formData.duration),
+        thumbnail: cleanString(formData.thumbnail),
+        images: formData.images && formData.images.length > 0 ? formData.images.filter(img => img && img.trim().length > 0) : [],
         featured: formData.featured,
         published: formData.published,
-        type: formData.type || null,
-        groupSize: formData.groupSize || null,
-        included: formData.included.length > 0 ? formData.included : null,
-        excluded: formData.excluded.length > 0 ? formData.excluded : null,
-        highlights: formData.highlights.length > 0 ? formData.highlights : null,
-        itinerary: formData.itinerary.length > 0 ? formData.itinerary : null,
-        locationLatitude: formData.locationLatitude ? parseFloat(formData.locationLatitude) : null,
-        locationLongitude: formData.locationLongitude ? parseFloat(formData.locationLongitude) : null,
-        locationDescription: formData.locationDescription || null,
-        languages: formData.languages.length > 0 ? formData.languages : null,
-        availableTimes: formData.availableTimes.length > 0 ? formData.availableTimes : null,
+        type: cleanString(formData.type),
+        groupSize: cleanString(formData.groupSize),
+        included: cleanArray(formData.included),
+        excluded: cleanArray(formData.excluded),
+        highlights: cleanArray(formData.highlights),
+        itinerary: cleanItinerary(formData.itinerary),
+        locationLatitude: formData.locationLatitude && formData.locationLatitude.trim() ? parseFloat(formData.locationLatitude) : null,
+        locationLongitude: formData.locationLongitude && formData.locationLongitude.trim() ? parseFloat(formData.locationLongitude) : null,
+        locationDescription: cleanString(formData.locationDescription),
+        meetingPointAddress: cleanString(formData.meetingPointAddress),
+        meetingPointMapUrl: cleanString(formData.meetingPointMapUrl),
+        languages: cleanArray(formData.languages),
+        availableTimes: cleanArray(formData.availableTimes),
       };
       
       // For update, send packages separately
@@ -215,7 +243,18 @@ const TourForm: React.FC = () => {
         }
         console.log('Updating tour with data:', cleanTourData);
         // Update tour without packages
-        await toursApiService.updateTour(id, cleanTourData);
+        try {
+          await toursApiService.updateTour(id, cleanTourData);
+        } catch (updateErr: any) {
+          // Check for slug conflict error in update
+          const updateErrorResponse = updateErr?.response?.data || updateErr?.response || {};
+          const updateErrorMessage = updateErrorResponse?.message || updateErr?.message || '';
+          
+          if (updateErrorMessage.includes('slug') && (updateErrorMessage.includes('already exists') || updateErrorMessage.includes('Unique constraint'))) {
+            throw new Error(`This slug "${formData.slug}" is already in use. Please choose a different slug.`);
+          }
+          throw updateErr;
+        }
         
         // Find packages that were deleted (exist in original but not in current)
         const currentPackageIds = new Set(packages.filter(p => p.id).map(p => p.id));
@@ -247,22 +286,44 @@ const TourForm: React.FC = () => {
           }
         }
         
+        // Helper function to clean package strings
+        const cleanPackageString = (str: string | undefined | null): string | null => {
+          if (!str || typeof str !== 'string') return null;
+          const trimmed = str.trim();
+          return trimmed.length > 0 ? trimmed : null;
+        };
+
         // Update packages separately
         console.log('Updating packages:', packages);
         for (const pkg of packages) {
           try {
-            const packageData = {
-              name: pkg.name || 'Standard Package',
-              description: pkg.description || '',
+            const packageData: any = {
+              name: cleanPackageString(pkg.name) || 'Standard Package',
               adultPrice: pkg.adultPrice || 0,
               childPrice: pkg.childPrice || 0,
               infantPrice: pkg.infantPrice || 0,
-              language: pkg.language || 'English',
+              language: cleanPackageString(pkg.language) || 'English',
               capacity: pkg.capacity || 10,
-              childMaxAge: pkg.childMaxAge !== undefined && pkg.childMaxAge !== null ? pkg.childMaxAge : undefined,
-              infantMaxAge: pkg.infantMaxAge !== undefined && pkg.infantMaxAge !== null ? pkg.infantMaxAge : undefined,
-              monthlyPrices: pkg.monthlyPrices && Object.keys(pkg.monthlyPrices).length > 0 ? pkg.monthlyPrices : undefined,
             };
+
+            // Only include description if it's not empty
+            const cleanedDescription = cleanPackageString(pkg.description);
+            if (cleanedDescription) {
+              packageData.description = cleanedDescription;
+            }
+
+            // Only include age limits if they have values
+            if (pkg.childMaxAge !== undefined && pkg.childMaxAge !== null) {
+              packageData.childMaxAge = pkg.childMaxAge;
+            }
+            if (pkg.infantMaxAge !== undefined && pkg.infantMaxAge !== null) {
+              packageData.infantMaxAge = pkg.infantMaxAge;
+            }
+
+            // Only include monthlyPrices if it has entries
+            if (pkg.monthlyPrices && Object.keys(pkg.monthlyPrices).length > 0) {
+              packageData.monthlyPrices = pkg.monthlyPrices;
+            }
             
             console.log('Package data to update:', packageData);
             
@@ -289,18 +350,44 @@ const TourForm: React.FC = () => {
           images: cleanTourData.images && cleanTourData.images.length > 0 
             ? cleanTourData.images 
             : (cleanTourData.thumbnail ? [cleanTourData.thumbnail] : []),
-          packages: packages.map(pkg => ({
-            name: pkg.name || 'Standard Package',
-            description: pkg.description || '',
-            adultPrice: pkg.adultPrice || 0,
-            childPrice: pkg.childPrice || 0,
-            infantPrice: pkg.infantPrice || 0,
-            language: pkg.language || 'English',
-            capacity: pkg.capacity || 10,
-            childMaxAge: pkg.childMaxAge || undefined,
-            infantMaxAge: pkg.infantMaxAge || undefined,
-            monthlyPrices: pkg.monthlyPrices || undefined,
-          })),
+          packages: packages.map(pkg => {
+            // Helper function to clean package strings
+            const cleanPackageString = (str: string | undefined | null): string | null => {
+              if (!str || typeof str !== 'string') return null;
+              const trimmed = str.trim();
+              return trimmed.length > 0 ? trimmed : null;
+            };
+
+            const packageData: any = {
+              name: cleanPackageString(pkg.name) || 'Standard Package',
+              adultPrice: pkg.adultPrice || 0,
+              childPrice: pkg.childPrice || 0,
+              infantPrice: pkg.infantPrice || 0,
+              language: cleanPackageString(pkg.language) || 'English',
+              capacity: pkg.capacity || 10,
+            };
+
+            // Only include description if it's not empty
+            const cleanedDescription = cleanPackageString(pkg.description);
+            if (cleanedDescription) {
+              packageData.description = cleanedDescription;
+            }
+
+            // Only include age limits if they have values
+            if (pkg.childMaxAge !== undefined && pkg.childMaxAge !== null) {
+              packageData.childMaxAge = pkg.childMaxAge;
+            }
+            if (pkg.infantMaxAge !== undefined && pkg.infantMaxAge !== null) {
+              packageData.infantMaxAge = pkg.infantMaxAge;
+            }
+
+            // Only include monthlyPrices if it has entries
+            if (pkg.monthlyPrices && Object.keys(pkg.monthlyPrices).length > 0) {
+              packageData.monthlyPrices = pkg.monthlyPrices;
+            }
+
+            return packageData;
+          }),
         };
         console.log('Creating tour with data:', JSON.stringify(tourData, null, 2));
         await toursApiService.createTour(tourData);
@@ -308,9 +395,18 @@ const TourForm: React.FC = () => {
 
       navigate('/admin/tours');
     } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to save tour';
-      setError(errorMessage);
       console.error('Error saving tour:', err);
+      
+      // Check for slug conflict error
+      const errorResponse = err?.response?.data || err?.response || {};
+      const errorMessage = errorResponse?.message || err?.message || 'Failed to save tour';
+      
+      // Check if error is about slug already existing
+      if (errorMessage.includes('slug') && (errorMessage.includes('already exists') || errorMessage.includes('Unique constraint'))) {
+        setError(`This slug "${formData.slug}" is already in use. Please choose a different slug.`);
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -784,6 +880,9 @@ const TourForm: React.FC = () => {
                     title: parts[1] || '',
                     description: parts[2] || '',
                   };
+                }).filter(item => {
+                  // Only keep items that have at least one non-empty field
+                  return item.day || item.title || item.description;
                 });
                 handleInputChange('itinerary', itinerary);
               }}

@@ -45,9 +45,29 @@ const ToursAdmin: React.FC = () => {
     try {
       await toursApiService.deleteTour(id);
       setTours(tours.filter(tour => tour.id !== id));
-    } catch (err) {
-      alert('Failed to delete tour');
-      console.error('Error deleting tour:', err);
+    } catch (err: any) {
+      const errorMessage = err?.errorMessage || err?.message || 'Failed to delete tour';
+      
+      // Check if error mentions bookings
+      if (errorMessage.includes('booking') || errorMessage.includes('associated')) {
+        const forceDelete = confirm(
+          `${errorMessage}\n\nDo you want to force delete this tour? This will delete all associated bookings, reviews, and packages.`
+        );
+        
+        if (forceDelete) {
+          try {
+            await toursApiService.deleteTour(id, true);
+            setTours(tours.filter(tour => tour.id !== id));
+            alert('Tour deleted successfully (force delete)');
+          } catch (forceErr) {
+            alert('Failed to force delete tour');
+            console.error('Error force deleting tour:', forceErr);
+          }
+        }
+      } else {
+        alert(`Failed to delete tour: ${errorMessage}`);
+        console.error('Error deleting tour:', err);
+      }
     }
   };
 

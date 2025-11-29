@@ -87,8 +87,9 @@ export class ToursController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete tour' })
   @ApiResponse({ status: 200, description: 'Tour deleted successfully' })
-  remove(@Param('id') id: string) {
-    return this.toursService.remove(id);
+  remove(@Param('id') id: string, @Query('force') force?: string) {
+    const forceDelete = force === 'true' || force === '1';
+    return this.toursService.remove(id, forceDelete);
   }
 
   // Tour Packages endpoints

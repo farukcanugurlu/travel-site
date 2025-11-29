@@ -153,12 +153,6 @@ const AdminDashboard: React.FC = () => {
             <div className="action-description">Create new blog content</div>
           </Link>
 
-          <Link to="/admin/categories" className="action-card">
-            <div className="action-icon">🏷️</div>
-            <div className="action-title">Manage Categories</div>
-            <div className="action-description">Organize tour categories</div>
-          </Link>
-
           <Link to="/admin/destinations" className="action-card">
             <div className="action-icon">📍</div>
             <div className="action-title">Manage Destinations</div>

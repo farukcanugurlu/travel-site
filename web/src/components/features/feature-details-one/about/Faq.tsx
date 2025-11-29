@@ -48,22 +48,19 @@ const Faq = ({ tour }: FaqProps) => {
    const [faqData, setFaqData] = useState<FaqData[]>([]);
 
    useEffect(() => {
-      // Use tour itinerary if available, otherwise use defaults
-      const itineraryData = tour.itinerary || defaultFaqData.map((item, index) => ({
-         day: item.day,
-         title: item.title,
-         description: item.desc
-      }));
-
-      const mappedData: FaqData[] = itineraryData.map((item, index) => ({
-         id: index + 1,
-         day: item.day,
-         title: item.title,
-         desc: item.description,
-         showAnswer: index === 0
-      }));
-
-      setFaqData(mappedData);
+      // Only use tour itinerary if available and not empty, no defaults
+      if (tour.itinerary && Array.isArray(tour.itinerary) && tour.itinerary.length > 0) {
+         const mappedData: FaqData[] = tour.itinerary.map((item, index) => ({
+            id: index + 1,
+            day: item.day || '',
+            title: item.title || '',
+            desc: item.description || '',
+            showAnswer: index === 0
+         }));
+         setFaqData(mappedData);
+      } else {
+         setFaqData([]);
+      }
    }, [tour.itinerary]);
 
    const toggleAnswer = (faqId: number) => {
@@ -74,6 +71,11 @@ const Faq = ({ tour }: FaqProps) => {
          }))
       );
    };
+
+   // Don't render if no itinerary data
+   if (!faqData || faqData.length === 0) {
+      return null;
+   }
 
    return (
       <div className="tg-tour-faq-wrap mb-70">

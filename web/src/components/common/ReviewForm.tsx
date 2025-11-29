@@ -1,6 +1,7 @@
 // src/components/common/ReviewForm.tsx
 import React, { useState } from 'react';
 import reviewsApiService from '../../api/reviews';
+import authApiService from '../../api/auth';
 import type { CreateReviewData } from '../../api/reviews';
 
 interface ReviewFormProps {
@@ -19,6 +20,31 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ tourId, onReviewSubmitted, clas
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const currentUser = authApiService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'ADMIN';
+
+  // Show disabled message for non-admin users
+  if (!isAdmin) {
+    return (
+      <div className={`review-form-disabled ${className}`} style={{ 
+        background: 'white',
+        border: '1px solid #e0e0e0',
+        borderRadius: '8px',
+        padding: '24px',
+        textAlign: 'center',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#2c3e50' }}>Yorum Yap</h3>
+        <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+          <strong>Geçici olarak devre dışı</strong>
+        </p>
+        <p style={{ margin: '8px 0 0 0', color: '#999', fontSize: '13px' }}>
+          Yorum yapma özelliği şu anda sadece yöneticiler için açıktır.
+        </p>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -55,6 +55,7 @@ const ReviewFormArea = ({ tourId, reviews = [], onReviewSubmitted }: ReviewFormA
    });
    
    const currentUser = authApiService.getCurrentUser();
+   const isAdmin = currentUser?.role === 'ADMIN';
    const hasReviewed = !!(currentUser && reviews.some(r => r.userId === currentUser.id));
 
    const categories = [
@@ -115,7 +116,22 @@ const ReviewFormArea = ({ tourId, reviews = [], onReviewSubmitted }: ReviewFormA
             </ul>
          </div>
          <div className="tg-tour-about-review-form">
-            {hasReviewed ? (
+            {!isAdmin ? (
+              <div style={{ 
+                padding: '20px', 
+                background: '#f8f9fa', 
+                borderRadius: '8px', 
+                textAlign: 'center',
+                color: '#666'
+              }}>
+                <p style={{ margin: 0, fontSize: '16px' }}>
+                  <strong>Geçici olarak devre dışı</strong>
+                </p>
+                <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+                  Yorum yapma özelliği şu anda sadece yöneticiler için açıktır.
+                </p>
+              </div>
+            ) : hasReviewed ? (
               <div className="alert" style={{ color: '#e74c3c' }}>You have already submitted a review for this tour.</div>
             ) : (
               <ReviewForm 

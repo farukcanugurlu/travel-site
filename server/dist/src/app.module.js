@@ -21,6 +21,7 @@ const admin_module_1 = require("./admin/admin.module");
 const users_module_1 = require("./users/users.module");
 const destinations_module_1 = require("./destinations/destinations.module");
 const settings_module_1 = require("./settings/settings.module");
+const sitemap_module_1 = require("./sitemap/sitemap.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -42,6 +43,7 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             destinations_module_1.DestinationsModule,
             settings_module_1.SettingsModule,
+            sitemap_module_1.SitemapModule,
         ],
     })
 ], AppModule);

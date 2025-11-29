@@ -15,6 +15,19 @@ export class ToursService {
     
     console.log('Creating tour with data:', tourData);
     
+    // Check if slug already exists
+    if (tourData.slug) {
+      const existingTour = await this.prisma.tour.findUnique({
+        where: { slug: tourData.slug },
+      });
+      
+      if (existingTour) {
+        throw new BadRequestException(
+          `A tour with the slug "${tourData.slug}" already exists. Please use a different slug.`
+        );
+      }
+    }
+    
     // If thumbnail is provided, add it to images array if images is empty
     if (tourData.thumbnail && (!tourData.images || tourData.images.length === 0)) {
       tourData.images = [tourData.thumbnail];
@@ -149,6 +162,19 @@ export class ToursService {
   async update(id: string, updateTourDto: UpdateTourDto) {
     const data: any = { ...updateTourDto };
     
+    // If slug is being updated, check if it already exists (excluding current tour)
+    if (data.slug) {
+      const existingTour = await this.prisma.tour.findUnique({
+        where: { slug: data.slug },
+      });
+      
+      if (existingTour && existingTour.id !== id) {
+        throw new BadRequestException(
+          `A tour with the slug "${data.slug}" already exists. Please use a different slug.`
+        );
+      }
+    }
+    
     // If destinationId is provided, verify it exists
     if (data.destinationId) {
       const destination = await this.prisma.destination.findUnique({
@@ -171,10 +197,96 @@ export class ToursService {
     });
   }
 
-  async remove(id: string) {
-    return this.prisma.tour.delete({
-      where: { id },
-    });
+  async remove(id: string, forceDelete: boolean = false) {
+    try {
+      // Check if tour exists
+      const tourToDelete = await this.prisma.tour.findUnique({
+        where: { id },
+        include: {
+          bookings: true,
+          reviews: true,
+          packages: {
+            include: {
+              bookings: true,
+            },
+          },
+          favorites: true,
+        },
+      });
+
+      if (!tourToDelete) {
+        throw new NotFoundException(`Tour with ID ${id} not found`);
+      }
+
+      // Check if there are any bookings associated with this tour
+      const totalBookings = tourToDelete.bookings?.length || 0;
+      const packageBookings = tourToDelete.packages?.reduce((sum, pkg) => sum + (pkg.bookings?.length || 0), 0) || 0;
+      const allBookings = totalBookings + packageBookings;
+
+      if (allBookings > 0) {
+        if (!forceDelete) {
+          throw new BadRequestException(
+            `Cannot delete tour "${tourToDelete.title}" because it has ${allBookings} associated booking(s). Please delete or reassign the bookings first, or use force delete.`
+          );
+        }
+        
+        // Force delete: Delete all associated bookings first
+        console.warn(`⚠️ Force deleting tour "${tourToDelete.title}" and ${allBookings} associated booking(s)`);
+        
+        // Delete bookings directly associated with tour
+        if (totalBookings > 0) {
+          await this.prisma.booking.deleteMany({
+            where: { tourId: id },
+          });
+        }
+        
+        // Delete bookings associated with tour packages
+        if (packageBookings > 0) {
+          const packageIds = tourToDelete.packages?.map(pkg => pkg.id) || [];
+          if (packageIds.length > 0) {
+            await this.prisma.booking.deleteMany({
+              where: { packageId: { in: packageIds } },
+            });
+          }
+        }
+        
+        console.log(`✅ Deleted ${allBookings} booking(s) associated with tour "${tourToDelete.title}"`);
+      }
+
+      // Delete favorites
+      if (tourToDelete.favorites && tourToDelete.favorites.length > 0) {
+        await this.prisma.favorite.deleteMany({
+          where: { tourId: id },
+        });
+      }
+
+      // Delete reviews
+      if (tourToDelete.reviews && tourToDelete.reviews.length > 0) {
+        await this.prisma.review.deleteMany({
+          where: { tourId: id },
+        });
+      }
+
+      // Delete packages (cascade will handle this, but we'll do it explicitly for clarity)
+      if (tourToDelete.packages && tourToDelete.packages.length > 0) {
+        await this.prisma.tourPackage.deleteMany({
+          where: { tourId: id },
+        });
+      }
+
+      // Delete the tour
+      return await this.prisma.tour.delete({
+        where: { id },
+      });
+    } catch (error) {
+      // If it's already a NestJS exception, re-throw it
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      // Otherwise, wrap it in a BadRequestException
+      console.error('Error deleting tour:', error);
+      throw new BadRequestException(error?.message || 'Failed to delete tour');
+    }
   }
 
   // Tour Packages CRUD

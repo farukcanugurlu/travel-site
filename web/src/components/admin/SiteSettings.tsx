@@ -67,17 +67,17 @@ const SiteSettings: React.FC = () => {
               hint="Sticky header için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
             />
           </div>
-          <ImageUpload
+            <ImageUpload
             label="Logo (Footer)"
-            folder="site"
+              folder="site"
             currentImage={form.footerLogo || ''}
             onImageUploaded={(url) => set('footerLogo', url)}
             maxSize={2}
             hint="Footer için logo. Yüklenmezse normal logo kullanılır. Ideal boyut: 200x60px. PNG formatı önerilir."
-          />
-          <ImageUpload
+            />
+            <ImageUpload
             label="Logo (Sidebar)"
-            folder="site"
+              folder="site"
             currentImage={form.sidebarLogo || ''}
             onImageUploaded={(url) => set('sidebarLogo', url)}
             maxSize={2}

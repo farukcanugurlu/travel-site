@@ -577,7 +577,7 @@ export declare class ToursController {
         availableTimes: import("@prisma/client/runtime/library").JsonValue | null;
         destinationId: string;
     }>;
-    remove(id: string): Promise<{
+    remove(id: string, force?: string): Promise<{
         id: string;
         slug: string;
         title: string;

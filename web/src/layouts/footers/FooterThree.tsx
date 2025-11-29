@@ -87,8 +87,44 @@ const FooterThree = () => {
         .tg-footer-top .row.tight-gap > [class*=" col-"] { padding-left: 2px; padding-right: 2px; }
         .footer-left-holder { margin-right: -12px; } /* sol sütunu Quick Links'e yaklaştır */
 
+        /* (TR) Footer widget container - logo ve yazıyı aynı hizada tut */
+        .footer-left-holder .tg-footer-widget {
+          padding-left: 0;
+          margin-left: 0;
+        }
+        
         /* (TR) Sol metin maksimum genişlik – fazla uzamasın */
-        .tg-footer-widget .footer-intro { max-width: 260px; line-height: 1.7; }
+        .tg-footer-widget .footer-intro { 
+          max-width: 260px; 
+          line-height: 1.7; 
+          padding-left: 0 !important;
+          margin-left: 0 !important;
+        }
+        
+        /* (TR) Footer logo hizalaması - logo ve yazıyı sol kenardan hizala */
+        .tg-footer-logo {
+          display: block !important;
+          max-width: 260px !important; /* Yazıyla aynı genişlik */
+          width: 100%;
+          padding-left: 0 !important;
+          margin-left: -65px !important; /* Logoyu çok daha sola kaydır */
+          margin-right: 0;
+          margin-bottom: 20px;
+        }
+        .tg-footer-logo a {
+          display: block;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+        .tg-footer-logo img {
+          display: block;
+          max-width: 100%;
+          width: 100%;
+          height: auto;
+          object-fit: contain;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
 
         /* (TR) QUICK LINKS – başlık ve liste aynı sol çizgide */
         .tg-footer-link { text-align: left; }

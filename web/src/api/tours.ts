@@ -275,8 +275,9 @@ class ToursApiService {
   }
 
   // Delete tour (Admin only)
-  async deleteTour(id: string): Promise<void> {
-    return apiService.delete<void>(`/tours/${id}`);
+  async deleteTour(id: string, forceDelete: boolean = false): Promise<void> {
+    const url = forceDelete ? `/tours/${id}?force=true` : `/tours/${id}`;
+    return apiService.delete<void>(url);
   }
 
   // Create tour package (Admin only)

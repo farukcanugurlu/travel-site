@@ -52,8 +52,9 @@ let ToursController = class ToursController {
     update(id, updateTourDto) {
         return this.toursService.update(id, updateTourDto);
     }
-    remove(id) {
-        return this.toursService.remove(id);
+    remove(id, force) {
+        const forceDelete = force === 'true' || force === '1';
+        return this.toursService.remove(id, forceDelete);
     }
     createPackage(tourId, createPackageDto) {
         return this.toursService.createPackage(tourId, createPackageDto);
@@ -161,8 +162,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete tour' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Tour deleted successfully' }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('force')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ToursController.prototype, "remove", null);
 __decorate([

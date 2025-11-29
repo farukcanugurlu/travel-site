@@ -147,10 +147,73 @@ let ToursService = class ToursService {
             },
         });
     }
-    async remove(id) {
-        return this.prisma.tour.delete({
-            where: { id },
-        });
+    async remove(id, forceDelete = false) {
+        try {
+            const tourToDelete = await this.prisma.tour.findUnique({
+                where: { id },
+                include: {
+                    bookings: true,
+                    reviews: true,
+                    packages: {
+                        include: {
+                            bookings: true,
+                        },
+                    },
+                    favorites: true,
+                },
+            });
+            if (!tourToDelete) {
+                throw new common_1.NotFoundException(`Tour with ID ${id} not found`);
+            }
+            const totalBookings = tourToDelete.bookings?.length || 0;
+            const packageBookings = tourToDelete.packages?.reduce((sum, pkg) => sum + (pkg.bookings?.length || 0), 0) || 0;
+            const allBookings = totalBookings + packageBookings;
+            if (allBookings > 0) {
+                if (!forceDelete) {
+                    throw new common_1.BadRequestException(`Cannot delete tour "${tourToDelete.title}" because it has ${allBookings} associated booking(s). Please delete or reassign the bookings first, or use force delete.`);
+                }
+                console.warn(`⚠️ Force deleting tour "${tourToDelete.title}" and ${allBookings} associated booking(s)`);
+                if (totalBookings > 0) {
+                    await this.prisma.booking.deleteMany({
+                        where: { tourId: id },
+                    });
+                }
+                if (packageBookings > 0) {
+                    const packageIds = tourToDelete.packages?.map(pkg => pkg.id) || [];
+                    if (packageIds.length > 0) {
+                        await this.prisma.booking.deleteMany({
+                            where: { packageId: { in: packageIds } },
+                        });
+                    }
+                }
+                console.log(`✅ Deleted ${allBookings} booking(s) associated with tour "${tourToDelete.title}"`);
+            }
+            if (tourToDelete.favorites && tourToDelete.favorites.length > 0) {
+                await this.prisma.favorite.deleteMany({
+                    where: { tourId: id },
+                });
+            }
+            if (tourToDelete.reviews && tourToDelete.reviews.length > 0) {
+                await this.prisma.review.deleteMany({
+                    where: { tourId: id },
+                });
+            }
+            if (tourToDelete.packages && tourToDelete.packages.length > 0) {
+                await this.prisma.tourPackage.deleteMany({
+                    where: { tourId: id },
+                });
+            }
+            return await this.prisma.tour.delete({
+                where: { id },
+            });
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.BadRequestException) {
+                throw error;
+            }
+            console.error('Error deleting tour:', error);
+            throw new common_1.BadRequestException(error?.message || 'Failed to delete tour');
+        }
     }
     async createPackage(tourId, createPackageDto) {
         return this.prisma.tourPackage.create({

@@ -16,10 +16,33 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ tourId, rating = 5, onReviewSub
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const currentUser = authApiService.getCurrentUser();
+  const isAdmin = currentUser?.role === 'ADMIN';
+
+  // Show disabled message for non-admin users
+  if (!isAdmin) {
+    return (
+      <div style={{ 
+        padding: '20px', 
+        background: '#f8f9fa', 
+        borderRadius: '8px', 
+        textAlign: 'center',
+        color: '#666',
+        marginBottom: '60px'
+      }}>
+        <p style={{ margin: 0, fontSize: '16px' }}>
+          <strong>Geçici olarak devre dışı</strong>
+        </p>
+        <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+          Yorum yapma özelliği şu anda sadece yöneticiler için açıktır.
+        </p>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-    const currentUser = authApiService.getCurrentUser();
     if (!currentUser) {
       setError('Please log in to write a review');
       return;

@@ -2,8 +2,8 @@ import { PrismaService } from '../prisma/prisma.service';
 export interface SiteSettingsData {
     logo?: string;
     logoSticky?: string;
-    headerImage?: string;
-    footerImage?: string;
+    footerLogo?: string;
+    sidebarLogo?: string;
     favicon?: string;
     companyDescription?: string;
     officeAddress?: string;
@@ -35,6 +35,8 @@ export interface SiteSettingsData {
     chooseFeature1Description?: string;
     chooseFeature2Title?: string;
     chooseFeature2Description?: string;
+    chooseFeature3Title?: string;
+    chooseFeature3Description?: string;
     chooseButtonText?: string;
     chooseImage1?: string;
     chooseImage2?: string;
