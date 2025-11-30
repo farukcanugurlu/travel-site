@@ -103,7 +103,7 @@ const FooterThree = () => {
           max-width: 260px !important; /* Yazıyla aynı genişlik */
           width: 100%;
           padding-left: 0 !important;
-          margin-left: -47px !important; /* Logoyu çok daha sola kaydır */
+          margin-left: -45px !important; /* Logoyu çok daha sola kaydır */
           margin-right: 0;
           margin-bottom: 20px;
         }
