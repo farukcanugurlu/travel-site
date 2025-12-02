@@ -1013,13 +1013,31 @@ const TourForm: React.FC = () => {
             <textarea
               value={formData.languages.join(', ')}
               onChange={(e) => {
-                const langs = e.target.value.split(/[,\n]/).map(l => l.trim()).filter(l => l);
+                // Split by comma or newline, but preserve spaces within language names
+                // First split by newlines, then by commas, then trim each
+                const lines = e.target.value.split('\n');
+                const langs: string[] = [];
+                lines.forEach(line => {
+                  if (line.trim()) {
+                    // Split by comma, but preserve spaces
+                    const commaSeparated = line.split(',');
+                    commaSeparated.forEach(lang => {
+                      const trimmed = lang.trim();
+                      if (trimmed) {
+                        langs.push(trimmed);
+                      }
+                    });
+                  }
+                });
                 handleInputChange('languages', langs);
               }}
               placeholder="English, Turkish, Russian, German"
               rows={3}
               className="form-textarea"
             />
+            <small style={{ color: '#666', display: 'block', marginTop: '8px' }}>
+              You can use commas or newlines to separate languages. Spaces within language names are preserved.
+            </small>
           </div>
         </div>
 

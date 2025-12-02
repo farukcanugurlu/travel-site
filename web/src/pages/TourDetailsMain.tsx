@@ -242,7 +242,7 @@ const TourDetailsMain: React.FC = () => {
                   <h3>Book This Tour</h3>
                   <div className="price-info">
                     <span className="price-label">Starting from</span>
-                    <span className="price-amount">€{lowestPrice}</span>
+                    <span className="price-amount">${lowestPrice}</span>
                     <span className="price-per">per person</span>
                   </div>
                   <div className="tour-info-summary">

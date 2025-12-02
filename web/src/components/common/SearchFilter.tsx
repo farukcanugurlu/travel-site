@@ -192,7 +192,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onResults, showResults = tr
           </div>
 
           <div className="filter-group">
-            <label>Min Price ($)</label>
+            <label>Min Price (€)</label>
             <input
               type="number"
               value={filters.minPrice}
@@ -203,7 +203,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onResults, showResults = tr
           </div>
 
           <div className="filter-group">
-            <label>Max Price ($)</label>
+            <label>Max Price (€)</label>
             <input
               type="number"
               value={filters.maxPrice}

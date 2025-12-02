@@ -24,7 +24,7 @@ const Pricing = () => {
                            <p className="mb-25">{item.desc}</p>
                         </div>
                         <div className="tg-pricing-price mb-25">
-                           <h2><span>$</span>{item.price}</h2>
+                           <h2><span>€</span>{item.price}</h2>
                            <span className="dates">/month *</span>
                         </div>
                         <div className="tg-pricing-btns mb-40">
