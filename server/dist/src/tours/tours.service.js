@@ -19,6 +19,14 @@ let ToursService = class ToursService {
     async create(createTourDto) {
         const { packages, ...tourData } = createTourDto;
         console.log('Creating tour with data:', tourData);
+        if (tourData.slug) {
+            const existingTour = await this.prisma.tour.findUnique({
+                where: { slug: tourData.slug },
+            });
+            if (existingTour) {
+                throw new common_1.BadRequestException(`A tour with the slug "${tourData.slug}" already exists. Please use a different slug.`);
+            }
+        }
         if (tourData.thumbnail && (!tourData.images || tourData.images.length === 0)) {
             tourData.images = [tourData.thumbnail];
             console.log('Added thumbnail to images:', tourData.images);
@@ -129,6 +137,14 @@ let ToursService = class ToursService {
     }
     async update(id, updateTourDto) {
         const data = { ...updateTourDto };
+        if (data.slug) {
+            const existingTour = await this.prisma.tour.findUnique({
+                where: { slug: data.slug },
+            });
+            if (existingTour && existingTour.id !== id) {
+                throw new common_1.BadRequestException(`A tour with the slug "${data.slug}" already exists. Please use a different slug.`);
+            }
+        }
         if (data.destinationId) {
             const destination = await this.prisma.destination.findUnique({
                 where: { id: data.destinationId },

@@ -125,19 +125,19 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
 
     // Validasyon: En az 1 yetişkin gerekli
     if (adultCount === 0 && childCount === 0 && infantCount === 0) {
-      toast.error("Lütfen en az 1 kişi seçin");
+      toast.error("Please select at least 1 person");
       return;
     }
 
     // Validasyon: Tarih seçilmeli
     if (!tourDate) {
-      toast.error("Lütfen bir tarih seçin");
+      toast.error("Please select a date");
       return;
     }
 
     // Validasyon: Tur paketi olmalı
     if (!tourPackage) {
-      toast.error("Tur paketi bulunamadı");
+      toast.error("Tour package not found");
       return;
     }
 

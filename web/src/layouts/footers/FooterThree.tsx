@@ -13,6 +13,7 @@ const FooterThree = () => {
     // Cache'den okuduktan sonra API'den güncel veriyi çek
     settingsApi.getSettings().then(setSettings).catch(() => setSettings(null)); 
   }, []);
+  
   // Footer logo: önce footerLogo, yoksa logo
   const footerLogo = settings?.footerLogo 
     ? normalizeImageUrl(settings.footerLogo) 
@@ -20,13 +21,15 @@ const FooterThree = () => {
   const companyDescription = settings?.companyDescription || 'Discover amazing travel experiences with LEXOR Travel. We offer carefully curated tours to destinations around the world.';
   const address = settings?.officeAddress || 'Antalya';
   const phone = settings?.phone || '+90 500 000 00 00';
+  const email = settings?.email || 'info@lexorholiday.com';
   const mapsLink = settings?.mapEmbedUrl || 'https://www.google.com/maps';
   const facebook = settings?.facebook || '#';
   const instagram = settings?.instagram || '#';
+  
   return (
     <>
       <style>{`
-        /* (TR) Footer'ın normal flow'da olmasını sağla - content'in bittiği yerde başlasın */
+        /* Footer base styles */
         footer,
         footer.tg-footer-area,
         footer > div,
@@ -36,20 +39,8 @@ const FooterThree = () => {
           clear: both !important;
           margin-top: 0 !important;
           margin-bottom: 0 !important;
-          top: auto !important;
-          bottom: auto !important;
-          left: auto !important;
-          right: auto !important;
         }
         
-        /* (TR) Footer'ın fixed veya absolute olmasını engelle - tüm olasılıkları kapsa */
-        * footer,
-        * .tg-footer-area,
-        * footer > * {
-          position: relative !important;
-        }
-        
-        /* (TR) Body ve html'in footer'ı etkilemesini engelle */
         body {
           min-height: auto !important;
           height: auto !important;
@@ -61,162 +52,368 @@ const FooterThree = () => {
           position: relative !important;
         }
         
-        /* (TR) Main content'in alt boşluğunu artır ve footer'ın üstünde olduğundan emin ol */
         main {
           min-height: calc(100vh - 200px);
-          padding-bottom: 80px !important;
+          padding-bottom: 60px !important;
           margin-bottom: 0 !important;
           position: relative !important;
           z-index: 1 !important;
         }
         
-        /* (TR) Footer'ın main'den sonra geldiğinden emin ol */
         main + footer {
           position: relative !important;
           margin-top: 0 !important;
           z-index: 0 !important;
         }
         
-        /* (TR) Kolon aralıklarını iyice daralt – soldaki sütunu ortadakine yaklaştır */
-        .tg-footer-top .row.tight-gap { margin-left: -2px; margin-right: -2px; }
-        .tg-footer-top .row.tight-gap > [class^="col-"],
-        .tg-footer-top .row.tight-gap > [class*=" col-"] { padding-left: 2px; padding-right: 2px; }
-        .footer-left-holder { margin-right: -12px; } /* sol sütunu Quick Links'e yaklaştır */
-
-        /* (TR) Footer widget container - logo ve yazıyı aynı hizada tut */
-        .footer-left-holder .tg-footer-widget {
-          padding-left: 0;
-          margin-left: 0;
+        /* Modern Footer Container */
+        .modern-footer {
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+          padding: 60px 0 30px;
+          position: relative;
+          overflow: hidden;
         }
         
-        /* (TR) Sol metin maksimum genişlik – fazla uzamasın */
-        .tg-footer-widget .footer-intro { 
-          max-width: 260px; 
-          line-height: 1.7; 
-          padding-left: 0 !important;
-          margin-left: 0 !important;
+        .modern-footer::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
         }
         
-        /* (TR) Footer logo hizalaması - logo ve yazıyı sol kenardan hizala */
-        .tg-footer-logo {
-          display: block !important;
-          max-width: 260px !important; /* Yazıyla aynı genişlik */
-          width: 100%;
-          padding-left: 0 !important;
-          margin-left: -45px !important; /* Logoyu çok daha sola kaydır */
-          margin-right: 0;
+        /* Footer Top Section */
+        .footer-top {
+          margin-bottom: 40px;
+        }
+        
+        /* Equal spacing between columns - simetrik boşluklar */
+        .footer-top .row {
+          margin-left: -10px;
+          margin-right: -10px;
+        }
+        
+        .footer-top .row > [class*="col-"] {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+        
+        /* Footer Widgets - Equal width columns */
+        .footer-widget {
+          margin-bottom: 30px;
+        }
+        
+        .footer-widget-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #ffffff;
+          margin-bottom: 20px;
+          position: relative;
+          padding-bottom: 12px;
+        }
+        
+        .footer-widget-title::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 40px;
+          height: 2px;
+          background: linear-gradient(90deg, #ff6b6b, #ffa500);
+          border-radius: 2px;
+        }
+        
+        /* Logo Section */
+        .footer-logo-section {
           margin-bottom: 20px;
         }
-        .tg-footer-logo a {
-          display: block;
-          padding: 0 !important;
-          margin: 0 !important;
+        
+        .footer-logo {
+          display: inline-block;
+          max-width: 180px;
+          margin-bottom: 18px;
         }
-        .tg-footer-logo img {
-          display: block;
+        
+        .footer-logo img {
           max-width: 100%;
-          width: 100%;
           height: auto;
-          object-fit: contain;
-          padding: 0 !important;
-          margin: 0 !important;
+          filter: brightness(1.1);
+          transition: transform 0.3s ease;
         }
-
-        /* (TR) QUICK LINKS – başlık ve liste aynı sol çizgide */
-        .tg-footer-link { text-align: left; }
-        .tg-footer-link .tg-footer-widget-title { text-align: left; margin-left: 0; }
-        .tg-footer-link ul { margin: 0; padding: 0; list-style: none; text-align: left; }
-        .tg-footer-link ul li { margin: 6px 0; }
-
-        /* (TR) INFORMATION – satırlar arası boşlukları azalt, ikonla düzgün hizala */
-        .tg-footer-info ul { margin: 0; padding: 0; list-style: none; }
-        .tg-footer-info ul li { display: block; margin: 8px 0; }
-        .tg-footer-info .d-flex { align-items: center; }
-        .tg-footer-info .mr-15 { margin-right: 12px; }
-        .tg-footer-info p { margin: 0; }
-
-        @media (max-width: 575.98px) {
-          .tg-footer-widget .footer-intro { max-width: 100%; }
-          
-          /* Make footer more compact on mobile */
-          .tg-footer-area.tg-footer-space {
-            padding-top: 40px !important;
-            margin-top: 0 !important;
+        
+        .footer-logo:hover img {
+          transform: scale(1.05);
+        }
+        
+        .footer-description {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 15px;
+          line-height: 1.8;
+          margin-bottom: 25px;
+          max-width: 280px;
+          position: relative;
+          padding: 20px 20px 20px 25px;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 4px;
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+        }
+        
+        .footer-description::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 20px;
+          bottom: 20px;
+          width: 3px;
+          background: linear-gradient(135deg, #ff6b6b, #ffa500);
+          border-radius: 2px;
+        }
+        
+        .footer-description::after {
+          content: '✈';
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          font-size: 24px;
+          opacity: 0.15;
+          transform: rotate(-15deg);
+          pointer-events: none;
+        }
+        
+        .footer-description:hover {
+          background: rgba(255, 255, 255, 0.05);
+          transform: translateX(3px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-description strong {
+          color: #ffffff;
+          font-weight: 600;
+        }
+        
+        /* Social Links */
+        .footer-social {
+          display: flex;
+          gap: 12px;
+          margin-top: 20px;
+        }
+        
+        .footer-social a {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 50%;
+          color: #ffffff;
+          font-size: 16px;
+          transition: all 0.3s ease;
+          text-decoration: none;
+        }
+        
+        .footer-social a:hover {
+          background: linear-gradient(135deg, #ff6b6b, #ffa500);
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        /* Footer Links */
+        .footer-links {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        
+        .footer-links li {
+          margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+          color: rgba(255, 255, 255, 0.7);
+          text-decoration: none;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          display: inline-block;
+          position: relative;
+          padding-left: 0;
+        }
+        
+        .footer-links a::before {
+          content: '→';
+          position: absolute;
+          left: -18px;
+          opacity: 0;
+          transition: all 0.3s ease;
+          color: #ff6b6b;
+        }
+        
+        .footer-links a:hover {
+          color: #ffffff;
+          padding-left: 18px;
+        }
+        
+        .footer-links a:hover::before {
+          opacity: 1;
+          left: 0;
+        }
+        
+        /* Contact Info */
+        .footer-contact {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        
+        .footer-contact li {
+          margin-bottom: 15px;
+          display: flex;
+          align-items: flex-start;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 14px;
+          line-height: 1.6;
+        }
+        
+        .footer-contact-icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 12px;
+          margin-top: 2px;
+          flex-shrink: 0;
+          color: #ff6b6b;
+        }
+        
+        .footer-contact-text {
+          flex: 1;
+        }
+        
+        .footer-contact a {
+          color: rgba(255, 255, 255, 0.7);
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+        
+        .footer-contact a:hover {
+          color: #ffffff;
+        }
+        
+        /* Copyright Section */
+        .footer-copyright {
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          padding-top: 25px;
+          text-align: center;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 14px;
+        }
+        
+        .footer-copyright a {
+          color: rgba(255, 255, 255, 0.8);
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+        
+        .footer-copyright a:hover {
+          color: #ff6b6b;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 991.98px) {
+          .modern-footer {
+            padding: 50px 0 25px;
           }
           
-          .tg-footer-top {
-            margin-bottom: 20px !important;
+          .footer-widget {
+            margin-bottom: 35px;
           }
           
-          .tg-footer-widget {
-            margin-bottom: 20px !important;
-          }
-          
-          .tg-footer-logo {
-            margin-bottom: 15px !important;
-          }
-          
-          .tg-footer-widget-title {
-            font-size: 18px !important;
-            margin-bottom: 15px !important;
-          }
-          
-          .tg-footer-copyright {
-            padding: 20px 10px !important;
+          .footer-description {
+            max-width: 100%;
           }
         }
         
-        @media (max-width: 768px) {
-          .tg-footer-area.tg-footer-space {
-            padding-top: 50px !important;
-            margin-top: 0 !important;
+        @media (max-width: 767.98px) {
+          .modern-footer {
+            padding: 40px 0 20px;
+          }
+          
+          .footer-widget-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+          }
+          
+          .footer-logo {
+            max-width: 150px;
+          }
+          
+          .footer-social {
+            gap: 10px;
+          }
+          
+          .footer-social a {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+          }
+        }
+        
+        @media (max-width: 575.98px) {
+          .modern-footer {
+            padding: 35px 0 20px;
+          }
+          
+          .footer-top {
+            margin-bottom: 30px;
+          }
+          
+          .footer-widget {
+            margin-bottom: 30px;
           }
         }
       `}</style>
 
       <footer>
-        <div
-          className="tg-footer-area tg-footer-space include-bg"
-          style={{ backgroundImage: `url(/assets/img/footer/footer.jpg)` }}
-        >
+        <div className="modern-footer">
           <div className="container">
-            <div className="tg-footer-top mb-40">
-              <div className="row tight-gap">
-                {/* Left: logo + text + socials */}
-                <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6 footer-left-holder">
-                  <div className="tg-footer-widget mb-40">
+            <div className="footer-top">
+              <div className="row">
+                {/* Column 1: Logo & Description */}
+                <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                  <div className="footer-widget footer-logo-section">
                     {footerLogo && (
-                      <div className="tg-footer-logo mb-20">
+                      <div className="footer-logo">
                         <Link to="/">
-                          <img src={footerLogo} alt="Lexor" />
+                          <img src={footerLogo} alt="Lexor Holiday" />
                         </Link>
                       </div>
                     )}
-
                     {companyDescription && (
-                      <p className="mb-20 footer-intro">
+                      <div className="footer-description">
                         {companyDescription}
-                      </p>
+                      </div>
                     )}
-
-                    <div className="tg-footer-social">
-                      <Link aria-label="Facebook" to={facebook || '#'}>
-                        <i className="fa-brands fa-facebook-f"></i>
-                      </Link>
-                      <Link aria-label="Instagram" to={instagram || '#'}>
-                        <i className="fa-brands fa-instagram"></i>
-                      </Link>
+                    <div className="footer-social">
+                      {facebook && (
+                        <Link to={facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+                          <i className="fa-brands fa-facebook-f"></i>
+                        </Link>
+                      )}
+                      {instagram && (
+                        <Link to={instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                          <i className="fa-brands fa-instagram"></i>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Middle: Quick Links (title & list aligned left together) */}
-                <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                  <div className="tg-footer-widget tg-footer-link mb-40">
-                    <h3 className="tg-footer-widget-title mb-25">
-                      Quick Links
-                    </h3>
-                    <ul>
+                {/* Column 2: Quick Links */}
+                <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                  <div className="footer-widget">
+                    <h3 className="footer-widget-title">Quick Links</h3>
+                    <ul className="footer-links">
                       <li>
                         <Link to="/">Home</Link>
                       </li>
@@ -224,63 +421,66 @@ const FooterThree = () => {
                         <Link to="/tours">Tours</Link>
                       </li>
                       <li>
-                        <Link to="/contact">Contact</Link>
+                        <Link to="/about">About Us</Link>
                       </li>
                       <li>
                         <Link to="/blog">Blog</Link>
                       </li>
                       <li>
-                        <Link to="/about">About Us</Link>
+                        <Link to="/contact">Contact</Link>
                       </li>
                     </ul>
                   </div>
                 </div>
 
-                {/* Right: Information */}
-                <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                  <div className="tg-footer-widget tg-footer-info mb-40">
-                    <h3 className="tg-footer-widget-title mb-25">
-                      Information
-                    </h3>
-                    <ul>
+                {/* Column 3: Information */}
+                <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                  <div className="footer-widget">
+                    <h3 className="footer-widget-title">Information</h3>
+                    <ul className="footer-contact">
                       <li>
-                        <Link className="d-flex" to={mapsLink}>
-                          <span className="mr-15">
-                            <svg
-                              width="20"
-                              height="24"
-                              viewBox="0 0 20 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M19.0013 10.0608C19.0013 16.8486 10.3346 22.6668 10.3346 22.6668C10.3346 22.6668 1.66797 16.8486 1.66797 10.0608C1.66797 7.74615 2.58106 5.52634 4.20638 3.88965C5.83169 2.25297 8.03609 1.3335 10.3346 1.3335C12.6332 1.3335 14.8376 2.25297 16.4629 3.88965C18.0882 5.52634 19.0013 7.74615 19.0013 10.0608Z"
-                                stroke="white"
-                                strokeWidth="1.73333"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M10.3346 12.9699C11.9301 12.9699 13.2235 11.6674 13.2235 10.0608C13.2235 8.45412 11.9301 7.15168 10.3346 7.15168C8.73915 7.15168 7.44575 8.45412 7.44575 10.0608C7.44575 11.6674 8.73915 12.9699 10.3346 12.9699Z"
-                                stroke="white"
-                                strokeWidth="1.73333"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </span>
-                          {address}
-                        </Link>
+                        <svg className="footer-contact-icon" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M19.0013 10.0608C19.0013 16.8486 10.3346 22.6668 10.3346 22.6668C10.3346 22.6668 1.66797 16.8486 1.66797 10.0608C1.66797 7.74615 2.58106 5.52634 4.20638 3.88965C5.83169 2.25297 8.03609 1.3335 10.3346 1.3335C12.6332 1.3335 14.8376 2.25297 16.4629 3.88965C18.0882 5.52634 19.0013 7.74615 19.0013 10.0608Z" stroke="currentColor" strokeWidth="1.73333" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M10.3346 12.9699C11.9301 12.9699 13.2235 11.6674 13.2235 10.0608C13.2235 8.45412 11.9301 7.15168 10.3346 7.15168C8.73915 7.15168 7.44575 8.45412 7.44575 10.0608C7.44575 11.6674 8.73915 12.9699 10.3346 12.9699Z" stroke="currentColor" strokeWidth="1.73333" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        <span className="footer-contact-text">
+                          <Link to={mapsLink} target="_blank" rel="noopener noreferrer">
+                            {address}
+                          </Link>
+                        </span>
                       </li>
-
                       <li>
-                        <Link className="d-flex" to={`tel:${phone}`}
-                        >
-                          <span className="mr-15">
-                            <i className="fa-sharp text-white fa-solid fa-phone"></i>
-                          </span>
-                          {phone}
-                        </Link>
+                        <i className="fa-sharp fa-solid fa-phone footer-contact-icon"></i>
+                        <span className="footer-contact-text">
+                          <Link to={`tel:${phone}`}>{phone}</Link>
+                        </span>
+                      </li>
+                      <li>
+                        <i className="fa-sharp fa-solid fa-envelope footer-contact-icon"></i>
+                        <span className="footer-contact-text">
+                          <Link to={`mailto:${email}`}>{email}</Link>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Column 4: Support */}
+                <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+                  <div className="footer-widget">
+                    <h3 className="footer-widget-title">Support</h3>
+                    <ul className="footer-links">
+                      <li>
+                        <Link to="/contact">Contact Us</Link>
+                      </li>
+                      <li>
+                        <Link to="/about">About Us</Link>
+                      </li>
+                      <li>
+                        <Link to="/tours">Our Tours</Link>
+                      </li>
+                      <li>
+                        <Link to="/blog">Travel Blog</Link>
                       </li>
                     </ul>
                   </div>
@@ -288,9 +488,10 @@ const FooterThree = () => {
               </div>
             </div>
 
-            <div className="tg-footer-copyright text-center">
+            {/* Copyright */}
+            <div className="footer-copyright">
               <span>
-                Copyright <Link to="#">©Lexor</Link> | All Right Reserved
+                Copyright <Link to="/">© {new Date().getFullYear()} Lexor Holiday</Link> | All Rights Reserved
               </span>
             </div>
           </div>
