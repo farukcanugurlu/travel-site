@@ -888,7 +888,7 @@ const FeatureDetailsArea = ({ tour }: FeatureDetailsAreaProps) => {
                      </div>
                      <div className="col-lg-4">
                         <div className="tg-tour-details-video-feature-price mb-15">
-                           <p>From <span>${Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice))).toFixed(2)}</span> / Person</p>
+                           <p>From <span>€{Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice))).toFixed(2)}</span> / Person</p>
                         </div>
                      </div>
                   </div>

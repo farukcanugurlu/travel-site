@@ -80,8 +80,8 @@ const FeatureArea = () => {
 
                                        </Link>
                                        <div className="tg-listing-2-price">
-                                          {item.delete_price && <del>${item.delete_price}</del>}
-                                          <span className="new">${item.price}</span>
+                                          {item.delete_price && <del>€{item.delete_price}</del>}
+                                          <span className="new">€{item.price}</span>
                                           <span className="shift">/night</span>
                                        </div>
                                     </div>

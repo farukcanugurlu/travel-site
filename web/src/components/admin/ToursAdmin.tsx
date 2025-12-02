@@ -275,7 +275,7 @@ const ToursAdmin: React.FC = () => {
                     <div className="price-info">
                       <div className="price-from">From</div>
                       <div className="price-amount">
-                        ${Math.min(...tour.packages.map(p => p.adultPrice))}
+                        €{Math.min(...tour.packages.map(p => p.adultPrice))}
                       </div>
                     </div>
                   ) : (

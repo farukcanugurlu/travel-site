@@ -202,15 +202,15 @@ const TourDetailsMain: React.FC = () => {
                             <div className="package-prices">
                               <div className="price-item">
                                 <span>Adult:</span>
-                                <span>${pkg.adultPrice}</span>
+                                <span>€{pkg.adultPrice}</span>
                               </div>
                               <div className="price-item">
                                 <span>Child:</span>
-                                <span>${pkg.childPrice}</span>
+                                <span>€{pkg.childPrice}</span>
                               </div>
                               <div className="price-item">
                                 <span>Infant:</span>
-                                <span>${pkg.infantPrice}</span>
+                                <span>€{pkg.infantPrice}</span>
                               </div>
                             </div>
                             {pkg.description && (
@@ -242,7 +242,7 @@ const TourDetailsMain: React.FC = () => {
                   <h3>Book This Tour</h3>
                   <div className="price-info">
                     <span className="price-label">Starting from</span>
-                    <span className="price-amount">${lowestPrice}</span>
+                    <span className="price-amount">€{lowestPrice}</span>
                     <span className="price-per">per person</span>
                   </div>
                   <div className="tour-info-summary">

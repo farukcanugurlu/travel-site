@@ -65,7 +65,7 @@ const Listing = () => {
                            <div className="tg-listing-card-price d-flex align-items-end justify-content-between">
                               <div>
                                  <span className="tg-listing-card-currency-amount d-flex align-items-center">
-                                    <span className="currency-symbol mr-5">From</span>${item.price}
+                                    <span className="currency-symbol mr-5">From</span>€{item.price}
                                  </span>
                               </div>
                               <div>

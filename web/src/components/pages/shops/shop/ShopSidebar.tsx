@@ -156,7 +156,7 @@ const ShopSidebar = ({ setProducts }: FeatureSidebarProps) => {
                   <span><i className="fa-sharp fa-solid fa-star"></i></span>
                   <span><i className="fa-sharp fa-regular fa-star"></i></span>
                 </div>
-                <span className="price">${item.price}.00</span>
+                <span className="price">€{item.price}.00</span>
               </div>
             </div>
           ))}

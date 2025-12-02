@@ -257,7 +257,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onResults, showResults = tr
                         </p>
                         <p className="tour-duration">⏱️ {tour.duration || 'Full Day'}</p>
                         <div className="tour-price">
-                          From ${Math.min(...tour.packages.map((pkg: TourPackage) => Number(pkg.adultPrice)))}
+                          From €{Math.min(...tour.packages.map((pkg: TourPackage) => Number(pkg.adultPrice)))}
                         </div>
                       </div>
                     </div>

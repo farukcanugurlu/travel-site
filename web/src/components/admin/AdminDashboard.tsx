@@ -206,7 +206,7 @@ const AdminDashboard: React.FC = () => {
                     <p>{booking.user?.email}</p>
                     <div className="booking-meta">
                       <span className={`status ${booking.status}`}>{booking.status}</span>
-                      <span className="amount">${booking.totalAmount}</span>
+                      <span className="amount">€{booking.totalAmount}</span>
                     </div>
                   </div>
                   <div className="booking-actions">

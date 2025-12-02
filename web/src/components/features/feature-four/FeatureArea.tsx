@@ -110,8 +110,8 @@ const FeatureArea = () => {
                                           <p className="tg-listing-map-list-para mb-25">{item.desc}</p>
                                           <div className="tg-listing-avai d-flex align-items-center justify-content-between">
                                              <div className="tg-listing-2-price">
-                                                {item.delete_price && <del>${item.delete_price}</del>}
-                                                <span className="new">${item.price}</span>
+                                                {item.delete_price && <del>€{item.delete_price}</del>}
+                                                <span className="new">€{item.price}</span>
                                                 <span className="shift">/night</span>
                                              </div>
                                              <Link className="tg-listing-avai-btn" to="/tour-details-2">Check Availability</Link>

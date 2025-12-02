@@ -88,7 +88,7 @@ const ShopArea = () => {
                           <Rating initialValue={item.review} size={16} readonly={true} />
                           <span>({item.total_review} Reviews)</span>
                         </div>
-                        <span className="price">${item.price}.00</span>
+                        <span className="price">€{item.price}.00</span>
                       </div>
                     </div>
                   </div>

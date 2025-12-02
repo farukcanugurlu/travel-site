@@ -220,7 +220,7 @@ const FooterThree = () => {
           transform: translateY(-3px);
           box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
         }
-        
+
         /* Footer Links */
         .footer-links {
           list-style: none;
@@ -313,8 +313,8 @@ const FooterThree = () => {
           color: rgba(255, 255, 255, 0.8);
           text-decoration: none;
           transition: color 0.3s ease;
-        }
-        
+          }
+          
         .footer-copyright a:hover {
           color: #ff6b6b;
         }
@@ -397,13 +397,13 @@ const FooterThree = () => {
                     <div className="footer-social">
                       {facebook && (
                         <Link to={facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer">
-                          <i className="fa-brands fa-facebook-f"></i>
-                        </Link>
+                        <i className="fa-brands fa-facebook-f"></i>
+                      </Link>
                       )}
                       {instagram && (
                         <Link to={instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
-                          <i className="fa-brands fa-instagram"></i>
-                        </Link>
+                        <i className="fa-brands fa-instagram"></i>
+                      </Link>
                       )}
                     </div>
                   </div>
@@ -442,11 +442,11 @@ const FooterThree = () => {
                         <svg className="footer-contact-icon" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M19.0013 10.0608C19.0013 16.8486 10.3346 22.6668 10.3346 22.6668C10.3346 22.6668 1.66797 16.8486 1.66797 10.0608C1.66797 7.74615 2.58106 5.52634 4.20638 3.88965C5.83169 2.25297 8.03609 1.3335 10.3346 1.3335C12.6332 1.3335 14.8376 2.25297 16.4629 3.88965C18.0882 5.52634 19.0013 7.74615 19.0013 10.0608Z" stroke="currentColor" strokeWidth="1.73333" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M10.3346 12.9699C11.9301 12.9699 13.2235 11.6674 13.2235 10.0608C13.2235 8.45412 11.9301 7.15168 10.3346 7.15168C8.73915 7.15168 7.44575 8.45412 7.44575 10.0608C7.44575 11.6674 8.73915 12.9699 10.3346 12.9699Z" stroke="currentColor" strokeWidth="1.73333" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                            </svg>
                         <span className="footer-contact-text">
                           <Link to={mapsLink} target="_blank" rel="noopener noreferrer">
-                            {address}
-                          </Link>
+                          {address}
+                        </Link>
                         </span>
                       </li>
                       <li>
@@ -459,7 +459,7 @@ const FooterThree = () => {
                         <i className="fa-sharp fa-solid fa-envelope footer-contact-icon"></i>
                         <span className="footer-contact-text">
                           <Link to={`mailto:${email}`}>{email}</Link>
-                        </span>
+                          </span>
                       </li>
                     </ul>
                   </div>

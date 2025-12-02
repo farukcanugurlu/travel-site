@@ -487,7 +487,7 @@ const Listing = () => {
                           alignItems: "baseline",
                         }}
                       >
-                        <span className="currency-symbol">$</span>
+                        <span className="currency-symbol">€</span>
                         {priceText}
                       </span>
                     </div>

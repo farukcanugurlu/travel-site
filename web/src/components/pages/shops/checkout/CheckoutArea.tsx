@@ -187,10 +187,10 @@ const CheckoutArea = () => {
                         {productItem.length > 0 ? productItem.map((add_item: any, add_index: any) =>
                           <tr key={add_index} className="cart_item first">
                             <td className="product-name">
-                              {add_item.title}<span> ${(add_item.price || 0).toFixed(2)} x {add_item.quantity || 0}</span>
+                              {add_item.title}<span> €{(add_item.price || 0).toFixed(2)} x {add_item.quantity || 0}</span>
                             </td>
                             <td className="product-total">
-                              <span className="amount">${((add_item.quantity || 0) * (add_item.price || 0)).toFixed(2)}</span>
+                              <span className="amount">€{((add_item.quantity || 0) * (add_item.price || 0)).toFixed(2)}</span>
                             </td>
                           </tr>
                         ) : (
@@ -202,15 +202,15 @@ const CheckoutArea = () => {
                       <tfoot>
                         <tr className="cart-subtotal">
                           <th>Subtotal</th>
-                          <td><span className="amount">${total.toFixed(2)}</span></td>
+                          <td><span className="amount">€{total.toFixed(2)}</span></td>
                         </tr>
                         <tr className="cart-subtotal">
                           <th>Shipping</th>
-                          <td><span className="amount">${shipCost.toFixed(2)}</span></td>
+                          <td><span className="amount">€{shipCost.toFixed(2)}</span></td>
                         </tr>
                         <tr className="cart-subtotal">
                           <th>Total</th>
-                          <td><span className="amount">${(total + shipCost).toFixed(2)}</span></td>
+                          <td><span className="amount">€{(total + shipCost).toFixed(2)}</span></td>
                         </tr>
                       </tfoot>
                     </table>

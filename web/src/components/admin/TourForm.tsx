@@ -621,7 +621,7 @@ const TourForm: React.FC = () => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Adult Price ($)</label>
+                  <label>Adult Price (€)</label>
                   <input
                     type="number"
                     value={pkg.adultPrice || 0}
@@ -633,7 +633,7 @@ const TourForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Child Price ($)</label>
+                  <label>Child Price (€)</label>
                   <input
                     type="number"
                     value={pkg.childPrice || 0}
@@ -645,7 +645,7 @@ const TourForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Infant Price ($)</label>
+                  <label>Infant Price (€)</label>
                   <input
                     type="number"
                     value={pkg.infantPrice || 0}

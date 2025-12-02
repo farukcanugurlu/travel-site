@@ -47,7 +47,7 @@ const WishlistArea = () => {
                               <Link className="texts" to="/shop-details">{item.title}</Link>
                             </td>
                             <td className="product-price2">
-                              <span className="amount">${item.price}.00</span>
+                              <span className="amount">€{item.price}.00</span>
                             </td>
                             <td className="product-add-to-cart">
                               <button onClick={() => dispatch(addToCart(item))} className="tg-btn">Add To Cart</button>

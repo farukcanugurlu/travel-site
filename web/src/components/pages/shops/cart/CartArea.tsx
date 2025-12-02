@@ -329,7 +329,7 @@ const CartArea = () => {
                                              <Link className="texts" to="/shop-details">{item.title}</Link>
                                           </td>
                                           <td className="product-price2">
-                                             <span className="amount">${item.price}.00</span>
+                                             <span className="amount">€{item.price}.00</span>
                                           </td>
                                           <td className="product-quantity">
                                              <div className="tg-product-details-quantity">
@@ -350,7 +350,7 @@ const CartArea = () => {
                                              </div>
                                           </td>
 
-                                          <td className="product-subtotal"><span className="amount">${item.price * item.quantity}.00</span></td>
+                                          <td className="product-subtotal"><span className="amount">€{item.price * item.quantity}.00</span></td>
                                           <td className="product-remove">
                                              <a onClick={() => dispatch(remove_cart_product(item))} style={{ cursor: "pointer" }}><i className="fa fa-times"></i></a>
                                           </td>
@@ -372,7 +372,7 @@ const CartArea = () => {
                                           <h5 className="mobile-cart-item-title">
                                              <Link to="/shop-details">{item.title}</Link>
                                           </h5>
-                                          <p className="mobile-cart-item-price">${item.price}.00</p>
+                                          <p className="mobile-cart-item-price">€{item.price}.00</p>
                                        </div>
                                        <div 
                                           className="mobile-cart-item-remove"
@@ -403,7 +403,7 @@ const CartArea = () => {
                                        </div>
                                        <div className="mobile-cart-item-subtotal">
                                           <div className="mobile-cart-item-subtotal-label">Subtotal</div>
-                                          <div className="mobile-cart-item-subtotal-amount">${item.price * item.quantity}.00</div>
+                                          <div className="mobile-cart-item-subtotal-amount">€{item.price * item.quantity}.00</div>
                                        </div>
                                     </div>
                                  </div>
@@ -416,9 +416,9 @@ const CartArea = () => {
                               <div className="col-xl-3 col-lg-4 col-md-5">
                                  <div className="tg-cart-page-total mb-20" style={{ width: '100%' }}>
                                     <ul className="mb-20">
-                                       <li>Subtotal <span>${total.toFixed(2)}</span></li>
-                                       <li className="borders">Shopping <span>$0.00</span></li>
-                                       <li>Total <span>${total.toFixed(2)}</span></li>
+                                       <li>Subtotal <span>€{total.toFixed(2)}</span></li>
+                                       <li className="borders">Shopping <span>€0.00</span></li>
+                                       <li>Total <span>€{total.toFixed(2)}</span></li>
                                     </ul>
                                      <div className="d-flex" style={{ gap: '10px', width: '100%', maxWidth: '100%', margin: 0, padding: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                                         <Link to="#" className="tg-btn tg-btn-black mb-10" style={{ flex: '0 0 auto', padding: '10px 24px', fontSize: '14px', margin: 0 }}>Update</Link>

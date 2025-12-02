@@ -59,8 +59,8 @@ const Listing = () => {
                         <div className="tg-listing-card-content p-relative">
                            <div className="tg-listing-2-price-wrap text-center">
                               <div className="tg-listing-2-price">
-                                 {item.delete_price && <del>${item.delete_price}</del>}
-                                 <span className="new">${item.price}</span>
+                                 {item.delete_price && <del>€{item.delete_price}</del>}
+                                 <span className="new">€{item.price}</span>
                                  <span className="shift">/night</span>
                               </div>
                            </div>

@@ -116,7 +116,7 @@ const Listing = () => {
                                     <Link className="tg-listing-avai-btn" to="/tour-details">View Details</Link>
                                     <div className="tg-listing-card-price d-flex align-items-center">
                                        <span className="form mr-5">From</span>
-                                       <span className="price">${item.price}</span>
+                                       <span className="price">€{item.price}</span>
                                     </div>
                                  </div>
                               </div>

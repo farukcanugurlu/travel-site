@@ -347,7 +347,7 @@ const FeatureArea = () => {
                                   alignItems: "baseline",
                                 }}
                               >
-                                <span className="currency-symbol">$</span>
+                                <span className="currency-symbol">€</span>
                                 {(() => {
                                   // Packages'dan en düşük fiyatı al
                                   if (item.packages && Array.isArray(item.packages) && item.packages.length > 0) {

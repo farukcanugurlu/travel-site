@@ -266,7 +266,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
           <div className="tg-tour-about-tickets-adult">
             <span>Adult</span>
             <p className="mb-0">
-              <span>${adultPrice}</span>
+              <span>€{adultPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -293,7 +293,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
           <div className="tg-tour-about-tickets-adult">
             <span>Child </span>
             <p className="mb-0">
-              <span>${childPrice}</span>
+              <span>€{childPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -320,7 +320,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
           <div className="tg-tour-about-tickets-adult">
             <span>Infant </span>
             <p className="mb-0">
-              <span>${infantPrice}</span>
+              <span>€{infantPrice}</span>
             </p>
           </div>
           <div className="tg-tour-about-tickets-quantity">
@@ -353,15 +353,15 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
           <ul>
             <li>
               <span className="adult">Adult ({adultCount}x):</span>
-              <span className="quantity">${(adultCount * adultPrice).toFixed(2)}</span>
+              <span className="quantity">€{(adultCount * adultPrice).toFixed(2)}</span>
             </li>
             <li>
               <span className="adult">Child ({childCount}x):</span>
-              <span className="quantity">${(childCount * childPrice).toFixed(2)}</span>
+              <span className="quantity">€{(childCount * childPrice).toFixed(2)}</span>
             </li>
             <li>
               <span className="adult">Infant ({infantCount}x):</span>
-              <span className="quantity">${(infantCount * infantPrice).toFixed(2)}</span>
+              <span className="quantity">€{(infantCount * infantPrice).toFixed(2)}</span>
             </li>
           </ul>
         </div>
@@ -371,7 +371,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
         <span className="tg-tour-about-sidebar-title d-inline-block">
           Total Cost:
         </span>
-        <h5 className="total-price">${totalCost.toFixed(2)}</h5>
+        <h5 className="total-price">€{totalCost.toFixed(2)}</h5>
       </div>
       <button type="submit" className="tg-btn tg-btn-switch-animation w-100">
         Book now

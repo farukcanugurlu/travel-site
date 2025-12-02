@@ -77,8 +77,8 @@ const Listing = () => {
                                     {item.tag && <span className="tg-listing-item-price-discount shape-2">% Offer</span>}
                                  </Link>
                                  <div className="tg-listing-2-price">
-                                    {item.delete_price && <del>$299</del>}
-                                    <span className="new">${item.price}</span>
+                                    {item.delete_price && <del>€299</del>}
+                                    <span className="new">€{item.price}</span>
                                     <span className="shift">/night</span>
                                  </div>
                               </div>

@@ -227,15 +227,15 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
                 <div className="package-prices">
                   <div className="price-item">
                     <span>Adult:</span>
-                    <span>${pkg.adultPrice}</span>
+                    <span>€{pkg.adultPrice}</span>
                   </div>
                   <div className="price-item">
                     <span>Child:</span>
-                    <span>${pkg.childPrice}</span>
+                    <span>€{pkg.childPrice}</span>
                   </div>
                   <div className="price-item">
                     <span>Infant:</span>
-                    <span>${pkg.infantPrice}</span>
+                    <span>€{pkg.infantPrice}</span>
                   </div>
                 </div>
                 {pkg.description && (
@@ -380,25 +380,25 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
             <h3>Booking Summary</h3>
             {selectedPackage && (
               <div className="breakdown-item">
-                <span>{formData.adultCount} Adult(s) × ${selectedPackage.adultPrice}</span>
-                <span>${formData.adultCount * selectedPackage.adultPrice}</span>
+                <span>{formData.adultCount} Adult(s) × €{selectedPackage.adultPrice}</span>
+                <span>€{formData.adultCount * selectedPackage.adultPrice}</span>
               </div>
             )}
             {selectedPackage && formData.childCount > 0 && (
               <div className="breakdown-item">
-                <span>{formData.childCount} Child(ren) × ${selectedPackage.childPrice}</span>
-                <span>${formData.childCount * selectedPackage.childPrice}</span>
+                <span>{formData.childCount} Child(ren) × €{selectedPackage.childPrice}</span>
+                <span>€{formData.childCount * selectedPackage.childPrice}</span>
               </div>
             )}
             {selectedPackage && formData.infantCount > 0 && (
               <div className="breakdown-item">
-                <span>{formData.infantCount} Infant(s) × ${selectedPackage.infantPrice}</span>
-                <span>${formData.infantCount * selectedPackage.infantPrice}</span>
+                <span>{formData.infantCount} Infant(s) × €{selectedPackage.infantPrice}</span>
+                <span>€{formData.infantCount * selectedPackage.infantPrice}</span>
               </div>
             )}
             <div className="total-amount">
               <span>Total Amount:</span>
-              <span>${totalAmount}</span>
+              <span>€{totalAmount}</span>
             </div>
           </div>
         </div>
