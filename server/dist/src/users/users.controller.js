@@ -52,8 +52,9 @@ let UsersController = class UsersController {
     resetPassword(id, body) {
         return this.usersService.resetPassword(id, body.password);
     }
-    remove(id) {
-        return this.usersService.remove(id);
+    remove(id, force) {
+        const forceDelete = force === 'true';
+        return this.usersService.remove(id, forceDelete);
     }
 };
 exports.UsersController = UsersController;
@@ -135,9 +136,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete user' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'User deleted successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'User not found' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'User has bookings and force delete not enabled' }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('force')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "remove", null);
 exports.UsersController = UsersController = __decorate([

@@ -20,9 +20,14 @@ const getApiUrl = () => {
   return 'http://localhost:3000';
 };
 
-export function normalizeImageUrl(url?: string): string {
+export function normalizeImageUrl(url?: string): string | null {
   if (!url) {
-    return '/assets/img/listing/default-tour.jpg';
+    return null;
+  }
+
+  // Skip default/placeholder images - only show uploaded images
+  if (url.includes('/assets/img/listing/') || url.includes('listing-') || url.includes('default-tour')) {
+    return null;
   }
 
   // If it's already a full URL (starts with http:// or https://), return as is

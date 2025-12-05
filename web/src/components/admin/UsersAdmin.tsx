@@ -91,16 +91,36 @@ const UsersAdmin: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
-    
+  const handleDelete = async (user: User) => {
     try {
-      await usersApiService.deleteUser(id);
-      setUsers(users.filter(user => user.id !== id));
+      // First try to delete without force
+      await usersApiService.deleteUser(user.id, false);
+      setUsers(users.filter(u => u.id !== user.id));
       toast.success('User deleted successfully');
-    } catch (err) {
-      toast.error('Failed to delete user');
-      console.error('Error deleting user:', err);
+    } catch (err: any) {
+      // Check if error is about bookings
+      const errorMessage = err?.response?.data?.message || err?.message || 'Failed to delete user';
+      
+      if (errorMessage.includes('booking')) {
+        // User has bookings, show warning and ask for confirmation
+        const bookingCount = errorMessage.match(/\d+/)?.[0] || 'some';
+        const confirmMessage = `This user has ${bookingCount} booking(s). Deleting will also delete all associated bookings, reviews, and favorites. Are you sure you want to proceed?`;
+        
+        if (window.confirm(confirmMessage)) {
+          try {
+            // Force delete
+            await usersApiService.deleteUser(user.id, true);
+            setUsers(users.filter(u => u.id !== user.id));
+            toast.success('User and associated data deleted successfully');
+          } catch (forceErr) {
+            toast.error('Failed to delete user');
+            console.error('Error force deleting user:', forceErr);
+          }
+        }
+      } else {
+        toast.error(errorMessage);
+        console.error('Error deleting user:', err);
+      }
     }
   };
 
@@ -330,7 +350,7 @@ const UsersAdmin: React.FC = () => {
                       </button>
                       <button
                         className="btn btn-sm btn-danger"
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => handleDelete(user)}
                       >
                         Delete
                       </button>

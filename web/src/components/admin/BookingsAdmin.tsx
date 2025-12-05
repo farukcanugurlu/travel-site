@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import bookingsApiService from '../../api/bookings';
 import type { Booking, BookingStats } from '../../api/bookings';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEdit, faTrash, faCheck, faTimes, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEdit, faTrash, faCheck, faTimes, faCalendarAlt, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -63,6 +63,16 @@ const BookingsAdmin: React.FC = () => {
         console.error('Failed to delete booking:', err);
         toast.error('Failed to delete booking.');
       }
+    }
+  };
+
+  const handleDownloadPDF = async (bookingId: string) => {
+    try {
+      await bookingsApiService.downloadPDF(bookingId);
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      toast.error('Failed to download PDF. Please try again.');
     }
   };
 
@@ -176,7 +186,13 @@ const BookingsAdmin: React.FC = () => {
                   <td>
                     <div className="tour-cell">
                       <img 
-                        src={booking.tour?.thumbnail || '/assets/img/listing/listing-1.jpg'} 
+                        src={(() => {
+                          const imgUrl = booking.tour?.thumbnail;
+                          if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                            return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect fill="%23f0f0f0" width="50" height="50"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="10"%3ENo Image%3C/text%3E%3C/svg%3E';
+                          }
+                          return imgUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}` : imgUrl;
+                        })()} 
                         alt={booking.tour?.title} 
                         className="tour-thumb" 
                       />
@@ -215,7 +231,7 @@ const BookingsAdmin: React.FC = () => {
                   </td>
                   <td>
                     <div className="amount-cell">
-                      ${booking.totalAmount}
+                      €{booking.totalAmount}
                     </div>
                   </td>
                   <td>
@@ -243,6 +259,13 @@ const BookingsAdmin: React.FC = () => {
                         disabled={booking.status === 'cancelled'}
                       >
                         <FontAwesomeIcon icon={faTimes} />
+                      </button>
+                      <button
+                        onClick={() => handleDownloadPDF(booking.id)}
+                        className="btn-action pdf"
+                        title="Download PDF"
+                      >
+                        <FontAwesomeIcon icon={faFilePdf} />
                       </button>
                       <button
                         onClick={() => handleDelete(booking.id)}
@@ -485,6 +508,15 @@ const BookingsAdmin: React.FC = () => {
         }
 
         .btn-action.cancel:hover:not(:disabled) {
+          background: #c0392b;
+        }
+
+        .btn-action.pdf {
+          background: #e74c3c;
+          color: white;
+        }
+
+        .btn-action.pdf:hover {
           background: #c0392b;
         }
 

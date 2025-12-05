@@ -1,6 +1,6 @@
-import { Controller, Post, Body, UseGuards, Request, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Get, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -38,5 +38,25 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('password/request-change')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Request password change - returns verification code' })
+  @ApiResponse({ status: 200, description: 'Verification code generated' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async requestPasswordChange(@Request() req) {
+    return this.authService.requestPasswordChange(req.user.id);
+  }
+
+  @Patch('password/change')
+  @ApiOperation({ summary: 'Change password with verification code' })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+  async changePasswordWithCode(
+    @Body() body: { email: string; code: string; newPassword: string },
+  ) {
+    return this.authService.changePasswordWithCode(body.email, body.code, body.newPassword);
   }
 }

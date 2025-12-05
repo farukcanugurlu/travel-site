@@ -78,8 +78,9 @@ class UsersApiService {
   }
 
   // Delete user
-  async deleteUser(id: string): Promise<void> {
-    return apiService.delete<void>(`/users/${id}`);
+  async deleteUser(id: string, forceDelete: boolean = false): Promise<void> {
+    const params = forceDelete ? '?force=true' : '';
+    return apiService.delete<void>(`/users/${id}${params}`);
   }
 
   // Get user statistics

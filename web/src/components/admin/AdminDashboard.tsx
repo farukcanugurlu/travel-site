@@ -170,7 +170,28 @@ const AdminDashboard: React.FC = () => {
               recentTours.map((tour) => (
                 <div key={tour.id} className="tour-item">
                   <div className="tour-image">
-                    <img src={tour.thumbnail || '/assets/img/listing/listing-1.jpg'} alt={tour.title} />
+                    {(() => {
+                      const imgUrl = tour.thumbnail;
+                      if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                        return (
+                          <div style={{ 
+                            width: '60px', 
+                            height: '60px', 
+                            backgroundColor: '#f0f0f0', 
+                            borderRadius: '8px',
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#999',
+                            fontSize: '10px',
+                            textAlign: 'center'
+                          }}>
+                            No img
+                          </div>
+                        );
+                      }
+                      return <img src={imgUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}` : imgUrl} alt={tour.title} />;
+                    })()}
                   </div>
                   <div className="tour-info">
                     <h3>{tour.title}</h3>

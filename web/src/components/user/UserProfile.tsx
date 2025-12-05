@@ -10,6 +10,7 @@ import reviewsApiService, { type Review } from '../../api/reviews';
 import HeaderThree from '../../layouts/headers/HeaderThree';
 import FooterThree from '../../layouts/footers/FooterThree';
 import { toast } from 'react-toastify';
+import emailjs from '@emailjs/browser';
 
 interface UserProfileData {
   id: string;
@@ -187,6 +188,7 @@ const UserProfile: React.FC = () => {
                   })}</span>
                 </div>
               </div>
+              <ChangePasswordForm userEmail={user.email} />
             </div>
           )}
 
@@ -208,7 +210,13 @@ const UserProfile: React.FC = () => {
                     <div key={booking.id} className="booking-item">
                       <div className="booking-image">
                         <img 
-                          src={booking.tour?.thumbnail || '/assets/img/listing/listing-1.jpg'} 
+                          src={(() => {
+                            const imgUrl = booking.tour?.thumbnail;
+                            if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                              return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23f5f5f5" width="80" height="80"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
+                            }
+                            return imgUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}` : imgUrl;
+                          })()} 
                           alt={booking.tour?.title} 
                         />
                       </div>
@@ -305,7 +313,13 @@ const UserProfile: React.FC = () => {
                     <div key={favorite.id} className="favorite-item">
                       <div className="favorite-image">
                         <img 
-                          src={favorite.tour?.thumbnail || '/assets/img/listing/listing-1.jpg'} 
+                          src={(() => {
+                            const imgUrl = favorite.tour?.thumbnail;
+                            if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                              return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23f5f5f5" width="80" height="80"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
+                            }
+                            return imgUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}` : imgUrl;
+                          })()} 
                           alt={favorite.tour?.title} 
                         />
                       </div>
@@ -913,6 +927,301 @@ const UserProfile: React.FC = () => {
       </main>
       <FooterThree />
     </>
+  );
+};
+
+// Change Password Form Component
+interface ChangePasswordFormProps {
+  userEmail: string;
+}
+
+const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ userEmail }) => {
+  const [showForm, setShowForm] = useState(false);
+  const [step, setStep] = useState<'request' | 'verify'>('request');
+  const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // EmailJS configuration
+  const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "themedox";
+  const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_vvhaqp9";
+  const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "8J7ZO8OH7mUoEA9WX";
+
+  useEffect(() => {
+    try {
+      emailjs.init(PUBLIC_KEY);
+    } catch {
+      // no-op
+    }
+  }, []);
+
+  const handleRequestCode = async () => {
+    try {
+      setLoading(true);
+      
+      // Request verification code from backend
+      const response = await authApiService.requestPasswordChange();
+      const verificationCode = response.code;
+
+      // Send code via EmailJS
+      const emailParams = {
+        to_email: userEmail,
+        user_email: userEmail,
+        subject: 'Password Change Verification Code',
+        message: `Your verification code for password change is: ${verificationCode}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this, please ignore this email.`,
+        to_name: userEmail,
+        from_name: 'Lexor Holiday',
+      };
+
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        emailParams,
+        PUBLIC_KEY
+      );
+
+      toast.success('Verification code sent to your email');
+      setStep('verify');
+    } catch (error) {
+      console.error('Error requesting password change:', error);
+      toast.error('Failed to send verification code. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await authApiService.changePasswordWithCode(userEmail, code, newPassword);
+      toast.success('Password changed successfully');
+      
+      // Reset form
+      setStep('request');
+      setCode('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowForm(false);
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to change password';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!showForm) {
+    return (
+      <div style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid #e0e0e0' }}>
+        <button
+          onClick={() => setShowForm(true)}
+          className="btn-change-password"
+          style={{
+            background: '#3498db',
+            color: 'white',
+            padding: '12px 24px',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: '500',
+            fontSize: '14px',
+          }}
+        >
+          Change Password
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="change-password-form" style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid #e0e0e0' }}>
+      <h3 style={{ fontSize: '20px', marginBottom: '20px', color: '#2c3e50' }}>Change Password</h3>
+      
+      {step === 'request' && (
+        <div>
+          <p style={{ color: '#666', marginBottom: '20px' }}>
+            We'll send a verification code to your email address ({userEmail}) to confirm your identity.
+          </p>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={handleRequestCode}
+              disabled={loading}
+              style={{
+                background: '#3498db',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontWeight: '500',
+                opacity: loading ? 0.6 : 1,
+              }}
+            >
+              {loading ? 'Sending...' : 'Send Verification Code'}
+            </button>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setStep('request');
+              }}
+              style={{
+                background: '#6c757d',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '500',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 'verify' && (
+        <form onSubmit={handleChangePassword}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#2c3e50' }}>
+              Verification Code
+            </label>
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="Enter 6-digit code"
+              required
+              maxLength={6}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
+            />
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+              Check your email for the verification code
+            </p>
+          </div>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#2c3e50' }}>
+              New Password
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+              required
+              minLength={6}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500', color: '#2c3e50' }}>
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              required
+              minLength={6}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                background: '#28a745',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontWeight: '500',
+                opacity: loading ? 0.6 : 1,
+              }}
+            >
+              {loading ? 'Changing...' : 'Change Password'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                setStep('request');
+                setCode('');
+                setNewPassword('');
+                setConfirmPassword('');
+              }}
+              style={{
+                background: '#6c757d',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '500',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStep('request');
+                setCode('');
+              }}
+              style={{
+                background: '#f8f9fa',
+                color: '#2c3e50',
+                padding: '12px 24px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: '500',
+              }}
+            >
+              Resend Code
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
   );
 };
 

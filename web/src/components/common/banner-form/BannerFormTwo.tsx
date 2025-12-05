@@ -1,27 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent as ReactMouseEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-
-/** Dropdown’da göstereceğimiz sabit öneriler */
-const SUGGESTIONS = [
-  "Kusadasi",
-  "Fethiye",
-  "Bodrum",
-  "Marmaris",
-  "Istanbul",
-  "Kemer",
-  "Cappadocia",
-  "Cesme",
-  "Icmeler",
-  "Belek",
-  "Side",
-  "Alanya",
-  "Pamukkale",
-  "Kas",
-  "Kalkan",
-  "Izmir",
-  "Antalya",
-];
+import { destinationsApiService } from "../../../api/destinations";
 
 export default function BannerFormTwo() {
   const navigate = useNavigate();
@@ -30,9 +10,32 @@ export default function BannerFormTwo() {
   // input & dropdown state
   const [location, setLocation] = useState("");
   const [open, setOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(true);
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
-  // URL’den (destination|location) varsa sadece inputu doldur (otomatik yönlendirme YOK)
+  // Fetch destinations from API
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        setLoadingDestinations(true);
+        const destinations = await destinationsApiService.getDestinations({ limit: 50 });
+        // Extract destination names
+        const destinationNames = destinations.map(dest => dest.name);
+        setSuggestions(destinationNames);
+      } catch (error) {
+        console.error('Failed to fetch destinations:', error);
+        // Fallback to empty array if API fails
+        setSuggestions([]);
+      } finally {
+        setLoadingDestinations(false);
+      }
+    };
+    
+    fetchDestinations();
+  }, []);
+
+  // URL'den (destination|location) varsa sadece inputu doldur (otomatik yönlendirme YOK)
   useEffect(() => {
     const qs = new URLSearchParams(search);
     const selected = qs.get("destination") || qs.get("location");
@@ -334,48 +337,56 @@ export default function BannerFormTwo() {
                 onClick={stop}
               >
                   <div className="lexor-loc-list">
-                    {SUGGESTIONS.filter(s => 
-                      !location || s.toLowerCase().includes(location.toLowerCase())
-                    ).map((s) => (
-                      <button
-                        type="button"
-                        key={s}
-                        className="lexor-loc-item"
-                        onMouseDown={() => go(s)}
-                      >
-                        <span className="label">{s}</span>
-                        <span className="icon" aria-hidden="true">
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12 21s-7-5.2-7-11a7 7 0 1 1 14 0c0 5.8-7 11-7 11Z"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <circle
-                              cx="12"
-                              cy="10"
-                              r="2.5"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                            />
-                          </svg>
-                        </span>
-                      </button>
-                    ))}
-                    {SUGGESTIONS.filter(s => 
-                      !location || s.toLowerCase().includes(location.toLowerCase())
-                    ).length === 0 && (
+                    {loadingDestinations ? (
                       <div style={{ padding: '20px', textAlign: 'center', color: '#6b6b6b' }}>
-                        No destinations found
+                        Loading destinations...
                       </div>
+                    ) : (
+                      <>
+                        {suggestions.filter(s => 
+                          !location || s.toLowerCase().includes(location.toLowerCase())
+                        ).map((s) => (
+                          <button
+                            type="button"
+                            key={s}
+                            className="lexor-loc-item"
+                            onMouseDown={() => go(s)}
+                          >
+                            <span className="label">{s}</span>
+                            <span className="icon" aria-hidden="true">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M12 21s-7-5.2-7-11a7 7 0 1 1 14 0c0 5.8-7 11-7 11Z"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <circle
+                                  cx="12"
+                                  cy="10"
+                                  r="2.5"
+                                  stroke="currentColor"
+                                  strokeWidth="1.8"
+                                />
+                              </svg>
+                            </span>
+                          </button>
+                        ))}
+                        {suggestions.filter(s => 
+                          !location || s.toLowerCase().includes(location.toLowerCase())
+                        ).length === 0 && (
+                          <div style={{ padding: '20px', textAlign: 'center', color: '#6b6b6b' }}>
+                            No destinations found
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

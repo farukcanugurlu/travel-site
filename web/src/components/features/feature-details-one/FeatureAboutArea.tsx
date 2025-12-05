@@ -7,6 +7,7 @@ import { ReviewSection } from "./about/Review"
 import ReviewDetails from "./about/ReviewDetails"
 import ReviewFormArea from "./about/ReviewFormArea"
 import FeatureSidebar from "./FeatureSidebar"
+import SimilarTours from "./SimilarTours"
 
 interface FeatureAboutAreaProps {
   tour: Tour;
@@ -88,6 +89,11 @@ const FeatureAboutArea = ({ tour, reviews, onReviewSubmitted }: FeatureAboutArea
                               ></iframe>
                            </div>
                         </div>
+                        <div className="tg-tour-about-border mb-45"></div>
+                        
+                        {/* Similar Tours Section */}
+                        <SimilarTours currentTour={tour} />
+                        
                         <div className="tg-tour-about-border mb-45"></div>
                         
                         {/* Mobilde Book This Tour'ı buraya ekle */}

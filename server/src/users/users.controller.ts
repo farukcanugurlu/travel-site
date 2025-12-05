@@ -85,8 +85,10 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete user' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @ApiResponse({ status: 400, description: 'User has bookings and force delete not enabled' })
+  remove(@Param('id') id: string, @Query('force') force?: string) {
+    const forceDelete = force === 'true';
+    return this.usersService.remove(id, forceDelete);
   }
 }
 

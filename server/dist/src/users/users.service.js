@@ -186,12 +186,44 @@ let UsersService = class UsersService {
         });
         return { message: 'Password reset successfully' };
     }
-    async remove(id) {
+    async remove(id, forceDelete = false) {
         const user = await this.prisma.user.findUnique({
             where: { id },
+            include: {
+                bookings: true,
+                reviews: true,
+                favorites: true,
+            },
         });
         if (!user) {
             throw new common_1.NotFoundException('User not found');
+        }
+        const bookingsCount = user.bookings?.length || 0;
+        if (bookingsCount > 0) {
+            if (!forceDelete) {
+                throw new common_1.BadRequestException(`Cannot delete user "${user.email}" because they have ${bookingsCount} booking(s). Please delete or reassign the bookings first, or use force delete.`);
+            }
+            console.warn(`⚠️ Force deleting user "${user.email}" and ${bookingsCount} associated booking(s)`);
+            if (bookingsCount > 0) {
+                await this.prisma.booking.deleteMany({
+                    where: { userId: id },
+                });
+            }
+            console.log(`✅ Deleted ${bookingsCount} booking(s) associated with user "${user.email}"`);
+        }
+        const reviewsCount = user.reviews?.length || 0;
+        if (reviewsCount > 0) {
+            await this.prisma.review.deleteMany({
+                where: { userId: id },
+            });
+            console.log(`✅ Deleted ${reviewsCount} review(s) associated with user "${user.email}"`);
+        }
+        const favoritesCount = user.favorites?.length || 0;
+        if (favoritesCount > 0) {
+            await this.prisma.favorite.deleteMany({
+                where: { userId: id },
+            });
+            console.log(`✅ Deleted ${favoritesCount} favorite(s) associated with user "${user.email}"`);
         }
         await this.prisma.user.delete({
             where: { id },

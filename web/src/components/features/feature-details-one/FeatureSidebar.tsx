@@ -146,7 +146,7 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
       id: `${tour.id}-${tourPackage.id}-${tourDate}-${selectedTime}-${adultCount}-${childCount}-${infantCount}`,
       title: `${tour.title} - ${tourPackage.name} (${tourDate} ${selectedTime})`,
       price: totalCost,
-      thumb: normalizeImageUrl(tour.images?.[0] || tour.thumbnail || '/assets/img/listing/listing-1.jpg'),
+      thumb: normalizeImageUrl(tour.images?.[0] || tour.thumbnail) || null,
       // Ekstra bilgiler
       tourId: tour.id,
       packageId: tourPackage.id,

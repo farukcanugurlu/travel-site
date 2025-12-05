@@ -139,8 +139,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
         title: `${tour?.title || 'Tour'} - ${selectedPackage.name} (${formData.tourDate}${formData.tourTime ? ` ${formData.tourTime}` : ''})`,
         price: totalAmount,
         thumb: (() => {
-          const imgUrl = tour?.images?.[0] || tour?.thumbnail || '/assets/img/listing/listing-1.jpg';
-          if (!imgUrl) return '/assets/img/listing/listing-1.jpg';
+          const imgUrl = tour?.images?.[0] || tour?.thumbnail;
+          if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+            return null; // No default placeholder
+          }
           if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) return imgUrl;
           if (imgUrl.startsWith('/uploads/')) {
             return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
@@ -195,7 +197,27 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
       <div className="booking-header">
         <h2>Book This Tour</h2>
         <div className="tour-info">
-          <img src={tour.thumbnail || '/assets/img/listing/listing-1.jpg'} alt={tour.title} />
+          {(() => {
+            const imgUrl = tour.thumbnail;
+            if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+              return (
+                <div style={{ 
+                  width: '80px', 
+                  height: '80px', 
+                  backgroundColor: '#f5f5f5', 
+                  borderRadius: '8px',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  color: '#999',
+                  fontSize: '12px'
+                }}>
+                  No img
+                </div>
+              );
+            }
+            return <img src={imgUrl.startsWith('/uploads/') ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}` : imgUrl} alt={tour.title} />;
+          })()}
           <div>
             <h3>{tour.title}</h3>
             <p>{tour.destination?.name}, {tour.destination?.country}</p>

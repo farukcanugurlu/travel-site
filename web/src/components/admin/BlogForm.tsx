@@ -85,6 +85,45 @@ const BlogForm: React.FC = () => {
       .replace(/(^-|-$)/g, '');
   };
 
+  // Normalize content: remove extra whitespace, normalize line breaks
+  const normalizeContent = (content: string): string => {
+    if (!content) return '';
+    
+    let normalized = content
+      // First, handle HTML content - convert <br> and <p> tags to newlines
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<p[^>]*>/gi, '')
+      // Remove other HTML tags but keep their content
+      .replace(/<[^>]+>/g, '')
+      // Decode HTML entities
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      // Replace multiple spaces with single space (but preserve intentional spacing)
+      .replace(/[ \t]{2,}/g, ' ')
+      // Replace multiple line breaks (3+) with double line break
+      .replace(/\n{3,}/g, '\n\n')
+      // Remove spaces before line breaks
+      .replace(/ +\n/g, '\n')
+      // Remove spaces after line breaks
+      .replace(/\n +/g, '\n')
+      // Trim each line but preserve intentional line breaks
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0 || line === '') // Keep empty lines for paragraph breaks
+      .join('\n')
+      // Remove leading/trailing whitespace
+      .trim()
+      // Final cleanup: ensure max 2 consecutive line breaks
+      .replace(/\n{3,}/g, '\n\n');
+    
+    return normalized;
+  };
+
   const handleInputChange = (field: string, value: any) => {
     if (field === 'title') {
       setFormData({
@@ -92,12 +131,39 @@ const BlogForm: React.FC = () => {
         title: value,
         slug: generateSlug(value),
       });
+    } else if (field === 'content') {
+      // Normalize content when pasting
+      const normalized = normalizeContent(value);
+      setFormData({
+        ...formData,
+        [field]: normalized,
+      });
     } else {
       setFormData({
         ...formData,
         [field]: value,
       });
     }
+  };
+
+  // Handle paste event to clean up content
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text/plain');
+    const normalized = normalizeContent(pastedText);
+    
+    const textarea = e.currentTarget;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentValue = formData.content;
+    
+    const newValue = currentValue.substring(0, start) + normalized + currentValue.substring(end);
+    handleInputChange('content', newValue);
+    
+    // Set cursor position after paste
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = start + normalized.length;
+    }, 0);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,8 +188,12 @@ const BlogForm: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      // Normalize content before saving
+      const normalizedContent = normalizeContent(formData.content);
+
       const blogData = {
         ...formData,
+        content: normalizedContent,
         categoryId: formData.categoryId,
       };
 
@@ -415,11 +485,21 @@ const BlogForm: React.FC = () => {
               id="content"
               value={formData.content}
               onChange={(e) => handleInputChange('content', e.target.value)}
+              onPaste={handlePaste}
               placeholder="Write your blog post content here..."
               rows={15}
               className="form-textarea"
               required
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                fontFamily: 'inherit',
+                lineHeight: '1.6'
+              }}
             />
+            <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+              <p style={{ margin: '4px 0' }}>💡 Tip: Copy-paste yaptığınızda içerik otomatik olarak temizlenecektir.</p>
+            </div>
           </div>
         </div>
 

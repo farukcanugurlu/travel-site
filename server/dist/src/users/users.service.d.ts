@@ -13,63 +13,63 @@ export declare class UsersService {
     constructor(prisma: PrismaService);
     findAll(filters: UserFilters): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     create(createUserDto: CreateUserDto): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, updateUserDto: UpdateUserDto): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     toggleStatus(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string;
         lastName: string;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     resetPassword(id: string, newPassword: string): Promise<{
         message: string;
     }>;
-    remove(id: string): Promise<{
+    remove(id: string, forceDelete?: boolean): Promise<{
         message: string;
     }>;
     getStats(): Promise<{

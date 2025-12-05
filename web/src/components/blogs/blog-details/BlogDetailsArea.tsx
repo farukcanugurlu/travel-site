@@ -112,8 +112,40 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
     return `${minutes} min${minutes !== 1 ? 's' : ''} Read`;
   };
 
+  // Check if content is HTML or plain text
+  const isHTML = (content: string): boolean => {
+    return /<[a-z][\s\S]*>/i.test(content);
+  };
+
+  // Normalize and format plain text content for display
+  const formatContent = (content: string): string => {
+    if (!content) return '';
+    
+    // If already HTML, return as is
+    if (isHTML(content)) {
+      return content;
+    }
+    
+    // Convert line breaks to HTML for plain text
+    return content
+      // Split by double line breaks (paragraphs)
+      .split(/\n\n+/)
+      .map(paragraph => {
+        // Convert single line breaks within paragraph to <br>
+        const formatted = paragraph
+          .split(/\n/)
+          .map(line => line.trim())
+          .filter(line => line.length > 0)
+          .join('<br>');
+        return formatted ? `<p>${formatted}</p>` : '';
+      })
+      .filter(p => p.length > 0)
+      .join('');
+  };
+
   const readingTime = calculateReadingTime(blog.content || '');
   const blogDate = formatDate(blog.createdAt);
+  const formattedContent = blog.content ? formatContent(blog.content) : '';
 
   // Social media share handlers
   const handleFacebookShare = () => {
@@ -173,8 +205,8 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
                      </div>
                      {blog.content && (
                         <div 
-                           className="tg-blog-para lh-28 mb-40"
-                           dangerouslySetInnerHTML={{ __html: blog.content }}
+                           className="tg-blog-para lh-28 mb-40 blog-content-wrapper"
+                           dangerouslySetInnerHTML={{ __html: formattedContent || blog.content }}
                         />
                      )}
                      <div className="tg-blog-details-tag mb-40 d-flex flex-wrap justify-content-between align-items-center">
@@ -242,6 +274,88 @@ const BlogDetailsArea = ({ slug: propSlug }: BlogDetailsAreaProps) => {
                </div>
             </div>
          </div>
+         <style>{`
+           /* Blog content whitespace normalization */
+           .blog-content-wrapper {
+             white-space: pre-wrap;
+             word-wrap: break-word;
+           }
+           
+           .blog-content-wrapper p {
+             margin-bottom: 1em;
+             line-height: 1.8;
+           }
+           
+           .blog-content-wrapper p:last-child {
+             margin-bottom: 0;
+           }
+           
+           /* Remove excessive spacing between paragraphs */
+           .blog-content-wrapper p + p {
+             margin-top: 0;
+           }
+           
+           /* Normalize line breaks */
+           .blog-content-wrapper br {
+             line-height: 1.8;
+           }
+           
+           /* Remove multiple consecutive line breaks */
+           .blog-content-wrapper br + br {
+             display: none;
+           }
+           
+           /* Clean up empty paragraphs */
+           .blog-content-wrapper p:empty {
+             display: none;
+           }
+           
+           /* Normalize spacing in lists */
+           .blog-content-wrapper ul,
+           .blog-content-wrapper ol {
+             margin: 1em 0;
+             padding-left: 2em;
+             line-height: 1.8;
+           }
+           
+           .blog-content-wrapper li {
+             margin-bottom: 0.5em;
+           }
+           
+           /* Headings spacing */
+           .blog-content-wrapper h1,
+           .blog-content-wrapper h2,
+           .blog-content-wrapper h3,
+           .blog-content-wrapper h4,
+           .blog-content-wrapper h5,
+           .blog-content-wrapper h6 {
+             margin-top: 1.5em;
+             margin-bottom: 0.75em;
+             line-height: 1.4;
+           }
+           
+           .blog-content-wrapper h1:first-child,
+           .blog-content-wrapper h2:first-child,
+           .blog-content-wrapper h3:first-child,
+           .blog-content-wrapper h4:first-child,
+           .blog-content-wrapper h5:first-child,
+           .blog-content-wrapper h6:first-child {
+             margin-top: 0;
+           }
+           
+           /* Remove extra spacing from nested elements */
+           .blog-content-wrapper * {
+             max-width: 100%;
+           }
+           
+           /* Normalize blockquote spacing */
+           .blog-content-wrapper blockquote {
+             margin: 1.5em 0;
+             padding: 1em 1.5em;
+             border-left: 4px solid #ddd;
+             background: #f9f9f9;
+           }
+         `}</style>
       </div>
    )
 }

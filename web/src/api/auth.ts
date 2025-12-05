@@ -72,6 +72,20 @@ class AuthApiService {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
   }
+
+  // Request password change - returns verification code
+  async requestPasswordChange(): Promise<{ code: string }> {
+    return apiService.post<{ code: string }>('/auth/password/request-change', {});
+  }
+
+  // Change password with verification code
+  async changePasswordWithCode(email: string, code: string, newPassword: string): Promise<{ message: string }> {
+    return apiService.patch<{ message: string }>('/auth/password/change', {
+      email,
+      code,
+      newPassword,
+    });
+  }
 }
 
 export const authApiService = new AuthApiService();

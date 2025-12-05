@@ -4,6 +4,7 @@ import location_data from "../../../data/LocationData";
 import toursApiService from "../../../api/tours";
 import { destinationsApiService } from "../../../api/destinations";
 import { normalizeImageUrl } from "../../../utils/imageUtils";
+import Button from "../../common/Button";
 import type { Tour } from "../../../api/tours";
 import type { Destination } from "../../../api/destinations";
 
@@ -206,6 +207,20 @@ const Location = () => {
               </div>
             );
           })}
+          
+          {/* See All Destinations Button */}
+          {cards.length > 0 && (
+            <div className="col-12 text-center mt-30">
+              <Link
+                to="/tours"
+                className="tg-btn tg-btn-gray tg-btn-switch-animation wow fadeInUp"
+                data-wow-delay=".7s"
+                data-wow-duration=".9s"
+              >
+                <Button text="See All Destinations" />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

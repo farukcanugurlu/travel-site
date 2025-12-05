@@ -112,18 +112,35 @@ const TourDetailsMain: React.FC = () => {
           <div className="container">
             <div className="hero-content">
               <div className="hero-image">
-                <img src={(() => {
-                  const imgUrl = tour.images?.[0] || tour.thumbnail || '/assets/img/listing/listing-1.jpg';
+                {(() => {
+                  const imgUrl = tour.images?.[0] || tour.thumbnail;
+                  // Skip default/placeholder images
+                  if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                    return (
+                      <div style={{ 
+                        width: '100%', 
+                        height: '400px', 
+                        backgroundColor: '#f5f5f5', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        color: '#999',
+                        fontSize: '16px'
+                      }}>
+                        No image available
+                      </div>
+                    );
+                  }
                   // If it's already a full URL, return as is
+                  let finalUrl = imgUrl;
                   if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) {
-                    return imgUrl;
+                    finalUrl = imgUrl;
+                  } else if (imgUrl.startsWith('/uploads/')) {
+                    // If it starts with /uploads/, prepend backend URL
+                    finalUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
                   }
-                  // If it starts with /uploads/, prepend backend URL
-                  if (imgUrl.startsWith('/uploads/')) {
-                    return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
-                  }
-                  return imgUrl;
-                })()} alt={tour.title} />
+                  return <img src={finalUrl} alt={tour.title} />;
+                })()}
                 <div className="hero-badge">
                   {tour.featured && <span className="featured-badge">Featured</span>}
                   <span className="price-badge">From ${lowestPrice}</span>

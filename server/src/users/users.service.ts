@@ -1,5 +1,5 @@
 // server/src/users/users.service.ts
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -218,15 +218,62 @@ export class UsersService {
     return { message: 'Password reset successfully' };
   }
 
-  async remove(id: string) {
+  async remove(id: string, forceDelete: boolean = false) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      include: {
+        bookings: true,
+        reviews: true,
+        favorites: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
+    // Check if user has bookings
+    const bookingsCount = user.bookings?.length || 0;
+
+    if (bookingsCount > 0) {
+      if (!forceDelete) {
+        throw new BadRequestException(
+          `Cannot delete user "${user.email}" because they have ${bookingsCount} booking(s). Please delete or reassign the bookings first, or use force delete.`
+        );
+      }
+
+      // Force delete: Delete all associated bookings first
+      console.warn(`⚠️ Force deleting user "${user.email}" and ${bookingsCount} associated booking(s)`);
+
+      // Delete bookings
+      if (bookingsCount > 0) {
+        await this.prisma.booking.deleteMany({
+          where: { userId: id },
+        });
+      }
+
+      console.log(`✅ Deleted ${bookingsCount} booking(s) associated with user "${user.email}"`);
+    }
+
+    // Delete reviews
+    const reviewsCount = user.reviews?.length || 0;
+    if (reviewsCount > 0) {
+      await this.prisma.review.deleteMany({
+        where: { userId: id },
+      });
+      console.log(`✅ Deleted ${reviewsCount} review(s) associated with user "${user.email}"`);
+    }
+
+    // Delete favorites
+    const favoritesCount = user.favorites?.length || 0;
+    if (favoritesCount > 0) {
+      await this.prisma.favorite.deleteMany({
+        where: { userId: id },
+      });
+      console.log(`✅ Deleted ${favoritesCount} favorite(s) associated with user "${user.email}"`);
+    }
+
+    // Delete user
     await this.prisma.user.delete({
       where: { id },
     });

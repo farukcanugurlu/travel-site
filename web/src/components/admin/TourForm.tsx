@@ -45,6 +45,7 @@ const TourForm: React.FC = () => {
   const [destinations, setDestinations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedMonthlyPricing, setExpandedMonthlyPricing] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetchInitialData();
@@ -700,10 +701,49 @@ const TourForm: React.FC = () => {
 
               {/* Monthly Pricing */}
               <div className="form-section-monthly" style={{ marginTop: '30px', paddingTop: '30px', borderTop: '1px solid #e0e0e0' }}>
-                <h4 style={{ marginBottom: '15px', fontSize: '16px', fontWeight: 600 }}>Monthly Pricing (Optional)</h4>
-                <p className="form-hint" style={{ marginBottom: '20px', fontSize: '13px', color: '#666' }}>
-                  Set different prices for each month. If not set, base prices will be used.
-                </p>
+                <div 
+                  className="monthly-pricing-header" 
+                  onClick={() => {
+                    const newExpanded = new Set(expandedMonthlyPricing);
+                    if (newExpanded.has(index)) {
+                      newExpanded.delete(index);
+                    } else {
+                      newExpanded.add(index);
+                    }
+                    setExpandedMonthlyPricing(newExpanded);
+                  }}
+                  style={{ 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    marginBottom: '15px',
+                    padding: '10px',
+                    borderRadius: '6px',
+                    background: '#f8f9fa',
+                    transition: 'background 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#e9ecef'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#f8f9fa'}
+                >
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#2c3e50' }}>
+                      Monthly Pricing (Optional)
+                    </h4>
+                    <p className="form-hint" style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#666' }}>
+                      Set different prices for each month. If not set, base prices will be used.
+                    </p>
+                  </div>
+                  <span style={{ 
+                    fontSize: '18px', 
+                    color: '#666',
+                    transition: 'transform 0.3s ease',
+                    transform: expandedMonthlyPricing.has(index) ? 'rotate(180deg)' : 'rotate(0deg)'
+                  }}>
+                    ▼
+                  </span>
+                </div>
+                {expandedMonthlyPricing.has(index) && (
                 <div className="monthly-prices-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
                   {[
                     { num: 1, name: 'January' },
@@ -812,6 +852,7 @@ const TourForm: React.FC = () => {
                     );
                   })}
                 </div>
+                )}
               </div>
             </div>
           ))}

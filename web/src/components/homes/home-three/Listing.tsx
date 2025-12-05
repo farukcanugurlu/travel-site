@@ -364,29 +364,32 @@ const Listing = () => {
                       {(() => {
                         const validImage = getValidImage(item);
                         if (validImage) {
-                          return (
-                            <img
-                              className="tg-card-border w-100"
-                              src={normalizeImageUrl(validImage)}
-                              alt={item.title}
-                            />
-                          );
-                        } else {
-                          return (
-                            <div className="tg-card-border w-100" style={{
-                              height: '200px',
-                              backgroundColor: '#f5f5f5',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: '#999',
-                              fontSize: '14px',
-                              borderRadius: '16px 16px 0 0'
-                            }}>
-                              No image available
-                            </div>
-                          );
+                          const normalizedUrl = normalizeImageUrl(validImage);
+                          if (normalizedUrl) {
+                            return (
+                              <img
+                                className="tg-card-border w-100"
+                                src={normalizedUrl}
+                                alt={item.title}
+                              />
+                            );
+                          }
                         }
+                        // No valid image - show placeholder
+                        return (
+                          <div className="tg-card-border w-100" style={{
+                            height: '200px',
+                            backgroundColor: '#f5f5f5',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#999',
+                            fontSize: '14px',
+                            borderRadius: '16px 16px 0 0'
+                          }}>
+                            No image available
+                          </div>
+                        );
                       })()}
                       {item.featured && (
                         <span className="tg-listing-item-price-discount shape-3">

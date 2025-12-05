@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toursApiService from '../../api/tours';
+import { destinationsApiService } from '../../api/destinations';
 import type { TourFilters, TourPackage } from '../../api/tours';
 
 interface SearchFilterProps {
@@ -39,22 +40,26 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onResults, showResults = tr
 
   const fetchFilterOptions = async () => {
     try {
-      // Mock data for now - replace with actual API calls
+      // Fetch destinations from API
+      const fetchedDestinations = await destinationsApiService.getDestinations({ limit: 100 });
+      setDestinations(fetchedDestinations.map(dest => ({
+        id: dest.id,
+        name: dest.name,
+        country: dest.country
+      })));
+
+      // Categories - you can add API call here if categories endpoint exists
       setCategories([
         { id: '1', name: 'City Tours' },
         { id: '2', name: 'Adventure Tours' },
         { id: '3', name: 'Cultural Tours' },
         { id: '4', name: 'Nature Tours' },
       ]);
-
-      setDestinations([
-        { id: '1', name: 'Istanbul', country: 'Turkey' },
-        { id: '2', name: 'Antalya', country: 'Turkey' },
-        { id: '3', name: 'Cappadocia', country: 'Turkey' },
-        { id: '4', name: 'Pamukkale', country: 'Turkey' },
-      ]);
     } catch (error) {
       console.error('Failed to fetch filter options:', error);
+      // Fallback to empty arrays if API fails
+      setDestinations([]);
+      setCategories([]);
     }
   };
 
@@ -241,13 +246,31 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onResults, showResults = tr
                   {results.map((tour) => (
                     <div key={tour.id} className="tour-card" onClick={() => handleTourClick(tour)}>
                       <div className="tour-image">
-                        <img src={(() => {
-                          const imgUrl = tour.thumbnail || '/assets/img/listing/listing-1.jpg';
-                          if (imgUrl.startsWith('/uploads/')) {
-                            return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
+                        {(() => {
+                          const imgUrl = tour.thumbnail;
+                          // Skip default/placeholder images
+                          if (!imgUrl || imgUrl.includes('/assets/img/listing/') || imgUrl.includes('listing-') || imgUrl.includes('default-tour')) {
+                            return (
+                              <div style={{ 
+                                width: '100%', 
+                                height: '200px', 
+                                backgroundColor: '#f5f5f5', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                color: '#999',
+                                fontSize: '14px'
+                              }}>
+                                No image
+                              </div>
+                            );
                           }
-                          return imgUrl;
-                        })()} alt={tour.title} />
+                          let finalUrl = imgUrl;
+                          if (imgUrl.startsWith('/uploads/')) {
+                            finalUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${imgUrl}`;
+                          }
+                          return <img src={finalUrl} alt={tour.title} />;
+                        })()}
                         {tour.featured && <span className="featured-badge">Featured</span>}
                       </div>
                       <div className="tour-info">
