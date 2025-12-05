@@ -24,10 +24,11 @@ interface CreateBookingPayload {
 
 interface BookingFormProps {
   tourId?: string;
+  defaultPackageId?: string;
   onBookingSubmitted?: () => void;
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBookingSubmitted }) => {
+const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPackageId, onBookingSubmitted }) => {
   const { tourId: paramTourId } = useParams<{ tourId: string }>();
   const tourId = propTourId || paramTourId;
   const [tour, setTour] = useState<Tour | null>(null);
@@ -58,6 +59,16 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
     }
   }, [tourId]);
 
+  // Update package when defaultPackageId changes
+  useEffect(() => {
+    if (defaultPackageId && packages.length > 0) {
+      const packageExists = packages.find(pkg => pkg.id === defaultPackageId);
+      if (packageExists) {
+        setFormData(prev => ({ ...prev, packageId: defaultPackageId }));
+      }
+    }
+  }, [defaultPackageId, packages]);
+
   const fetchTourData = async () => {
     try {
       setLoading(true);
@@ -65,9 +76,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, onBooking
       setTour(tourData);
       setPackages(tourData.packages || []);
       
-      // Set default package if available
+      // Set default package if available (use defaultPackageId if provided, otherwise first package)
       if (tourData.packages && tourData.packages.length > 0) {
-        setFormData(prev => ({ ...prev, packageId: tourData.packages[0].id }));
+        const packageId = defaultPackageId || tourData.packages[0].id;
+        setFormData(prev => ({ ...prev, packageId }));
       }
       
       // Set default time if available times exist

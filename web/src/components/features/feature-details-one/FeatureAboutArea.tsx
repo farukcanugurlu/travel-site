@@ -56,6 +56,62 @@ const FeatureAboutArea = ({ tour, reviews, onReviewSubmitted }: FeatureAboutArea
                         <div className="tg-tour-about-border mb-40"></div>
                         <Faq tour={tour} />
                         <div className="tg-tour-about-border mb-45"></div>
+                        
+                        {/* Packages Section */}
+                        {tour.packages && tour.packages.length > 0 && (
+                          <>
+                            <div className="tg-tour-about-packages mb-40">
+                              <h4 className="tg-tour-about-title mb-20">Available Packages</h4>
+                              <div className="packages-list" style={{ display: 'grid', gap: '20px' }}>
+                                {tour.packages.map((pkg) => (
+                                  <div key={pkg.id} className="package-item" style={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '8px',
+                                    padding: '20px',
+                                    background: '#f8f9fa'
+                                  }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                                      <h5 style={{ margin: 0, fontSize: '18px', color: '#2c3e50' }}>{pkg.name}</h5>
+                                      <span style={{
+                                        background: '#e3f2fd',
+                                        color: '#1976d2',
+                                        padding: '4px 12px',
+                                        borderRadius: '16px',
+                                        fontSize: '12px',
+                                        fontWeight: 500
+                                      }}>
+                                        {pkg.language}
+                                      </span>
+                                    </div>
+                                    {pkg.description && (
+                                      <p style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>{pkg.description}</p>
+                                    )}
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                                      <div style={{ background: 'white', padding: '10px', borderRadius: '6px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>Adult</div>
+                                        <div style={{ fontSize: '16px', fontWeight: 600, color: '#2c3e50' }}>€{pkg.adultPrice}</div>
+                                      </div>
+                                      <div style={{ background: 'white', padding: '10px', borderRadius: '6px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>Child</div>
+                                        <div style={{ fontSize: '16px', fontWeight: 600, color: '#2c3e50' }}>€{pkg.childPrice}</div>
+                                      </div>
+                                      <div style={{ background: 'white', padding: '10px', borderRadius: '6px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>Infant</div>
+                                        <div style={{ fontSize: '16px', fontWeight: 600, color: '#2c3e50' }}>€{pkg.infantPrice}</div>
+                                      </div>
+                                    </div>
+                                    {pkg.capacity && (
+                                      <div style={{ marginTop: '10px', fontSize: '12px', color: '#999' }}>
+                                        Max {pkg.capacity} participants
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="tg-tour-about-border mb-45"></div>
+                          </>
+                        )}
                         <div className="tg-tour-about-map mb-40">
                            <h4 className="tg-tour-about-title mb-15">Location</h4>
                            <p className="text-capitalize lh-28">

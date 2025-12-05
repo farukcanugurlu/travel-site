@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = require("bcryptjs");
+const verificationCodes = new Map();
 let AuthService = class AuthService {
     constructor(prisma, jwtService) {
         this.prisma = prisma;
@@ -84,6 +85,60 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException();
         }
         return user;
+    }
+    generateVerificationCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+    async requestPasswordChange(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        const code = this.generateVerificationCode();
+        const expiresAt = Date.now() + 15 * 60 * 1000;
+        verificationCodes.set(user.email, {
+            code,
+            expiresAt,
+            userId: user.id,
+        });
+        this.cleanupExpiredCodes();
+        return { code };
+    }
+    async changePasswordWithCode(email, code, newPassword) {
+        const stored = verificationCodes.get(email);
+        if (!stored) {
+            throw new common_1.BadRequestException('Invalid or expired verification code');
+        }
+        if (stored.code !== code) {
+            throw new common_1.BadRequestException('Invalid verification code');
+        }
+        if (Date.now() > stored.expiresAt) {
+            verificationCodes.delete(email);
+            throw new common_1.BadRequestException('Verification code has expired');
+        }
+        const user = await this.prisma.user.findUnique({
+            where: { id: stored.userId },
+        });
+        if (!user || user.email !== email) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { password: hashedPassword },
+        });
+        verificationCodes.delete(email);
+        return { message: 'Password changed successfully' };
+    }
+    cleanupExpiredCodes() {
+        const now = Date.now();
+        for (const [email, data] of verificationCodes.entries()) {
+            if (now > data.expiresAt) {
+                verificationCodes.delete(email);
+            }
+        }
     }
 };
 exports.AuthService = AuthService;

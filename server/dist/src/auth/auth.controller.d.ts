@@ -16,14 +16,24 @@ export declare class AuthController {
     }>;
     register(registerDto: RegisterDto): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         firstName: string | null;
         lastName: string | null;
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getProfile(req: any): any;
+    requestPasswordChange(req: any): Promise<{
+        code: string;
+    }>;
+    changePasswordWithCode(body: {
+        email: string;
+        code: string;
+        newPassword: string;
+    }): Promise<{
+        message: string;
+    }>;
 }

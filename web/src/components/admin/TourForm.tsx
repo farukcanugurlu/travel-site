@@ -1438,11 +1438,18 @@ const TourForm: React.FC = () => {
         .form-input,
         .form-select,
         .form-textarea {
-          padding: 12px;
+          padding: 10px 12px;
           border: 1px solid #ddd;
           border-radius: 6px;
           font-size: 14px;
           transition: border-color 0.2s ease;
+          line-height: 1.4;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          font-family: inherit;
+          resize: vertical;
+          min-height: 100px;
+          overflow-y: auto;
         }
 
         .form-input:focus,
@@ -1450,11 +1457,6 @@ const TourForm: React.FC = () => {
         .form-textarea:focus {
           outline: none;
           border-color: #3498db;
-        }
-
-        .form-textarea {
-          resize: vertical;
-          min-height: 100px;
         }
 
         .checkbox-group {

@@ -32,6 +32,12 @@ let AuthController = class AuthController {
     getProfile(req) {
         return req.user;
     }
+    async requestPasswordChange(req) {
+        return this.authService.requestPasswordChange(req.user.id);
+    }
+    async changePasswordWithCode(body) {
+        return this.authService.changePasswordWithCode(body.email, body.code, body.newPassword);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -65,6 +71,28 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.Post)('password/request-change'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Request password change - returns verification code' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Verification code generated' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "requestPasswordChange", null);
+__decorate([
+    (0, common_1.Patch)('password/change'),
+    (0, swagger_1.ApiOperation)({ summary: 'Change password with verification code' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Password changed successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid or expired code' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "changePasswordWithCode", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),

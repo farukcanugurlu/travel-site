@@ -6,8 +6,6 @@ export declare class JwtStrategy extends JwtStrategy_base {
     constructor(authService: AuthService);
     validate(payload: JwtPayload): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string;
         password: string;
         firstName: string | null;
@@ -15,6 +13,8 @@ export declare class JwtStrategy extends JwtStrategy_base {
         role: import(".prisma/client").$Enums.UserRole;
         isActive: boolean;
         lastLoginAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }
 export {};

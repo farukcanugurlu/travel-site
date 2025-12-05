@@ -18,6 +18,16 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
   const [tourDate, setTourDate] = useState("");
+  const [selectedPackageId, setSelectedPackageId] = useState<string>(
+    tour.packages && tour.packages.length > 0 ? tour.packages[0].id : ''
+  );
+  
+  // Update selected package when tour changes
+  useEffect(() => {
+    if (tour.packages && tour.packages.length > 0 && !selectedPackageId) {
+      setSelectedPackageId(tour.packages[0].id);
+    }
+  }, [tour.packages, selectedPackageId]);
   
   // Parse availableTimes from tour data
   const getAvailableTimes = () => {
@@ -66,8 +76,8 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
     }
   }, [tour.availableTimes, selectedTime]);
 
-  // Get the first package for pricing (or you can add package selection)
-  const tourPackage = tour.packages?.[0];
+  // Get selected package for pricing
+  const tourPackage = tour.packages?.find(pkg => pkg.id === selectedPackageId) || tour.packages?.[0];
   
   // Get prices based on selected date (monthly pricing if available)
   const getPricesForDate = (dateString: string) => {
@@ -171,6 +181,54 @@ const FeatureSidebar = ({ tour }: FeatureSidebarProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <h4 className="tg-tour-about-title title-2 mb-15">Book This Tour</h4>
+      
+      {/* Package Selection */}
+      {tour.packages && tour.packages.length > 1 && (
+        <div className="tg-tour-about-package-selection mb-15">
+          <span className="tg-tour-about-sidebar-title mb-10 d-inline-block">
+            Select Package:
+          </span>
+          <div className="package-selection">
+            {tour.packages.map((pkg) => (
+              <div key={pkg.id} className="package-option" style={{ marginBottom: '10px' }}>
+                <label style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  cursor: 'pointer',
+                  padding: '10px',
+                  border: selectedPackageId === pkg.id ? '2px solid #560CE3' : '1px solid #ddd',
+                  borderRadius: '6px',
+                  background: selectedPackageId === pkg.id ? '#f0e6ff' : '#fff',
+                  transition: 'all 0.2s ease'
+                }}>
+                  <input
+                    type="radio"
+                    name="package"
+                    value={pkg.id}
+                    checked={selectedPackageId === pkg.id}
+                    onChange={(e) => setSelectedPackageId(e.target.value)}
+                    style={{ marginRight: '10px' }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, color: '#2c3e50', marginBottom: '4px' }}>
+                      {pkg.name} ({pkg.language})
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>
+                      Adult: €{pkg.adultPrice} | Child: €{pkg.childPrice} | Infant: €{pkg.infantPrice}
+                    </div>
+                    {pkg.description && (
+                      <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
+                        {pkg.description}
+                      </div>
+                    )}
+                  </div>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div className="tg-booking-form-parent-inner mb-10">
         <div className="tg-tour-about-date p-relative">
           <input

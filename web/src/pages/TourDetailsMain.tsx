@@ -17,6 +17,7 @@ const TourDetailsMain: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedPackageId, setSelectedPackageId] = useState<string>('');
 
   useEffect(() => {
     if (slug) {
@@ -45,6 +46,11 @@ const TourDetailsMain: React.FC = () => {
       }
       
       setTour(tourData);
+      
+      // Set default selected package
+      if (tourData.packages && tourData.packages.length > 0) {
+        setSelectedPackageId(tourData.packages[0].id);
+      }
       
       // Fetch reviews for this tour (separate try-catch to not affect tour data)
       try {
@@ -101,7 +107,8 @@ const TourDetailsMain: React.FC = () => {
     );
   }
 
-  const lowestPrice = Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice)));
+  const selectedPackage = tour.packages?.find(pkg => pkg.id === selectedPackageId) || tour.packages?.[0];
+  const lowestPrice = selectedPackage ? Number(selectedPackage.adultPrice) : Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice)));
 
   return (
     <>
@@ -143,7 +150,7 @@ const TourDetailsMain: React.FC = () => {
                 })()}
                 <div className="hero-badge">
                   {tour.featured && <span className="featured-badge">Featured</span>}
-                  <span className="price-badge">From ${lowestPrice}</span>
+                  <span className="price-badge">From €{lowestPrice}</span>
                 </div>
               </div>
               <div className="hero-info">
@@ -257,11 +264,59 @@ const TourDetailsMain: React.FC = () => {
               <div className="sidebar">
                 <div className="booking-card">
                   <h3>Book This Tour</h3>
+                  
+                  {/* Package Selection */}
+                  {tour.packages && tour.packages.length > 1 && (
+                    <div className="package-selection-sidebar" style={{ marginBottom: '20px' }}>
+                      <label style={{ display: 'block', marginBottom: '10px', fontWeight: 500, color: '#2c3e50' }}>
+                        Select Package:
+                      </label>
+                      <select
+                        value={selectedPackageId}
+                        onChange={(e) => setSelectedPackageId(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px',
+                          border: '1px solid #ddd',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          background: 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {tour.packages.map((pkg) => (
+                          <option key={pkg.id} value={pkg.id}>
+                            {pkg.name} ({pkg.language}) - €{pkg.adultPrice}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  
                   <div className="price-info">
                     <span className="price-label">Starting from</span>
-                    <span className="price-amount">${lowestPrice}</span>
+                    <span className="price-amount">€{lowestPrice}</span>
                     <span className="price-per">per person</span>
                   </div>
+                  {selectedPackage && (
+                    <div className="package-details-sidebar" style={{ marginTop: '15px', padding: '12px', background: '#f8f9fa', borderRadius: '6px', fontSize: '13px' }}>
+                      <div style={{ marginBottom: '6px' }}>
+                        <strong>Package:</strong> {selectedPackage.name} ({selectedPackage.language})
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span>Adult:</span>
+                        <span>€{selectedPackage.adultPrice}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span>Child:</span>
+                        <span>€{selectedPackage.childPrice}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Infant:</span>
+                        <span>€{selectedPackage.infantPrice}</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="tour-info-summary">
                     <div className="info-item">
                       <span className="info-label">Duration:</span>
@@ -287,7 +342,11 @@ const TourDetailsMain: React.FC = () => {
         {/* Booking Section */}
         <section id="booking-section" className="booking-section">
           <div className="container">
-            <BookingForm tourId={tour.id} onBookingSubmitted={() => console.log('Booking submitted')} />
+            <BookingForm 
+              tourId={tour.id} 
+              defaultPackageId={selectedPackageId}
+              onBookingSubmitted={() => console.log('Booking submitted')} 
+            />
           </div>
         </section>
       </main>
