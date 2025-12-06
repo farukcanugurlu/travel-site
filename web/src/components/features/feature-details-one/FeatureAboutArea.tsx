@@ -147,7 +147,7 @@ const FeatureAboutArea = ({ tour, reviews, onReviewSubmitted }: FeatureAboutArea
                         </div>
                         <div className="tg-tour-about-border mb-45"></div>
                         
-                        {/* Similar Tours Section */}
+                        {/* Similar Tours Section - Location'un hemen altında */}
                         <SimilarTours currentTour={tour} />
                         
                         <div className="tg-tour-about-border mb-45"></div>

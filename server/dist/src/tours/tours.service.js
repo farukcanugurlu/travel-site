@@ -71,10 +71,10 @@ let ToursService = class ToursService {
             where.destination = { slug: filters.destination };
         }
         if (filters?.featured !== undefined) {
-            where.featured = filters.featured;
+            where.featured = filters.featured === 'true' || filters.featured === true;
         }
         if (filters?.published !== undefined) {
-            where.published = filters.published;
+            where.published = filters.published === 'true' || filters.published === true;
         }
         if (filters?.search) {
             where.OR = [

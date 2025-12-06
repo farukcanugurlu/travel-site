@@ -25,54 +25,51 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         ? Math.min(...currentTour.packages.map(pkg => Number(pkg.adultPrice)))
         : 0;
 
-      // Fiyat aralığı: %50 daha ucuz veya %100 daha pahalı
-      const minPrice = currentTourPrice > 0 ? Math.max(0, currentTourPrice * 0.5) : undefined;
-      const maxPrice = currentTourPrice > 0 ? currentTourPrice * 2 : undefined;
+      let filteredTours: Tour[] = [];
 
       // Önce aynı destination'dan turları getir
-      const destinationTours = await toursApiService.getTours({
-        destination: typeof currentTour.destination === 'object' 
-          ? currentTour.destination.slug 
-          : currentTour.destination,
-        published: true,
-      });
+      const destinationSlug = typeof currentTour.destination === 'object' 
+        ? currentTour.destination.slug 
+        : currentTour.destination;
 
-      // Mevcut turu hariç tut ve fiyat filtresi uygula
-      let filteredTours = destinationTours
-        .filter(tour => tour.id !== currentTour.id)
-        .filter(tour => {
-          if (!tour.packages || tour.packages.length === 0) return false;
-          const tourPrice = Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice)));
-          
-          if (minPrice !== undefined && maxPrice !== undefined) {
-            return tourPrice >= minPrice && tourPrice <= maxPrice;
-          }
-          return true;
-        });
+      if (destinationSlug) {
+        try {
+          const destinationTours = await toursApiService.getTours({
+            destination: destinationSlug,
+            published: true,
+          });
 
-      // Eğer aynı destination'dan yeterli tur yoksa, benzer fiyat aralığındaki turları da ekle
-      if (filteredTours.length < 4 && currentTourPrice > 0) {
-        const priceRangeTours = await toursApiService.getTours({
-          published: true,
-        });
-
-        const additionalTours = priceRangeTours
-          .filter(tour => 
-            tour.id !== currentTour.id && 
-            !filteredTours.some(ft => ft.id === tour.id)
-          )
-          .filter(tour => {
-            if (!tour.packages || tour.packages.length === 0) return false;
-            const tourPrice = Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice)));
-            return tourPrice >= minPrice! && tourPrice <= maxPrice!;
-          })
-          .slice(0, 4 - filteredTours.length);
-
-        filteredTours = [...filteredTours, ...additionalTours];
+          // Mevcut turu hariç tut
+          filteredTours = destinationTours.filter(tour => tour.id !== currentTour.id);
+        } catch (error) {
+          console.warn('Error fetching destination tours:', error);
+        }
       }
 
-      // Sıralama: Önce aynı destination, sonra benzer fiyat
+      // Eğer aynı destination'dan yeterli tur yoksa (4'ten az), tüm turlardan ekle
+      if (filteredTours.length < 4) {
+        try {
+          const allTours = await toursApiService.getTours({
+            published: true,
+          });
+
+          const additionalTours = allTours
+            .filter(tour => 
+              tour.id !== currentTour.id && 
+              !filteredTours.some(ft => ft.id === tour.id) &&
+              tour.packages && tour.packages.length > 0 // Sadece paketi olan turlar
+            )
+            .slice(0, 4 - filteredTours.length);
+
+          filteredTours = [...filteredTours, ...additionalTours];
+        } catch (error) {
+          console.warn('Error fetching all tours:', error);
+        }
+      }
+
+      // Sıralama: Önce aynı destination, sonra featured, sonra popular
       filteredTours.sort((a, b) => {
+        // Aynı destination kontrolü
         const aIsSameDestination = typeof currentTour.destination === 'object'
           ? (typeof a.destination === 'object' ? a.destination.id === currentTour.destination.id : false)
           : false;
@@ -83,12 +80,24 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         if (aIsSameDestination && !bIsSameDestination) return -1;
         if (!aIsSameDestination && bIsSameDestination) return 1;
 
-        // Fiyat farkına göre sırala (daha yakın fiyatlar önce)
-        const aPrice = Math.min(...a.packages.map(pkg => Number(pkg.adultPrice)));
-        const bPrice = Math.min(...b.packages.map(pkg => Number(pkg.adultPrice)));
-        const aDiff = Math.abs(aPrice - currentTourPrice);
-        const bDiff = Math.abs(bPrice - currentTourPrice);
-        return aDiff - bDiff;
+        // Featured önceliği
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+
+        // Popular önceliği
+        if (a.popular && !b.popular) return -1;
+        if (!a.popular && b.popular) return 1;
+
+        // Fiyat farkına göre sırala (daha yakın fiyatlar önce) - sadece fiyat varsa
+        if (currentTourPrice > 0) {
+          const aPrice = Math.min(...a.packages.map(pkg => Number(pkg.adultPrice)));
+          const bPrice = Math.min(...b.packages.map(pkg => Number(pkg.adultPrice)));
+          const aDiff = Math.abs(aPrice - currentTourPrice);
+          const bDiff = Math.abs(bPrice - currentTourPrice);
+          return aDiff - bDiff;
+        }
+
+        return 0;
       });
 
       // Maksimum 4 tur göster
@@ -101,8 +110,8 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
     }
   };
 
-  // Eğer yeterli benzer tur yoksa (3'ten az), hiçbir şey gösterme
-  if (loading || similarTours.length < 3) {
+  // Eğer yeterli benzer tur yoksa (1'den az), hiçbir şey gösterme
+  if (loading || similarTours.length < 1) {
     return null;
   }
 
@@ -142,7 +151,7 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
           return (
             <Link 
               key={tour.id} 
-              to={`/tour-details?slug=${tour.slug}`}
+              to={`/tour/${tour.slug}`}
               className="similar-tour-card"
             >
               <div className="similar-tour-image">
@@ -212,30 +221,33 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
 
         .similar-tours-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 25px;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+          overflow-x: auto;
         }
 
         .similar-tour-card {
           display: block;
           background: white;
-          border-radius: 12px;
+          border-radius: 10px;
           overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
           transition: all 0.3s ease;
           text-decoration: none;
           color: inherit;
+          border: 1px solid #f0f0f0;
         }
 
         .similar-tour-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+          transform: translateY(-3px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+          border-color: #7f0af5;
         }
 
         .similar-tour-image {
           position: relative;
           width: 100%;
-          height: 200px;
+          height: 160px;
           overflow: hidden;
           background: #f5f5f5;
         }
@@ -275,15 +287,15 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         }
 
         .similar-tour-content {
-          padding: 20px;
+          padding: 15px;
         }
 
         .similar-tour-title {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 600;
           color: #2c3e50;
-          margin: 0 0 12px 0;
-          line-height: 1.4;
+          margin: 0 0 10px 0;
+          line-height: 1.3;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -293,9 +305,9 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         .similar-tour-meta {
           display: flex;
           flex-wrap: wrap;
-          gap: 15px;
-          margin-bottom: 12px;
-          font-size: 14px;
+          gap: 12px;
+          margin-bottom: 10px;
+          font-size: 13px;
           color: #666;
         }
 
@@ -315,8 +327,8 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         .similar-tour-rating {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 15px;
+          gap: 6px;
+          margin-bottom: 12px;
         }
 
         .similar-tour-rating .stars {
@@ -325,7 +337,7 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         }
 
         .similar-tour-rating .stars i {
-          font-size: 12px;
+          font-size: 11px;
           color: #ddd;
         }
 
@@ -334,53 +346,78 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
         }
 
         .similar-tour-rating .rating-text {
-          font-size: 12px;
+          font-size: 11px;
           color: #666;
         }
 
         .similar-tour-price {
           display: flex;
           align-items: baseline;
-          gap: 5px;
-          padding-top: 15px;
+          gap: 4px;
+          padding-top: 12px;
           border-top: 1px solid #f0f0f0;
         }
 
         .similar-tour-price .price-label {
-          font-size: 12px;
+          font-size: 10px;
           color: #999;
           text-transform: uppercase;
         }
 
         .similar-tour-price .price-amount {
-          font-size: 22px;
+          font-size: 20px;
           font-weight: 700;
-          color: #2ecc71;
+          color: #7f0af5;
         }
 
         .similar-tour-price .price-per {
-          font-size: 12px;
+          font-size: 11px;
           color: #999;
+        }
+
+        @media (max-width: 1200px) {
+          .similar-tours-grid {
+            grid-template-columns: repeat(4, minmax(220px, 1fr));
+          }
+        }
+
+        @media (max-width: 992px) {
+          .similar-tours-grid {
+            grid-template-columns: repeat(3, minmax(200px, 1fr));
+          }
         }
 
         @media (max-width: 768px) {
           .similar-tours-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 15px;
+          }
+
+          .similar-tour-image {
+            height: 140px;
           }
 
           .similar-tour-content {
-            padding: 15px;
+            padding: 12px;
           }
 
           .similar-tour-title {
-            font-size: 16px;
+            font-size: 15px;
+          }
+
+          .similar-tour-price .price-amount {
+            font-size: 18px;
           }
         }
 
         @media (max-width: 480px) {
           .similar-tours-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+            gap: 12px;
+          }
+
+          .similar-tour-image {
+            height: 120px;
           }
         }
       `}</style>
@@ -389,5 +426,6 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
 };
 
 export default SimilarTours;
+
 
 

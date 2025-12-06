@@ -86,12 +86,20 @@ class ApiService {
       if (!response.ok) {
         // Handle 401 Unauthorized - token expired or invalid
         if (response.status === 401) {
-          // Clear auth data and redirect to login
+          // Clear auth data
           localStorage.removeItem('authToken');
           localStorage.removeItem('user');
           
-          // Only redirect if we're not already on login page
-          if (!window.location.pathname.includes('/login')) {
+          // Only redirect to login if we're on a protected route (admin, profile, checkout, cart)
+          // Don't redirect on public pages (home, tours, blog, etc.)
+          const currentPath = window.location.pathname;
+          const isProtectedRoute = currentPath.startsWith('/admin') || 
+                                   currentPath.startsWith('/profile') || 
+                                   currentPath.startsWith('/user-profile') ||
+                                   currentPath.startsWith('/checkout') ||
+                                   currentPath.startsWith('/cart');
+          
+          if (isProtectedRoute && !currentPath.includes('/login')) {
             window.location.href = '/login';
           }
         }

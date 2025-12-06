@@ -94,9 +94,9 @@ const Listing = () => {
                ))}
                <div className="col-12 wow fadeInUp" data-wow-delay=".7s" data-wow-duration=".6s">
                   <div className="tg-listing-2-btn text-center pt-25">
-                     <Link to="/tour-grid-2" className="tg-btn tg-btn-switch-animation">
-                        <Button text="See All Listings" />
-                     </Link>
+                     <a href="https://lexorholiday.com/tours" className="tg-btn tg-btn-switch-animation">
+                        <Button text="See All Tours" />
+                     </a>
                   </div>
                </div>
             </div>

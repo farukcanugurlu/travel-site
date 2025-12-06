@@ -612,6 +612,37 @@ const Listing = () => {
           })
           )}
         </div>
+
+        {/* See All Tours Button */}
+        <div className="row mt-50">
+          <div className="col-12 text-center">
+            <a 
+              href="https://lexorholiday.com/tours" 
+              className="tg-btn tg-btn-switch-animation"
+              style={{
+                display: 'inline-block',
+                padding: '15px 40px',
+                background: '#7f0af5',
+                color: '#fff',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '16px',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#6a08d4';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#7f0af5';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              See All Tours
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

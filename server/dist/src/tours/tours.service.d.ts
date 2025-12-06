@@ -80,8 +80,8 @@ export declare class ToursService {
     }>;
     findAll(filters?: {
         destination?: string;
-        featured?: boolean;
-        published?: boolean;
+        featured?: boolean | string;
+        published?: boolean | string;
         search?: string;
     }): Promise<({
         destination: {

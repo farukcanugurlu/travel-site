@@ -76,8 +76,8 @@ export class ToursService {
 
   async findAll(filters?: {
     destination?: string;
-    featured?: boolean;
-    published?: boolean;
+    featured?: boolean | string;
+    published?: boolean | string;
     search?: string;
   }) {
     const where: any = {};
@@ -87,11 +87,13 @@ export class ToursService {
     }
 
     if (filters?.featured !== undefined) {
-      where.featured = filters.featured;
+      // Query parametreleri string olarak gelir, boolean'a çevir
+      where.featured = filters.featured === 'true' || filters.featured === true;
     }
 
     if (filters?.published !== undefined) {
-      where.published = filters.published;
+      // Query parametreleri string olarak gelir, boolean'a çevir
+      where.published = filters.published === 'true' || filters.published === true;
     }
 
     if (filters?.search) {
