@@ -390,3 +390,4 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ currentTour }) => {
 
 export default SimilarTours;
 
+
