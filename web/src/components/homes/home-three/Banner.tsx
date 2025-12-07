@@ -4,12 +4,7 @@ import { Link } from "react-router-dom";
 import Button from "../../common/Button";
 import { useEffect, useState } from "react";
 import settingsApi, { type SiteSettingsData } from "../../../api/settings";
-
-const banner_thumb: string[] = [
-  "/assets/img/hero/hero-1.webp",
-  "/assets/img/hero/hero-2.webp",
-  "/assets/img/hero/hero-3.webp",
-];
+import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 const setting = {
   slidesPerView: 1,
@@ -29,35 +24,38 @@ const setting = {
 
 const Banner = () => {
   const [settings, setSettings] = useState<SiteSettingsData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    settingsApi.getSettings().then(setSettings).catch(() => setSettings(null));
+    settingsApi.getSettings()
+      .then(setSettings)
+      .catch(() => setSettings(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const heroTitle = settings?.heroTitle || "Lexor Holiday";
   const heroSubtitle = settings?.heroSubtitle || "From the first click to the final memory: <br /> Lexor Holiday is with you.";
   const heroButtonText = settings?.heroButtonText || "Take a Tour";
   
-  // Filter out empty strings and invalid URLs from heroSliderImages
+  // Filter out empty strings, invalid URLs, and default template images from heroSliderImages
   const validHeroImages = settings?.heroSliderImages 
-    ? settings.heroSliderImages.filter(img => img && img.trim() !== '' && img !== 'undefined' && img !== 'null')
+    ? settings.heroSliderImages
+        .filter(img => img && img.trim() !== '' && img !== 'undefined' && img !== 'null')
+        .map(img => normalizeImageUrl(img))
+        .filter((img): img is string => img !== null && !img.includes('/assets/img/hero/'))
     : [];
-  
-  const heroSliderImages = validHeroImages.length > 0 
-    ? validHeroImages 
-    : banner_thumb;
 
   return (
     <div className="tg-hero-area fix p-relative">
       <div className="tg-hero-top-shadow"></div>
       <div className="shop-slider-wrapper">
-        {heroSliderImages.length > 0 ? (
+        {!loading && validHeroImages.length > 0 ? (
           <Swiper
             {...setting}
             modules={[Navigation, EffectFade, Autoplay]}
             className="swiper-container tg-hero-slider-active"
           >
-            {heroSliderImages.map((thumb, i) => (
+            {validHeroImages.map((thumb, i) => (
               <SwiperSlide key={i} className="swiper-slide">
                 <div className="tg-hero-bg">
                   <div
@@ -68,14 +66,23 @@ const Banner = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-        ) : (
+        ) : !loading ? (
           <div className="tg-hero-bg">
             <div
               className="tg-hero-thumb"
-              style={{ backgroundImage: `url(${banner_thumb[0]})` }}
-            ></div>
+              style={{ 
+                backgroundColor: '#f5f5f5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#999',
+                fontSize: '16px'
+              }}
+            >
+              No slider images available
+            </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="tg-hero-content-area">

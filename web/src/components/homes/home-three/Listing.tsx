@@ -173,8 +173,12 @@ const Listing = () => {
       const thumb = tour.thumbnail;
       // Check if it's an uploaded image (starts with /uploads/ or is a full URL with /uploads/)
       if (thumb.startsWith('/uploads/') || thumb.includes('/uploads/') || thumb.startsWith('http')) {
-        // Skip stock photos
-        if (!thumb.includes('/assets/img/listing/') && !thumb.includes('listing-') && !thumb.includes('default-tour')) {
+        // Skip stock photos and default template images
+        if (!thumb.includes('/assets/img/listing/') && 
+            !thumb.includes('/assets/img/hero/') && 
+            !thumb.includes('listing-') && 
+            !thumb.includes('default-tour') &&
+            !thumb.includes('hero-')) {
           return thumb;
         }
       }
@@ -183,8 +187,13 @@ const Listing = () => {
     // Then check images array - only include uploaded images
     if (tour.images && Array.isArray(tour.images)) {
       for (const img of tour.images) {
-        // Skip stock photos
-        if (img && !img.includes('/assets/img/listing/') && !img.includes('listing-') && !img.includes('default-tour')) {
+        // Skip stock photos and default template images
+        if (img && 
+            !img.includes('/assets/img/listing/') && 
+            !img.includes('/assets/img/hero/') && 
+            !img.includes('listing-') && 
+            !img.includes('default-tour') &&
+            !img.includes('hero-')) {
           // Only include uploaded images or full URLs
           if (img.startsWith('/uploads/') || img.includes('/uploads/') || img.startsWith('http')) {
             return img;
