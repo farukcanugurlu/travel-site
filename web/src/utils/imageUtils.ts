@@ -28,9 +28,13 @@ export function normalizeImageUrl(url?: string): string | null {
   // Skip default/placeholder images - only show uploaded images
   if (url.includes('/assets/img/listing/') || 
       url.includes('/assets/img/hero/') || 
+      url.includes('/assets/img/about/') ||
       url.includes('listing-') || 
       url.includes('default-tour') ||
-      url.includes('hero-')) {
+      url.includes('hero-') ||
+      url.includes('about.jpg') ||
+      url.includes('about-') ||
+      url.includes('logo.png')) {
     return null;
   }
 
