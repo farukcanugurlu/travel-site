@@ -11,15 +11,20 @@ import HeaderThree from "../../../layouts/headers/HeaderThree";
 import BannerFormThree from "../../common/banner-form/BannerFormThree";
 import FooterThree from "../../../layouts/footers/FooterThree";
 import Listing from "./Listing";
+import { type SiteSettingsData } from "../../../api/settings";
 
-const HomeThree = () => {
+interface HomeThreeProps {
+  settings: SiteSettingsData | null;
+}
+
+const HomeThree = ({ settings }: HomeThreeProps) => {
   return (
     <>
       <HeaderThree />
       <main>
-        <Banner />
+        <Banner settings={settings} />
         <BannerFormThree />
-        <About />
+        <About settings={settings} />
         <Location />
         <Choose />
         <CtaThree />

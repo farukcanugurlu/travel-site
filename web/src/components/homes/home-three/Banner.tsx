@@ -2,8 +2,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade, Autoplay } from "swiper/modules";
 import { Link } from "react-router-dom";
 import Button from "../../common/Button";
-import { useEffect, useState } from "react";
-import settingsApi, { type SiteSettingsData } from "../../../api/settings";
+import { useEffect } from "react";
+import { type SiteSettingsData } from "../../../api/settings";
 import { normalizeImageUrl } from "../../../utils/imageUtils";
 
 const setting = {
@@ -22,17 +22,11 @@ const setting = {
   },
 };
 
-const Banner = () => {
-  const [settings, setSettings] = useState<SiteSettingsData | null>(null);
-  const [loading, setLoading] = useState(true);
+interface BannerProps {
+  settings: SiteSettingsData | null;
+}
 
-  useEffect(() => {
-    settingsApi.getSettings()
-      .then(setSettings)
-      .catch(() => setSettings(null))
-      .finally(() => setLoading(false));
-  }, []);
-
+const Banner = ({ settings }: BannerProps) => {
   const heroTitle = settings?.heroTitle || "Lexor Holiday";
   const heroSubtitle = settings?.heroSubtitle || "From the first click to the final memory: <br /> Lexor Holiday is with you.";
   const heroButtonText = settings?.heroButtonText || "Take a Tour";
@@ -45,11 +39,16 @@ const Banner = () => {
         .filter((img): img is string => img !== null && !img.includes('/assets/img/hero/'))
     : [];
 
+  // Scroll'u en üste zorla component mount olduğunda
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="tg-hero-area fix p-relative">
       <div className="tg-hero-top-shadow"></div>
-      <div className="shop-slider-wrapper">
-        {!loading && validHeroImages.length > 0 ? (
+      <div className="shop-slider-wrapper" style={{ minHeight: '100vh' }}>
+        {validHeroImages.length > 0 ? (
           <Swiper
             {...setting}
             modules={[Navigation, EffectFade, Autoplay]}
@@ -66,7 +65,7 @@ const Banner = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-        ) : !loading ? (
+        ) : (
           <div className="tg-hero-bg">
             <div
               className="tg-hero-thumb"
@@ -76,13 +75,14 @@ const Banner = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#999',
-                fontSize: '16px'
+                fontSize: '16px',
+                minHeight: '100vh'
               }}
             >
               No slider images available
             </div>
           </div>
-        ) : null}
+        )}
       </div>
 
       <div className="tg-hero-content-area">
