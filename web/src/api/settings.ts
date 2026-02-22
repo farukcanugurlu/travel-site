@@ -82,6 +82,7 @@ export interface SiteSettingsData {
   aboutPageImage1?: string;
   aboutPageImage2?: string;
   aboutPageImage3?: string;
+
 }
 
 const SETTINGS_CACHE_KEY = 'site_settings_cache';

@@ -204,6 +204,16 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
   const selectedPackage = packages.find(pkg => pkg.id === formData.packageId);
   const totalAmount = calculateTotal();
 
+  // Dynamic age ranges from selected package (or defaults: Infant 0-3, Child 4-11, Adult 12-25+)
+  const infantMax = selectedPackage?.infantMaxAge ?? 3;
+  const childMax = selectedPackage?.childMaxAge ?? 11;
+  const adultMin = childMax + 1;
+  const ageRanges = {
+    adult: `Age ${adultMin}-25+`,
+    child: `Age ${infantMax + 1}-${childMax}`,
+    infant: `Age 0-${infantMax}`,
+  };
+
   return (
     <div className="booking-form-container">
       <div className="booking-header">
@@ -283,9 +293,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
         {/* Participants */}
         <div className="form-section">
           <h3>Number of Participants</h3>
-          <div className="participants-grid">
-            <div className="form-group">
-              <label htmlFor="adultCount">Adults *</label>
+          <div className="participants-list">
+            <div className="participant-row">
+              <div className="participant-label-block">
+                <label htmlFor="adultCount" className="participant-title">Adult</label>
+                <span className="participant-age-range">{ageRanges.adult}</span>
+              </div>
               <input
                 type="number"
                 id="adultCount"
@@ -293,13 +306,15 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
                 onChange={(e) => handleInputChange('adultCount', parseInt(e.target.value))}
                 min="1"
                 max="20"
-                className="form-input"
+                className="form-input participant-input"
                 required
               />
             </div>
-
-            <div className="form-group">
-              <label htmlFor="childCount">Children</label>
+            <div className="participant-row">
+              <div className="participant-label-block">
+                <label htmlFor="childCount" className="participant-title">Child</label>
+                <span className="participant-age-range">{ageRanges.child}</span>
+              </div>
               <input
                 type="number"
                 id="childCount"
@@ -307,12 +322,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
                 onChange={(e) => handleInputChange('childCount', parseInt(e.target.value))}
                 min="0"
                 max="20"
-                className="form-input"
+                className="form-input participant-input"
               />
             </div>
-
-            <div className="form-group">
-              <label htmlFor="infantCount">Infants</label>
+            <div className="participant-row">
+              <div className="participant-label-block">
+                <label htmlFor="infantCount" className="participant-title">Infant</label>
+                <span className="participant-age-range">{ageRanges.infant}</span>
+              </div>
               <input
                 type="number"
                 id="infantCount"
@@ -320,7 +337,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
                 onChange={(e) => handleInputChange('infantCount', parseInt(e.target.value))}
                 min="0"
                 max="20"
-                className="form-input"
+                className="form-input participant-input"
               />
             </div>
           </div>
@@ -609,6 +626,55 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
           margin: 0;
         }
 
+        .participants-list {
+          display: flex;
+          flex-direction: column;
+          border: 1px solid #e8eaef;
+          border-radius: 12px;
+          overflow: hidden;
+          background: #fff;
+        }
+
+        .participant-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          padding: 16px 20px;
+          border-bottom: 1px dotted #d0d4dc;
+        }
+
+        .participant-row:last-child {
+          border-bottom: none;
+        }
+
+        .participant-label-block {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .participant-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #0A193F;
+          margin: 0;
+          cursor: pointer;
+        }
+
+        .participant-age-range {
+          font-size: 14px;
+          color: #828282;
+          font-weight: 400;
+        }
+
+        .participant-input {
+          width: 80px;
+          min-width: 80px;
+          text-align: center;
+          flex-shrink: 0;
+        }
+
         .participants-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -730,6 +796,29 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
           .tour-info {
             flex-direction: column;
             text-align: center;
+          }
+
+          .participant-row {
+            flex-wrap: wrap;
+            padding: 14px 16px;
+          }
+
+          .participant-label-block {
+            flex: 1;
+            min-width: 0;
+          }
+
+          .participant-title {
+            font-size: 16px;
+          }
+
+          .participant-age-range {
+            font-size: 13px;
+          }
+
+          .participant-input {
+            width: 72px;
+            min-width: 72px;
           }
 
           .participants-grid {
