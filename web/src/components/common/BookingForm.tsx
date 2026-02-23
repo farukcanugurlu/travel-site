@@ -258,35 +258,40 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
         <div className="form-section">
           <h3>Select Package</h3>
           <div className="package-options">
-            {packages.map((pkg) => (
-              <div
-                key={pkg.id}
-                className={`package-option ${formData.packageId === pkg.id ? 'selected' : ''}`}
-                onClick={() => handleInputChange('packageId', pkg.id)}
-              >
-                <div className="package-header">
-                  <h4>{pkg.name}</h4>
-                  <span className="package-language">{pkg.language}</span>
+            {packages.map((pkg) => {
+              const im = pkg.infantMaxAge ?? 3;
+              const cm = pkg.childMaxAge ?? 11;
+              const pkgAges = { adult: `Age ${cm + 1}-25+`, child: `Age ${im + 1}-${cm}`, infant: `Age 0-${im}` };
+              return (
+                <div
+                  key={pkg.id}
+                  className={`package-option ${formData.packageId === pkg.id ? 'selected' : ''}`}
+                  onClick={() => handleInputChange('packageId', pkg.id)}
+                >
+                  <div className="package-header">
+                    <h4>{pkg.name}</h4>
+                    <span className="package-language">{pkg.language}</span>
+                  </div>
+                  <div className="package-prices">
+                    <div className="price-item">
+                      <span className="price-item-label">Adult <span className="price-item-age">{pkgAges.adult}</span></span>
+                      <span>€{pkg.adultPrice}</span>
+                    </div>
+                    <div className="price-item">
+                      <span className="price-item-label">Child <span className="price-item-age">{pkgAges.child}</span></span>
+                      <span>€{pkg.childPrice}</span>
+                    </div>
+                    <div className="price-item">
+                      <span className="price-item-label">Infant <span className="price-item-age">{pkgAges.infant}</span></span>
+                      <span>€{pkg.infantPrice}</span>
+                    </div>
+                  </div>
+                  {pkg.description && (
+                    <p className="package-description">{pkg.description}</p>
+                  )}
                 </div>
-                <div className="package-prices">
-                  <div className="price-item">
-                    <span>Adult:</span>
-                    <span>€{pkg.adultPrice}</span>
-                  </div>
-                  <div className="price-item">
-                    <span>Child:</span>
-                    <span>€{pkg.childPrice}</span>
-                  </div>
-                  <div className="price-item">
-                    <span>Infant:</span>
-                    <span>€{pkg.infantPrice}</span>
-                  </div>
-                </div>
-                {pkg.description && (
-                  <p className="package-description">{pkg.description}</p>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -613,6 +618,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ tourId: propTourId, defaultPa
         .price-item span:first-child {
           color: #666;
           font-size: 14px;
+        }
+
+        .price-item-label {
+          display: inline-block;
+        }
+
+        .price-item-age {
+          display: block;
+          font-size: 11px;
+          color: #999;
+          font-weight: 400;
         }
 
         .price-item span:last-child {

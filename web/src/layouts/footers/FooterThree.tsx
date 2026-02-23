@@ -29,7 +29,7 @@ const FooterThree = () => {
   // TÜRSAB plaka bilgileri – statik (admin/DB’de tutulmuyor)
   const TURSAB_BELGE_NO = '8045';
   const TURSAB_SERI_NO = 'AH17R';
-  const TURSAB_AGENCY_NAME = 'LEXOR HOLIDAY TRAVEL';
+  const TURSAB_AGENCY_NAME = 'LEXOR HOLIDAY TRAVEL AGENCY';
 
   return (
     <>
@@ -460,8 +460,11 @@ const FooterThree = () => {
           object-fit: contain;
         }
         
+        .pay-safe-logo-amex {
+          min-width: 56px;
+        }
         .pay-safe-logo-amex svg {
-          max-width: 52px;
+          max-width: 72px;
         }
         
         /* Responsive Design */
@@ -731,9 +734,10 @@ const FooterThree = () => {
                     </svg>
                   </span>
                   <span className="pay-safe-logo pay-safe-logo-amex" title="American Express">
-                    <svg viewBox="0 0 52 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Express">
-                      <rect width="52" height="24" rx="2" fill="#006FCF"/>
-                      <text x="26" y="15.5" textAnchor="middle" fill="white" fontSize="12" fontFamily="Arial,sans-serif" fontWeight="bold">AMEX</text>
+                    <svg viewBox="0 0 72 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Express">
+                      <rect width="72" height="24" rx="2" fill="#006FCF"/>
+                      <text x="36" y="10.5" textAnchor="middle" fill="white" fontSize="7" fontFamily="Arial,sans-serif" fontWeight="bold">AMERICAN</text>
+                      <text x="36" y="19" textAnchor="middle" fill="white" fontSize="7" fontFamily="Arial,sans-serif" fontWeight="bold">EXPRESS</text>
                     </svg>
                   </span>
                   <span className="pay-safe-logo" title="JCB">

@@ -110,6 +110,13 @@ const TourDetailsMain: React.FC = () => {
   const selectedPackage = tour.packages?.find(pkg => pkg.id === selectedPackageId) || tour.packages?.[0];
   const lowestPrice = selectedPackage ? Number(selectedPackage.adultPrice) : Math.min(...tour.packages.map(pkg => Number(pkg.adultPrice)));
 
+  // Age ranges from package (admin: childMaxAge, infantMaxAge) or defaults 11, 3
+  const getAgeRanges = (pkg: { childMaxAge?: number; infantMaxAge?: number }) => {
+    const im = pkg.infantMaxAge ?? 3;
+    const cm = pkg.childMaxAge ?? 11;
+    return { adult: `Age ${cm + 1}-25+`, child: `Age ${im + 1}-${cm}`, infant: `Age 0-${im}` };
+  };
+
   return (
     <>
       <HeaderThree />
@@ -217,7 +224,9 @@ const TourDetailsMain: React.FC = () => {
                     <div className="packages-tab">
                       <h2>Available Packages</h2>
                       <div className="packages-grid">
-                        {tour.packages.map((pkg) => (
+                        {tour.packages.map((pkg) => {
+                          const ages = getAgeRanges(pkg);
+                          return (
                           <div key={pkg.id} className="package-card">
                             <div className="package-header">
                               <h3>{pkg.name}</h3>
@@ -225,15 +234,15 @@ const TourDetailsMain: React.FC = () => {
                             </div>
                             <div className="package-prices">
                               <div className="price-item">
-                                <span>Adult:</span>
+                                <span>Adult <span className="package-age-range">{ages.adult}</span></span>
                                 <span>€{pkg.adultPrice}</span>
                               </div>
                               <div className="price-item">
-                                <span>Child:</span>
+                                <span>Child <span className="package-age-range">{ages.child}</span></span>
                                 <span>€{pkg.childPrice}</span>
                               </div>
                               <div className="price-item">
-                                <span>Infant:</span>
+                                <span>Infant <span className="package-age-range">{ages.infant}</span></span>
                                 <span>€{pkg.infantPrice}</span>
                               </div>
                             </div>
@@ -246,7 +255,8 @@ const TourDetailsMain: React.FC = () => {
                               </div>
                             )}
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -298,25 +308,28 @@ const TourDetailsMain: React.FC = () => {
                     <span className="price-amount">€{lowestPrice}</span>
                     <span className="price-per">per person</span>
                   </div>
-                  {selectedPackage && (
+                  {selectedPackage && (() => {
+                    const ages = getAgeRanges(selectedPackage);
+                    return (
                     <div className="package-details-sidebar" style={{ marginTop: '15px', padding: '12px', background: '#f8f9fa', borderRadius: '6px', fontSize: '13px' }}>
                       <div style={{ marginBottom: '6px' }}>
                         <strong>Package:</strong> {selectedPackage.name} ({selectedPackage.language})
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span>Adult:</span>
+                        <span>Adult <span className="package-age-range">{ages.adult}</span></span>
                         <span>€{selectedPackage.adultPrice}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span>Child:</span>
+                        <span>Child <span className="package-age-range">{ages.child}</span></span>
                         <span>€{selectedPackage.childPrice}</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Infant:</span>
+                        <span>Infant <span className="package-age-range">{ages.infant}</span></span>
                         <span>€{selectedPackage.infantPrice}</span>
                       </div>
                     </div>
-                  )}
+                    );
+                  })()}
                   <div className="tour-info-summary">
                     <div className="info-item">
                       <span className="info-label">Duration:</span>
@@ -573,6 +586,13 @@ const TourDetailsMain: React.FC = () => {
         .price-item span:first-child {
           color: #666;
           font-size: 14px;
+        }
+
+        .package-age-range {
+          display: block;
+          font-size: 11px;
+          color: #888;
+          font-weight: 400;
         }
 
         .price-item span:last-child {
