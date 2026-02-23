@@ -319,6 +319,9 @@ const FooterThree = () => {
         .footer-copyright {
           color: rgba(255, 255, 255, 0.6);
           font-size: 14px;
+          flex: 1;
+          text-align: center;
+          padding: 0 16px;
         }
         
         .footer-copyright a {
@@ -457,6 +460,10 @@ const FooterThree = () => {
           object-fit: contain;
         }
         
+        .pay-safe-logo-amex svg {
+          max-width: 52px;
+        }
+        
         /* Responsive Design */
         @media (max-width: 991.98px) {
           .modern-footer {
@@ -504,17 +511,24 @@ const FooterThree = () => {
             text-align: center;
           }
           
+          .footer-copyright {
+            flex: none;
+            order: 2;
+          }
+          
           .footer-bottom-left {
             flex-direction: column;
             align-items: center;
+            order: 1;
+          }
+          
+          .footer-pay-safe {
+            order: 3;
+            text-align: center;
           }
           
           .footer-tursab {
             max-width: 240px;
-          }
-          
-          .footer-pay-safe {
-            text-align: center;
           }
           
           .pay-safe-text {
@@ -668,7 +682,7 @@ const FooterThree = () => {
               </div>
             </div>
 
-            {/* Copyright + Pay Safe */}
+            {/* TÜRSAB | Copyright | Pay Safe */}
             <div className="footer-bottom">
               <div className="footer-bottom-left">
                 <a
@@ -676,27 +690,26 @@ const FooterThree = () => {
                   href={TURSAB_DDS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="TÜRSAB Dijital Doğrulama Sayfası - Acentamızı doğrulayın"
+                  title="TÜRSAB Digital Verification - Verify our agency"
                 >
                   <div className="tursab-inner">
                     <span className="tursab-logo">TÜRSAB</span>
-                    <span className="tursab-org">Türkiye Seyahat Acentaları Birliği</span>
                     <span className="tursab-org">Association of Turkish Travel Agencies</span>
                     <span className="tursab-agency">{TURSAB_AGENCY_NAME}</span>
                     <div className="tursab-numbers">
-                      <span>Belge No: <strong>{TURSAB_BELGE_NO}</strong></span>
-                      <span>Seri No: <strong>{TURSAB_SERI_NO}</strong></span>
+                      <span>Certificate No: <strong>{TURSAB_BELGE_NO}</strong></span>
+                      <span>Serial No: <strong>{TURSAB_SERI_NO}</strong></span>
                     </div>
                     <span className="tursab-verify">
-                      Tıklayın: <strong>TÜRSAB</strong> Dijital Doğrulama ile acentamızı doğrulayabilirsiniz.
+                      Click to verify our agency with <strong>TÜRSAB</strong> Digital Verification.
                     </span>
                   </div>
                 </a>
-                <div className="footer-copyright">
-                  <span>
-                    Copyright <Link to="/">© {new Date().getFullYear()} Lexor Holiday</Link> | All Rights Reserved
-                  </span>
-                </div>
+              </div>
+              <div className="footer-copyright">
+                <span>
+                  Copyright <Link to="/">© {new Date().getFullYear()} Lexor Holiday</Link> | All Rights Reserved
+                </span>
               </div>
               <div className="footer-pay-safe">
                 <h4 className="pay-safe-title">Pay Safe</h4>
@@ -717,10 +730,10 @@ const FooterThree = () => {
                       <path d="M20 6.5C21.8 8.3 23 10.5 23 12C23 13.5 21.8 15.7 20 17.5C18.2 15.7 17 13.5 17 12C17 10.5 18.2 8.3 20 6.5Z" fill="#FF5F00"/>
                     </svg>
                   </span>
-                  <span className="pay-safe-logo" title="American Express">
-                    <svg viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Express">
-                      <rect width="60" height="24" rx="2" fill="#006FCF"/>
-                      <text x="30" y="15.5" textAnchor="middle" fill="white" fontSize="11" fontFamily="Arial,sans-serif" fontWeight="bold">AMERICAN EXPRESS</text>
+                  <span className="pay-safe-logo pay-safe-logo-amex" title="American Express">
+                    <svg viewBox="0 0 52 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="American Express">
+                      <rect width="52" height="24" rx="2" fill="#006FCF"/>
+                      <text x="26" y="15.5" textAnchor="middle" fill="white" fontSize="12" fontFamily="Arial,sans-serif" fontWeight="bold">AMEX</text>
                     </svg>
                   </span>
                   <span className="pay-safe-logo" title="JCB">
